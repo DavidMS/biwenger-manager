@@ -10,7 +10,10 @@ Phase 0 (AI-ready foundation). There is no application code yet. Items marked *(
 
 ```
 CLAUDE.md                 this file (always loaded, keep it short)
-.claude/                  shared settings, hooks, skills and subagents (planned, Phase 0)
+.claude/
+  settings.json           shared permissions and hooks (personal overrides: settings.local.json, gitignored)
+  hooks/                  hook scripts: guard-bash.sh (blocks force-push to main, reading .env), format-file.sh
+  skills/, agents/        project skills and subagents (planned, issues #4 and #5)
 backend/                  Java 25 + Spring Boot 4, Maven multi-module (planned, Phase 1)
   biwenger-client/        Biwenger API client, no Spring web dependencies
   app/                    domain, sync jobs, advisor algorithms, REST API
