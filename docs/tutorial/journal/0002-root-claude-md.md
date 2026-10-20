@@ -38,4 +38,4 @@ None yet. The human review of the PR may add some. If it does, record them here 
 
 ## Lesson
 
-Write CLAUDE.md for the repo as it is today, not as it will be. Keep it short (this one is about 70 lines) and update it in the same PR as any change that makes it stale.
+Write CLAUDE.md for the repo as it is today, not as it will be. Keep it short (this one is 62 lines) and update it in the same PR as any change that makes it stale.
