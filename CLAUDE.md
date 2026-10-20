@@ -24,9 +24,9 @@ backend/                  Java 25 + Spring Boot 4, Maven multi-module (planned, 
 frontend/                 React + TypeScript + Vite, Tailwind, shadcn/ui, TanStack Query (planned, Phase 1)
 docs/
   IMPLEMENTATION_PLAN.md  phases, tasks and decisions
-  tutorial/               "how we built this with AI", one chapter per phase (planned)
-  tutorial/journal/       one entry per issue
-  adr/                    architecture decision records (planned)
+  tutorial/               "how we built this with AI": README.md index, one chapter per phase
+  tutorial/journal/       one entry per issue, start from TEMPLATE.md
+  adr/                    architecture decision records (0001-0003: ADRs, tech stack, layout)
   biwenger-api/           reverse-engineered API reference and samples (planned, Phase 2)
 ```
 

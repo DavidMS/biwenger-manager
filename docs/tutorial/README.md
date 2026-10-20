@@ -1,0 +1,38 @@
+# Building Biwenger Manager with AI — the tutorial
+
+This folder tells the story of how this app was built with [Claude Code](https://claude.com/claude-code), one step at a time, including the mistakes. The app itself is a personal manager for a Biwenger fantasy football account (Java + Spring Boot backend, React frontend). The [implementation plan](../IMPLEMENTATION_PLAN.md) describes what it does.
+
+## How to read it
+
+- **Chapters** (`NN-*.md`) are the narrative. There is one per phase. Each explains the goal, the Claude Code concepts it relies on, how it went, what went wrong and the takeaways. Read them in order.
+- **Journal entries** (`journal/NNNN-*.md`) are the raw log. There is one per GitHub issue: the exact prompt, what Claude did, what was corrected and the lesson. Read them when you want the detail behind a chapter.
+- **ADRs** ([`../adr/`](../adr/)) record the significant decisions and why they were made.
+- Every change is a pull request on [GitHub](https://github.com/DavidMS/biwenger-manager/pulls?q=is%3Apr), so you can see the real diffs and reviews, and track the work on the [project board](https://github.com/users/DavidMS/projects/8).
+
+Prompts are always quoted exactly as they were typed, typos included.
+
+## Chapters
+
+| # | Chapter | Phase | Status |
+|---|---|---|---|
+| 00 | [Planning with AI](00-planning-with-ai.md) | Before Phase 0 | Written |
+| 01 | [Setting up Claude Code](01-setting-up-claude-code.md) | 0 — AI-ready foundation | Written |
+| 02 | Scaffolding a project with AI | 1 — Project skeleton | Planned |
+| 03 | Reverse-engineering an API with AI | 2 — Biwenger API client | Planned |
+| 04 | Letting AI design a schema | 3 — Domain, persistence and history | Planned |
+| 05 | Building UI with AI | 4 — Read-only UI | Planned |
+| 06 | Designing deterministic algorithms with AI | 5 — Advisor engine | Planned |
+| 07 | Safety when software acts on your behalf | 6 — Actions with confirmation | Planned |
+| 08 | Retrospective | 7 — Advanced and polish | Planned |
+
+## Journal
+
+New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
+
+| Issue | Entry |
+|---|---|
+| #2 | [Root CLAUDE.md](journal/0002-root-claude-md.md) |
+| #3 | [Shared Claude Code settings: permissions and hooks](journal/0003-claude-settings.md) |
+| #4 | [Project skills](journal/0004-project-skills.md) |
+| #5 | [Project subagents](journal/0005-project-agents.md) |
+| #6 | [Documentation skeleton](journal/0006-docs-skeleton.md) |
