@@ -28,7 +28,7 @@
 
 ## Corrections
 
-The verification step found four real problems, none of them in the new files:
+The verification step found four real problems. Three were in what already existed, and one was in Claude's own first fix:
 
 - **`.env` was not gitignored.** `CLAUDE.md`, the hooks and the plan all said credentials live in a gitignored `.env`, but nothing ignored it. It would have been committed the first time someone ran `git add .` in Phase 1. Now `.env` and `.env.*` are ignored, except `.env.example`.
 - **The original `.gitignore` ignored `*.jar`,** which would also have ignored the Maven wrapper jar coming in #8. The first exception (`!.mvn/wrapper/maven-wrapper.jar`) only matched at the repo root, because a pattern containing a slash is anchored to the `.gitignore`'s folder. `git check-ignore` caught it, and `!**/.mvn/...` fixed it.
