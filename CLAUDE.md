@@ -13,7 +13,9 @@ CLAUDE.md                 this file (always loaded, keep it short)
 .claude/
   settings.json           shared permissions and hooks (personal overrides: settings.local.json, gitignored)
   hooks/                  hook scripts: guard-bash.sh (blocks force-push to main, reading .env), format-file.sh
-  skills/, agents/        project skills and subagents (planned, issues #4 and #5)
+  skills/                 on-demand workflows: implement-issue, backend-feature, frontend-feature,
+                          biwenger-api, write-adr, tutorial-chapter
+  agents/                 project subagents (planned, issue #5)
 backend/                  Java 25 + Spring Boot 4, Maven multi-module (planned, Phase 1)
   biwenger-client/        Biwenger API client, no Spring web dependencies
   app/                    domain, sync jobs, advisor algorithms, REST API
