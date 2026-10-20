@@ -17,41 +17,22 @@ This repo is also a tutorial on building software with AI. The reader is a devel
 
 ## Journal entry (one per issue)
 
-Path: `docs/tutorial/journal/NNNN-slug.md`, where `NNNN` is the issue number padded to four digits and `slug` matches the branch. Aim for 30–60 lines.
+Copy [`docs/tutorial/journal/TEMPLATE.md`](../../../docs/tutorial/journal/TEMPLATE.md) to `docs/tutorial/journal/NNNN-slug.md`, where `NNNN` is the issue number padded to four digits and `slug` matches the branch. Aim for 30–60 lines.
 
-```markdown
-# #N — Title
+The sections, in order:
 
-- **Issue:** [#N title](https://github.com/DavidMS/biwenger-manager/issues/N)
-- **Phase:** P — phase name
-- **Date:** YYYY-MM-DD
+1. **Header**: issue link, phase, date.
+2. **Prompt**: the user's exact prompt(s) in a blockquote, plus a line on why it worked if there's something to learn.
+3. **What Claude did**: numbered steps covering what was read, the skills or agents used, what was built and how it was verified.
+4. **Corrections**: bugs Claude's own checks caught and changes asked for in review. Write "None yet" if there were none.
+5. **Decisions made along the way**: a bold one-line decision, then the reason. Link an ADR when there is one.
+6. **Lesson**: one short paragraph with the reusable takeaway.
 
-## Prompt
-
-> the user's exact prompt(s)
-
-One or two lines on why the prompt worked (or didn't), if there is something to learn.
-
-## What Claude did
-
-Numbered steps: what was read, which skills or agents were used, what was built, how it was verified.
-
-## Corrections
-
-What went wrong and how it was fixed: bugs Claude's own checks caught, and changes the human asked for in review. Write "None yet" if there were none. Human review may add more before merging.
-
-## Decisions made along the way
-
-Bold one-line decision, then the reason. Link an ADR when there is one.
-
-## Lesson
-
-One short paragraph: the reusable takeaway for someone building with AI.
-```
+Add the entry to the journal table in `docs/tutorial/README.md`.
 
 ## Tutorial chapter (one per phase)
 
-Path: `docs/tutorial/NN-slug.md` (two digits, `00` is planning). Add it to the index in `docs/tutorial/README.md`.
+Path: `docs/tutorial/NN-slug.md` (two digits, `00` is planning). Update its row in the chapter table in `docs/tutorial/README.md`.
 
 A chapter tells the story of a phase and teaches what generalises from it. Build it from that phase's journal entries, PRs and ADRs (`git log`, `gh pr list --state merged`); don't repeat them in full, link them.
 
