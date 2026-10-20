@@ -1,0 +1,52 @@
+name: Spike
+description: A time-boxed investigation. The output is documentation, not production code.
+title: "[N.N] Spike: "
+labels: ["type:spike"]
+projects: ["DavidMS/8"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A spike answers a question. Its deliverable is a document (for example in `docs/biwenger-api/` or an ADR), plus follow-up issues if needed.
+        Add the `phase:N` and `area:*` labels and the phase milestone after creating it.
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What we don't know yet and why it blocks or affects other work.
+    validations:
+      required: true
+  - type: textarea
+    id: questions
+    attributes:
+      label: Questions to answer
+      value: |
+        1. 
+    validations:
+      required: true
+  - type: input
+    id: timebox
+    attributes:
+      label: Time box
+      description: When to stop and report, even without a full answer.
+      placeholder: e.g. 2 hours
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: The deliverable that closes the spike.
+      value: |
+        - [ ] Findings documented in `docs/...`
+        - [ ] Follow-up issues created or updated
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+      description: For example "don't implement it yet".
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes for Claude
+      description: Sources to check, tools or agents to use, and anything the human must do (e.g. a browser capture). Never call Biwenger write endpoints.

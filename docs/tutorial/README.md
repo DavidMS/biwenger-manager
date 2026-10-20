@@ -36,3 +36,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #4 | [Project skills](journal/0004-project-skills.md) |
 | #5 | [Project subagents](journal/0005-project-agents.md) |
 | #6 | [Documentation skeleton](journal/0006-docs-skeleton.md) |
+| #7 | [GitHub scaffolding](journal/0007-github-scaffolding.md) |
