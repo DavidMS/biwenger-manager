@@ -6,7 +6,7 @@ A personal web app to manage a [Biwenger](https://biwenger.as.com/) fantasy foot
 
 It is also a **tutorial on building software with AI**. Almost all of it is written by [Claude Code](https://claude.com/claude-code), one GitHub issue at a time, and the whole process is documented: the prompts, what the AI did, what had to be corrected and what we learned.
 
-> **Status:** Phase 1 (project skeleton). The backend, frontend and Docker setup run, but the pages are still empty; Biwenger data arrives in Phases 2–4.
+> **Status:** Phase 1 (project skeleton) is done. The backend, frontend, Docker setup and CI work, but the pages are still empty; Biwenger data arrives in Phases 2–4.
 
 ## Start here
 
