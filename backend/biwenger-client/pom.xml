@@ -33,9 +33,14 @@
                     <exclude>org.springframework:spring-webflux</exclude>
                     <exclude>org.springframework.boot:*</exclude>
                     <exclude>org.springframework.data:*</exclude>
-                    <exclude>io.github.davidms:app</exclude>
+                    <exclude>org.springframework:spring-jdbc</exclude>
+                    <exclude>org.springframework:spring-orm</exclude>
+                    <exclude>jakarta.persistence:*</exclude>
+                    <exclude>org.hibernate.orm:*</exclude>
+                    <exclude>org.flywaydb:*</exclude>
+                    <exclude>org.postgresql:*</exclude>
                   </excludes>
-                  <message>biwenger-client must not depend on Spring Web, Spring Boot, Spring Data or the app module (ADR 0003).</message>
+                  <message>biwenger-client must not depend on Spring Web, Spring Boot or the database (ADR 0003).</message>
                 </bannedDependencies>
               </rules>
             </configuration>
