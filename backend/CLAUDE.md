@@ -13,6 +13,13 @@ Use JDK 25 (`sdk env` here, or `JAVA_HOME`). `./mvnw verify` runs the enforcer r
 
 `biwenger-client` is a plain library. It takes a configured `RestClient` in its constructor. `app` builds that `RestClient` (base URL, timeouts, User-Agent) and wires the client as a bean. Only `app.biwenger` calls the client: feature services ask `app.biwenger` and get domain types back, so they never see Biwenger's records.
 
+Biwenger's JSON is read into records in `io.github.davidms.biwenger.client.model`, one per object in `docs/biwenger-api/`. They mirror the JSON, not our domain:
+
+- Names follow the JSON. Rename only with `@JsonProperty` (`scoreID` → `scoreId`). Money is whole euros, and times stay Unix seconds as `long`.
+- **A field is required unless it is marked `@Nullable` (JSpecify).** Jackson 3 already fails on a missing primitive; required objects and strings get an `Objects.requireNonNull` in the compact constructor. Either way a field Biwenger drops shows up as "doesn't match docs/biwenger-api/" instead of a silent 0 or `null`. Optional values are boxed and `@Nullable`; a list Biwenger leaves out becomes empty.
+- Maps keyed by id are sorted by id, so iterating them is deterministic.
+- Unknown fields are ignored by the client's own JSON mapper, whatever the caller configures. Add a field to a record only when a feature needs it, together with a test against its sample.
+
 ## Package layout in `app`
 
 Packages are by feature, not by layer. Inside a feature, the subpackages are layers:

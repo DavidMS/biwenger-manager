@@ -9,6 +9,10 @@ The API is **unofficial and reverse-engineered** (reference: [pybiwenger](https:
 
 The reference is [`docs/biwenger-api/`](../../../docs/biwenger-api/README.md): one page per endpoint, written from real captures (#14), with anonymised samples in `docs/biwenger-api/samples/`. The samples are the source for WireMock stubs. **Tests never call the real API.**
 
+## The client
+
+`BiwengerClient` (in `backend/biwenger-client`) has one method per read endpoint: `account()`, `league()`, `squad()`, `market()`, `catalog()`, `roundStandings()` and `board()`. Each returns records from `client.model` (the conventions are in `backend/CLAUDE.md`). `leagueContext()` gives the league, user and scoring ids. The CDN endpoints come in 2.4.
+
 ## Auth flow
 
 1. `POST https://biwenger.as.com/api/v2/auth/login` with JSON `{"email": ..., "password": ...}`. Credentials come from environment variables (`.env`, never committed, never read by Claude).
