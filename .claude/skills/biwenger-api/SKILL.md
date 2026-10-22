@@ -7,22 +7,24 @@ description: Domain knowledge about the unofficial Biwenger API and game rules -
 
 The API is **unofficial and reverse-engineered** (reference: [pybiwenger](https://github.com/pablominue/pybiwenger)). It can change without notice. When reality disagrees with this file, trust a fresh capture, then update `docs/biwenger-api/` and this skill.
 
-Captured responses live in `docs/biwenger-api/samples/` (from issue 2.1) and are the source for WireMock stubs. **Tests never call the real API.**
+The reference is [`docs/biwenger-api/`](../../../docs/biwenger-api/README.md): one page per endpoint, written from real captures (#14), with anonymised samples in `docs/biwenger-api/samples/`. The samples are the source for WireMock stubs. **Tests never call the real API.**
 
 ## Auth flow
 
 1. `POST https://biwenger.as.com/api/v2/auth/login` with JSON `{"email": ..., "password": ...}`. Credentials come from environment variables (`.env`, never committed, never read by Claude).
-2. The response is `{"token": "..."}`. Keep it in memory only and send `Authorization: Bearer <token>`.
-3. `GET /api/v2/account` lists the user's leagues and the user id in each. This app uses the account's single La Liga league and fails clearly if there is none.
+2. The response is `{"token": "..."}`, with no `{status, data}` envelope (every other response has one). Keep it in memory only and send `Authorization: Bearer <token>`.
+3. `GET /api/v2/account` lists the user's leagues and the user id in each. This app uses the account's single La Liga league (`competition == "la-liga"`) and fails clearly if there is none or more than one.
 4. Every later call sends these headers:
 
 | Header | Value |
 |---|---|
 | `Authorization` | `Bearer <token>` |
 | `X-League` | league id |
-| `X-User` | the user's id in that league |
+| `X-User` | the user's id **in that league** (`data.leagues[].user.id`), not the account id |
 | `X-Lang` | `es` |
 | `Accept` | `application/json` |
+
+Which of these each endpoint strictly needs is untested, so send them all. The CDN (`cf.biwenger.com`) needs none of the auth headers.
 
 5. On `401`, log in again once and retry. A second `401` is an error.
 
@@ -34,32 +36,42 @@ Base `https://biwenger.as.com` unless the URL says otherwise.
 |---|---|---|
 | Login | `POST /api/v2/auth/login` | Returns `{token}` |
 | Account | `GET /api/v2/account` | Leagues, the user in each (balance, points, position), league settings |
-| League | `GET /api/v2/league/{leagueId}` | Users and standings. Needs `X-League`, `X-User` |
-| My squad | `GET /api/v2/user?fields=players(id,owner)` | |
-| Market | `GET /api/v2/market` | `data.sales[]`. `user == null` means a free player |
-| Player catalog | `GET /api/v2/competitions/la-liga/data?lang=es&score={scoreId}[&season=YYYY]` | All players: price, priceIncrement, fitness, points, status, position, team. Large, changes about once a day |
-| Rounds | `GET /api/v2/rounds/league` | |
-| Board (transfers) | `GET /api/v2/league/{leagueId}/board?type=transfer,market` | Transfer history in the league |
-| Player detail | `GET https://cf.biwenger.com/api/v2/players/la-liga/{slug}?lang=es&season=YYYY&fields=*,prices` | Price history |
-| Player reports | same URL with `&fields=*,reports(points,home,events,status(status,statusInfo),match(*,round,home,away))` | Per-match points and stats |
+| League | `GET /api/v2/league/{leagueId}` | League info and `users[]` as `{id, name, icon}` only: **no standings** |
+| My squad | `GET /api/v2/user?fields=players(id,owner)` | Player ids with `owner.date` and `owner.clause`. Join with the catalog; a squad player can be missing from it (seen 3 of 13) |
+| Market | `GET /api/v2/market` | `data.sales[]`; `user == null` means a free player. `data.status` has your `balance` and `maximumBid` |
+| Player catalog | `GET /api/v2/competitions/la-liga/data?lang=es&score={scoreId}[&season=YYYY]` | All players (551, about 230 KB) and teams, both objects **keyed by id as a string**. Also seasons, rounds and scoring systems. Changes about once a day |
+| Rounds and standings | `GET /api/v2/rounds/league` | The current round, and `data.league.standings[]` sorted by position: points, `teamValue`, `teamValueInc` and each manager's last lineup |
+| Board (transfers) | `GET /api/v2/league/{leagueId}/board?type=transfer,market` | `data` is an **array**, newest first: auction wins with the losing bids, sales to the game, clause buys. Pagination unknown |
+| Player detail | `GET https://cf.biwenger.com/api/v2/players/la-liga/{slug}?lang=es&fields=*,prices` | Price history: about a year of daily `[YYMMDD, price]` pairs, oldest first. No auth |
+| Player reports | same URL with `&fields=*,reports(points,home,events,status(status,statusInfo),match(*,round,home,away))` | Per-match points for **every** scoring system, keyed by score id. pybiwenger's version of this string lacks the last `)` |
+
+Omitting `season` returns the current one. The catalog calls 2026/2027 season `"2027"`.
+
+Conventions: money is whole euros (`int`), timestamps are Unix seconds, optional fields are usually **left out** rather than `null`.
 
 **Write endpoints** (bid, cancel bid, list for sale, accept/reject offer, save lineup) are not known yet. Spike #19 documents them in `docs/biwenger-api/write-endpoints.md`. Never call one without explicit user confirmation; in code they only run through the propose → confirm flow (Phase 6).
 
 ## Game rules that drive features
 
-- **Balance.** Each manager has cash. **A negative balance when a round starts scores 0 points.** Always warn about it.
+- **Balance.** Each manager has cash. **A negative balance when a round starts scores 0 points.** Always warn about it. In the sample, `maximumBid = balance + 25% of teamValue` exactly (inferred), so a bid can push the balance below zero. Rivals' balances are hidden in this league (`settings.balance: "hidden"`); the board's bids and transfers are the only way to estimate them.
 - **Market.** Each day free players and players listed by managers appear. Managers place sealed bids; the highest wins when the market closes. Managers can also send offers for other managers' players.
-- **Player value** changes daily with performance and demand. Biwenger keeps limited history (the cf `prices` field), so we snapshot the catalog daily.
+- **Player value** changes daily with performance and demand. The cf `prices` field goes back about a year, and only for one player per request, so we still snapshot the catalog daily.
 - **Clauses.** With `settings.clause` / `clauseIncrement` enabled, a player can be bought by paying their release clause ("clausulazo").
-- **Scoring** is per league (`scoreID`): SofaScore, AS picas, mixed stats, social, Jornada Perfecta or weighted mixes. Pass it as `score=<id>` to the catalog.
+- **Scoring** is per league (`scoreID`). The catalog lists 1 Diario AS, 2 SofaScore, 3 Estadísticas, 5 Media AS y SofaScore, 6 Biwenger Social, 7 Feeberse Score, 8 Media AS y Feeberse. Pass it as `score=<id>` to the catalog.
 - **Lineups.** Formation, optional captain, coach, reserves and max players per club (`lineupCaptain`, `lineupCoach`, `lineupReserves`, `lineupMaxClubPlayers`, `lineupMultiPos`). Players who don't play score 0.
-- **Status.** `status` / `statusInfo` (injured, doubtful, suspended...) and `fitness` (last 5 scores) are in the catalog.
+- **Status.** `status` is `ok`, `injured`, `doubt` (and probably `sanctioned`); `statusInfo` is present only when it isn't `ok`. `fitness` is the last 5 rounds, most recent first: a score, `null`, or a status string.
+- **Positions.** 1 goalkeeper, 2 defender, 3 midfielder, 4 forward, 5 coach. Formations and lineup sizes are in the catalog's `meta.sports`.
+- **Rounds.** A postponed round appears as a separate round with the same `short` name and a `part` number ("Jornada 6 (aplazada)").
 
 ## Be gentle with the API
 
 - Cache the catalog and snapshot it once a day.
 - Rate-limit, set timeouts and retry with backoff. Send a sensible `User-Agent`.
 - Map failures to `BiwengerApiException` with the endpoint and status, never the token.
+
+## Capture with the script
+
+`scripts/biwenger_capture.py` captures every read endpoint above. **The human runs it** (`! python3 scripts/biwenger_capture.py`), because it logs in with the credentials in `.env`. It anonymises in memory, checks each file for leaks before writing, and prints only status codes and sizes. To capture a new read endpoint, add it to the script with a test in `scripts/test_biwenger_capture.py`, then ask the human to run it.
 
 ## Capture a new endpoint with DevTools
 

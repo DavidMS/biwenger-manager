@@ -183,6 +183,10 @@ def trim_catalog(catalog, keep_ids):
     wanted = [key for key in by_id if key in {str(k) for k in keep_ids}]
     wanted += [key for key in by_id if key not in wanted][:CATALOG_EXTRA_PLAYERS]
     catalog["data"]["players"] = {key: players[key] for key in wanted[:CATALOG_MAX_PLAYERS]}
+    # meta.config is ad, feature-flag and app-store configuration (about 40 KB) we never use.
+    # meta.sports stays: it holds the formations and lineup sizes.
+    if isinstance(catalog.get("meta"), dict):
+        catalog["meta"].pop("config", None)
     return catalog, len(players)
 
 

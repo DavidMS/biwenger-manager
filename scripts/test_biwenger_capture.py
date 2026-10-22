@@ -112,11 +112,13 @@ class AnonymiserTest(unittest.TestCase):
 class TrimCatalogTest(unittest.TestCase):
 
     def test_keeps_wanted_players_first_then_a_few_more(self):
-        catalog = {"data": {"players": {str(i): {"id": i} for i in range(1, 101)}}}
+        catalog = {"data": {"players": {str(i): {"id": i} for i in range(1, 101)}},
+                   "meta": {"config": {"ads": {}}, "sports": [{"id": "football"}]}}
         trimmed, total = trim_catalog(catalog, keep_ids=[50, 99])
         self.assertEqual(total, 100)
         self.assertEqual(list(trimmed["data"]["players"])[:2], ["50", "99"])
         self.assertEqual(len(trimmed["data"]["players"]), 12)
+        self.assertEqual(trimmed["meta"], {"sports": [{"id": "football"}]})
 
 
 class SharedNameTest(unittest.TestCase):
