@@ -126,7 +126,7 @@ Every phase and every issue follows the same loop. Writing it down is the core o
 
 - **Budget/balance.** Each manager has a cash balance. **If your balance is negative when a round starts, you score 0 points.** The app must warn about this.
 - **Market.** Every day a set of free players (and players listed by managers) appears on the market. Managers place sealed **bids**, and the highest bid wins when the market closes. Managers can also send **offers** for players owned by others.
-- **Player value.** Values change daily based on performance and demand. Tracking these changes over time is valuable, because Biwenger only exposes limited history (`prices` field on the cf player endpoint).
+- **Player value.** Values change daily based on performance and demand. Tracking these changes over time is valuable: the cf player endpoint's `prices` field goes back about a year, but only one player per request.
 - **Clauses (cláusulas).** Depending on league settings (`settings.clause`, `clauseIncrement`), you can buy another manager's player by paying their release clause (a "clausulazo"). This brings both opportunities and risks, and some leagues penalise it.
 - **Scoring.** Configurable per league (`scoreID`): SofaScore, AS picas, mixed stats, social, Jornada Perfecta, or weighted combinations. The catalog endpoint takes a `score=<id>` parameter.
 - **Lineups.** Formation, optional captain, coach, reserves and a max-players-per-club rule (`lineupCaptain`, `lineupCoach`, `lineupReserves`, `lineupMaxClubPlayers`, `lineupMultiPos`). Players who don't play score 0, so injuries, suspensions and probable lineups matter.
@@ -134,17 +134,17 @@ Every phase and every issue follows the same loop. Writing it down is the core o
 
 ### 4.2 Known Biwenger API surface (from [pybiwenger](https://github.com/pablominue/pybiwenger))
 
-Unofficial and reverse engineered. It can change without notice.
+Unofficial and reverse engineered. It can change without notice. Since #14 the verified reference is [`docs/biwenger-api/`](biwenger-api/README.md), captured from real responses; this table is the original research.
 
 | Purpose | Method & URL | Notes |
 |---|---|---|
 | Login | `POST https://biwenger.as.com/api/v2/auth/login` body `{email, password}` | Returns `{token}`. Send it as `Authorization: Bearer <token>` |
 | Account | `GET /api/v2/account` | Leagues, the user in each league (balance, points, position) and league settings |
-| League | `GET /api/v2/league/{leagueId}` | Users/standings. Requires `X-League` and `X-User` headers |
+| League | `GET /api/v2/league/{leagueId}` | League info and users (no standings, see Rounds). Requires `X-League` and `X-User` headers |
 | My squad | `GET /api/v2/user?fields=players(id,owner)` | |
 | Market | `GET /api/v2/market` | `data.sales[]`. `user == null` means a free player |
 | Player catalog | `GET /api/v2/competitions/la-liga/data?lang=es&score={scoreId}[&season=YYYY]` | All players: price, priceIncrement, fitness, points, status, position, team |
-| Rounds | `GET /api/v2/rounds/league` | |
+| Rounds | `GET /api/v2/rounds/league` | Current round and the standings, with each manager's lineup |
 | Board (transfers) | `GET /api/v2/league/{leagueId}/board?type=transfer,market` | Transfer history in the league |
 | Player detail (CDN) | `GET https://cf.biwenger.com/api/v2/players/la-liga/{slug}?lang=es&season=YYYY&fields=*,prices` | Price history |
 | Player reports (CDN) | same with `&fields=*,reports(points,home,events,status(status,statusInfo),match(*,round,home,away))` | Per-match points and stats |

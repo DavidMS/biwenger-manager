@@ -43,3 +43,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #11 | [CI with GitHub Actions](journal/0011-ci-github-actions.md) |
 | #12 | [Module conventions: backend and frontend CLAUDE.md](journal/0012-module-conventions.md) |
 | #13 | [Tutorial chapter 02](journal/0013-tutorial-chapter-02.md) |
+| #14 | [Spike: capture and document the Biwenger read endpoints](journal/0014-biwenger-read-endpoints.md) |

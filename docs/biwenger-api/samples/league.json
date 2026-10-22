@@ -1,0 +1,46 @@
+{
+  "status": 200,
+  "data": {
+    "name": "Example League",
+    "type": "premium",
+    "mode": "league",
+    "icon": "https://example.invalid/icon.png",
+    "cover": "https://example.invalid/cover.png",
+    "created": 1659204919,
+    "id": 1000001,
+    "marketMode": "normal",
+    "scoreID": 1,
+    "users": [
+      {
+        "id": 2000002,
+        "name": "Manager 2",
+        "icon": "https://example.invalid/icon.png"
+      },
+      {
+        "id": 2000001,
+        "name": "Manager 1",
+        "icon": "https://example.invalid/icon.png"
+      },
+      {
+        "id": 2000003,
+        "name": "Manager 3",
+        "icon": "https://example.invalid/icon.png"
+      },
+      {
+        "id": 2000004,
+        "name": "Manager 4",
+        "icon": "https://example.invalid/icon.png"
+      },
+      {
+        "id": 2000005,
+        "name": "Manager 5",
+        "icon": "https://example.invalid/icon.png"
+      },
+      {
+        "id": 2000006,
+        "name": "Manager 6",
+        "icon": "https://example.invalid/icon.png"
+      }
+    ]
+  }
+}

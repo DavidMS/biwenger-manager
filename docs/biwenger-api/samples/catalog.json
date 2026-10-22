@@ -1,0 +1,3061 @@
+{
+  "status": 200,
+  "data": {
+    "id": 1,
+    "name": "Primera División",
+    "slug": "la-liga",
+    "sport": "football",
+    "currency": "€",
+    "scores": [
+      {
+        "id": 1,
+        "name": "Diario AS",
+        "kind": "as"
+      },
+      {
+        "id": 7,
+        "name": "Feeberse Score",
+        "kind": "feeberse"
+      },
+      {
+        "id": 8,
+        "name": "Media AS y Feeberse",
+        "kind": "Average"
+      },
+      {
+        "id": 2,
+        "name": "SofaScore",
+        "kind": "SofaScore"
+      },
+      {
+        "id": 5,
+        "name": "Media AS y SofaScore",
+        "kind": "Average"
+      },
+      {
+        "id": 3,
+        "name": "Estadísticas",
+        "kind": "Stats"
+      },
+      {
+        "id": 6,
+        "name": "Biwenger Social",
+        "kind": "Social"
+      }
+    ],
+    "social": {
+      "twitter": "biwenger",
+      "facebook": "biwenger",
+      "instagram": "biwengerfantasy",
+      "telegram": "BiwengerOficial",
+      "tiktok": "biwengerfantasy",
+      "blog": "https://biwenger.as.com/blog/"
+    },
+    "config": {
+      "coaches": true,
+      "multiPos": true,
+      "optimizeImages": true,
+      "superPicaScores": [
+        1,
+        5,
+        8
+      ],
+      "standings": {
+        "champion": 1,
+        "playoffs": 5,
+        "other": "6,7",
+        "descends": 3
+      },
+      "leagueSponsor": {
+        "image": "https://cdn.biwenger.com/cdn-cgi/image/f=avif/campaigns/2026/football/sportium-26-27/league2x.jpg",
+        "url": "https://online.sportium.es/promoRedirect?member=DISPLAY&campaign=DEFAULT&channel=DEFAULT&zone=19560249&lp=19561165&var1=fantasy&var2=biwenger&var3=bonodoble200",
+        "title": "Sportium"
+      }
+    },
+    "season": {
+      "id": "2027",
+      "name": "Temporada 2026/2027",
+      "slug": "2026-2027",
+      "rounds": [
+        {
+          "id": 4899,
+          "name": "Jornada 1",
+          "short": "J1",
+          "status": "finished"
+        },
+        {
+          "id": 4900,
+          "name": "Jornada 2",
+          "short": "J2",
+          "status": "finished"
+        },
+        {
+          "id": 4937,
+          "name": "Jornada 1 (aplazada)",
+          "short": "J1",
+          "part": 2,
+          "status": "finished"
+        },
+        {
+          "id": 4901,
+          "name": "Jornada 3",
+          "short": "J3",
+          "status": "finished"
+        },
+        {
+          "id": 4904,
+          "name": "Jornada 6",
+          "short": "J6",
+          "status": "finished"
+        },
+        {
+          "id": 4902,
+          "name": "Jornada 4",
+          "short": "J4",
+          "status": "finished"
+        },
+        {
+          "id": 4903,
+          "name": "Jornada 5",
+          "short": "J5",
+          "status": "finished"
+        },
+        {
+          "id": 5125,
+          "name": "Jornada 6 (aplazada)",
+          "short": "J6",
+          "part": 2,
+          "status": "finished"
+        },
+        {
+          "id": 4905,
+          "name": "Jornada 7",
+          "short": "J7",
+          "status": "finished"
+        },
+        {
+          "id": 4906,
+          "name": "Jornada 8",
+          "short": "J8",
+          "status": "finished"
+        },
+        {
+          "id": 4907,
+          "name": "Jornada 9",
+          "short": "J9",
+          "status": "finished"
+        },
+        {
+          "id": 5176,
+          "name": "Jornada 6 (aplazada)",
+          "short": "J6",
+          "part": 3,
+          "status": "active"
+        },
+        {
+          "id": 4908,
+          "name": "Jornada 10",
+          "short": "J10",
+          "status": "pending"
+        },
+        {
+          "id": 4909,
+          "name": "Jornada 11",
+          "short": "J11",
+          "status": "pending"
+        },
+        {
+          "id": 4910,
+          "name": "Jornada 12",
+          "short": "J12",
+          "status": "pending"
+        },
+        {
+          "id": 4911,
+          "name": "Jornada 13",
+          "short": "J13",
+          "status": "pending"
+        },
+        {
+          "id": 4912,
+          "name": "Jornada 14",
+          "short": "J14",
+          "status": "pending"
+        },
+        {
+          "id": 4913,
+          "name": "Jornada 15",
+          "short": "J15",
+          "status": "pending"
+        },
+        {
+          "id": 4914,
+          "name": "Jornada 16",
+          "short": "J16",
+          "status": "pending"
+        },
+        {
+          "id": 4915,
+          "name": "Jornada 17",
+          "short": "J17",
+          "status": "pending"
+        },
+        {
+          "id": 4916,
+          "name": "Jornada 18",
+          "short": "J18",
+          "status": "pending"
+        },
+        {
+          "id": 4917,
+          "name": "Jornada 19",
+          "short": "J19",
+          "status": "pending"
+        },
+        {
+          "id": 4918,
+          "name": "Jornada 20",
+          "short": "J20",
+          "status": "pending"
+        },
+        {
+          "id": 4919,
+          "name": "Jornada 21",
+          "short": "J21",
+          "status": "pending"
+        },
+        {
+          "id": 4920,
+          "name": "Jornada 22",
+          "short": "J22",
+          "status": "pending"
+        },
+        {
+          "id": 4921,
+          "name": "Jornada 23",
+          "short": "J23",
+          "status": "pending"
+        },
+        {
+          "id": 4922,
+          "name": "Jornada 24",
+          "short": "J24",
+          "status": "pending"
+        },
+        {
+          "id": 4923,
+          "name": "Jornada 25",
+          "short": "J25",
+          "status": "pending"
+        },
+        {
+          "id": 4924,
+          "name": "Jornada 26",
+          "short": "J26",
+          "status": "pending"
+        },
+        {
+          "id": 4925,
+          "name": "Jornada 27",
+          "short": "J27",
+          "status": "pending"
+        },
+        {
+          "id": 4926,
+          "name": "Jornada 28",
+          "short": "J28",
+          "status": "pending"
+        },
+        {
+          "id": 4927,
+          "name": "Jornada 29",
+          "short": "J29",
+          "status": "pending"
+        },
+        {
+          "id": 4928,
+          "name": "Jornada 30",
+          "short": "J30",
+          "status": "pending"
+        },
+        {
+          "id": 4929,
+          "name": "Jornada 31",
+          "short": "J31",
+          "status": "pending"
+        },
+        {
+          "id": 4930,
+          "name": "Jornada 32",
+          "short": "J32",
+          "status": "pending"
+        },
+        {
+          "id": 4931,
+          "name": "Jornada 33",
+          "short": "J33",
+          "status": "pending"
+        },
+        {
+          "id": 4932,
+          "name": "Jornada 34",
+          "short": "J34",
+          "status": "pending"
+        },
+        {
+          "id": 4933,
+          "name": "Jornada 35",
+          "short": "J35",
+          "status": "pending"
+        },
+        {
+          "id": 4934,
+          "name": "Jornada 36",
+          "short": "J36",
+          "status": "pending"
+        },
+        {
+          "id": 4935,
+          "name": "Jornada 37",
+          "short": "J37",
+          "status": "pending"
+        },
+        {
+          "id": 4936,
+          "name": "Jornada 38",
+          "short": "J38",
+          "status": "pending"
+        },
+        {
+          "id": 5202,
+          "name": "Jornada 8 (aplazada)",
+          "short": "J8",
+          "part": 2,
+          "status": "pending"
+        }
+      ],
+      "previous": {
+        "id": "2026",
+        "name": "Temporada 2025/2026",
+        "slug": "2025-2026"
+      }
+    },
+    "activeEvents": [
+      {
+        "id": 5176,
+        "name": "Jornada 6 (aplazada)",
+        "short": "J6",
+        "part": 3,
+        "status": "active",
+        "end": 1792681200,
+        "type": "round",
+        "games": [
+          {
+            "id": 50765,
+            "date": 1792605600,
+            "status": "finished",
+            "home": {
+              "id": 10,
+              "name": "Levante",
+              "slug": "levante",
+              "score": 3
+            },
+            "away": {
+              "id": 1,
+              "name": "Athletic",
+              "slug": "athletic",
+              "score": 1
+            },
+            "round": {
+              "id": 5176,
+              "name": "Jornada 6 (aplazada)",
+              "short": "J6",
+              "part": 3
+            }
+          },
+          {
+            "id": 50766,
+            "date": 1789673400,
+            "status": "finished",
+            "home": {
+              "id": 65,
+              "name": "Málaga",
+              "slug": "malaga",
+              "score": 1
+            },
+            "away": {
+              "id": 19,
+              "name": "Villarreal",
+              "slug": "villarreal",
+              "score": 3
+            },
+            "round": {
+              "id": 5125,
+              "name": "Jornada 6 (aplazada)",
+              "short": "J6",
+              "part": 2
+            }
+          },
+          {
+            "id": 50759,
+            "date": 1789664400,
+            "status": "finished",
+            "home": {
+              "id": 87,
+              "name": "Betis",
+              "slug": "betis",
+              "score": 1
+            },
+            "away": {
+              "id": 8,
+              "name": "Getafe",
+              "slug": "getafe",
+              "score": 0
+            },
+            "round": {
+              "id": 5125,
+              "name": "Jornada 6 (aplazada)",
+              "short": "J6",
+              "part": 2
+            }
+          },
+          {
+            "id": 50762,
+            "date": 1789587000,
+            "status": "finished",
+            "home": {
+              "id": 3,
+              "name": "Barcelona",
+              "slug": "barcelona",
+              "score": 7
+            },
+            "away": {
+              "id": 812,
+              "name": "Racing",
+              "slug": "racing",
+              "score": 2
+            },
+            "round": {
+              "id": 5125,
+              "name": "Jornada 6 (aplazada)",
+              "short": "J6",
+              "part": 2
+            }
+          },
+          {
+            "id": 50760,
+            "date": 1789578000,
+            "status": "finished",
+            "home": {
+              "id": 2,
+              "name": "Atlético",
+              "slug": "atletico",
+              "score": 4
+            },
+            "away": {
+              "id": 93,
+              "name": "Osasuna",
+              "slug": "osasuna",
+              "score": 0
+            },
+            "round": {
+              "id": 5125,
+              "name": "Jornada 6 (aplazada)",
+              "short": "J6",
+              "part": 2
+            }
+          },
+          {
+            "id": 50761,
+            "date": 1789578000,
+            "status": "finished",
+            "home": {
+              "id": 6,
+              "name": "Deportivo",
+              "slug": "deportivo",
+              "score": 0
+            },
+            "away": {
+              "id": 17,
+              "name": "Sevilla",
+              "slug": "sevilla",
+              "score": 1
+            },
+            "round": {
+              "id": 5125,
+              "name": "Jornada 6 (aplazada)",
+              "short": "J6",
+              "part": 2
+            }
+          },
+          {
+            "id": 50764,
+            "date": 1789500600,
+            "status": "finished",
+            "home": {
+              "id": 75,
+              "name": "Elche",
+              "slug": "elche",
+              "score": 2
+            },
+            "away": {
+              "id": 15,
+              "name": "Real Madrid",
+              "slug": "real-madrid",
+              "score": 3
+            },
+            "round": {
+              "id": 5125,
+              "name": "Jornada 6 (aplazada)",
+              "short": "J6",
+              "part": 2
+            }
+          },
+          {
+            "id": 50763,
+            "date": 1789495200,
+            "status": "finished",
+            "home": {
+              "id": 91,
+              "name": "Alavés",
+              "slug": "alaves",
+              "score": 0
+            },
+            "away": {
+              "id": 18,
+              "name": "Valencia",
+              "slug": "valencia",
+              "score": 1
+            },
+            "round": {
+              "id": 5125,
+              "name": "Jornada 6 (aplazada)",
+              "short": "J6",
+              "part": 2
+            }
+          },
+          {
+            "id": 50767,
+            "date": 1789491600,
+            "status": "finished",
+            "home": {
+              "id": 70,
+              "name": "Rayo Vallecano",
+              "slug": "rayo-vallecano",
+              "score": 2
+            },
+            "away": {
+              "id": 7,
+              "name": "Espanyol",
+              "slug": "espanyol",
+              "score": 1
+            },
+            "round": {
+              "id": 5125,
+              "name": "Jornada 6 (aplazada)",
+              "short": "J6",
+              "part": 2
+            }
+          },
+          {
+            "id": 50768,
+            "date": 1788462000,
+            "status": "finished",
+            "home": {
+              "id": 13,
+              "name": "Real Sociedad",
+              "slug": "real-sociedad",
+              "score": 0
+            },
+            "away": {
+              "id": 5,
+              "name": "Celta",
+              "slug": "celta",
+              "score": 0
+            },
+            "round": {
+              "id": 4904,
+              "name": "Jornada 6",
+              "short": "J6"
+            }
+          }
+        ],
+        "pool": {
+          "id": 638784
+        }
+      },
+      {
+        "id": 4908,
+        "name": "Jornada 10",
+        "short": "J10",
+        "status": "pending",
+        "start": 1792782000,
+        "end": 1793116800,
+        "type": "round",
+        "games": [
+          {
+            "id": 50800,
+            "date": 1792782000,
+            "status": "preview",
+            "home": {
+              "id": 91,
+              "name": "Alavés",
+              "slug": "alaves",
+              "score": null,
+              "difficulty": {
+                "rating": 16,
+                "standings": [
+                  6,
+                  35
+                ],
+                "homeAway": [
+                  12,
+                  20
+                ],
+                "form": [
+                  40,
+                  25
+                ],
+                "goalDiff": [
+                  6,
+                  20
+                ]
+              }
+            },
+            "away": {
+              "id": 65,
+              "name": "Málaga",
+              "slug": "malaga",
+              "score": null,
+              "difficulty": {
+                "rating": 51,
+                "standings": [
+                  75,
+                  35
+                ],
+                "homeAway": [
+                  42,
+                  20
+                ],
+                "form": [
+                  20,
+                  25
+                ],
+                "goalDiff": [
+                  56,
+                  20
+                ]
+              }
+            }
+          },
+          {
+            "id": 50805,
+            "date": 1792843200,
+            "status": "preview",
+            "home": {
+              "id": 70,
+              "name": "Rayo Vallecano",
+              "slug": "rayo-vallecano",
+              "score": null,
+              "difficulty": {
+                "rating": 31,
+                "standings": [
+                  22,
+                  35
+                ],
+                "homeAway": [
+                  39,
+                  20
+                ],
+                "form": [
+                  41,
+                  25
+                ],
+                "goalDiff": [
+                  28,
+                  20
+                ]
+              }
+            },
+            "away": {
+              "id": 75,
+              "name": "Elche",
+              "slug": "elche",
+              "score": null,
+              "difficulty": {
+                "rating": 44,
+                "standings": [
+                  43,
+                  35
+                ],
+                "homeAway": [
+                  45,
+                  20
+                ],
+                "form": [
+                  55,
+                  25
+                ],
+                "goalDiff": [
+                  31,
+                  20
+                ]
+              }
+            }
+          },
+          {
+            "id": 50804,
+            "date": 1792851300,
+            "status": "preview",
+            "home": {
+              "id": 812,
+              "name": "Racing",
+              "slug": "racing",
+              "score": null,
+              "difficulty": {
+                "rating": 36,
+                "standings": [
+                  34,
+                  35
+                ],
+                "homeAway": [
+                  28,
+                  20
+                ],
+                "form": [
+                  38,
+                  25
+                ],
+                "goalDiff": [
+                  46,
+                  20
+                ]
+              }
+            },
+            "away": {
+              "id": 7,
+              "name": "Espanyol",
+              "slug": "espanyol",
+              "score": null,
+              "difficulty": {
+                "rating": 32,
+                "standings": [
+                  28,
+                  35
+                ],
+                "homeAway": [
+                  54,
+                  20
+                ],
+                "form": [
+                  38,
+                  25
+                ],
+                "goalDiff": [
+                  10,
+                  20
+                ]
+              }
+            }
+          },
+          {
+            "id": 50808,
+            "date": 1792859400,
+            "status": "preview",
+            "home": {
+              "id": 18,
+              "name": "Valencia",
+              "slug": "valencia",
+              "score": null,
+              "difficulty": {
+                "rating": 50,
+                "standings": [
+                  53,
+                  35
+                ],
+                "homeAway": [
+                  47,
+                  20
+                ],
+                "form": [
+                  53,
+                  25
+                ],
+                "goalDiff": [
+                  46,
+                  20
+                ]
+              }
+            },
+            "away": {
+              "id": 19,
+              "name": "Villarreal",
+              "slug": "villarreal",
+              "score": null,
+              "difficulty": {
+                "rating": 19,
+                "standings": [
+                  16,
+                  35
+                ],
+                "homeAway": [
+                  2,
+                  20
+                ],
+                "form": [
+                  38,
+                  25
+                ],
+                "goalDiff": [
+                  16,
+                  20
+                ]
+              }
+            }
+          },
+          {
+            "id": 50802,
+            "date": 1792868400,
+            "status": "preview",
+            "home": {
+              "id": 2,
+              "name": "Atlético",
+              "slug": "atletico",
+              "score": null,
+              "difficulty": {
+                "rating": 36,
+                "standings": [
+                  47,
+                  35
+                ],
+                "homeAway": [
+                  46,
+                  20
+                ],
+                "form": [
+                  18,
+                  25
+                ],
+                "goalDiff": [
+                  29,
+                  20
+                ]
+              }
+            },
+            "away": {
+              "id": 6,
+              "name": "Deportivo",
+              "slug": "deportivo",
+              "score": null,
+              "difficulty": {
+                "rating": 78,
+                "standings": [
+                  84,
+                  35
+                ],
+                "homeAway": [
+                  65,
+                  20
+                ],
+                "form": [
+                  92,
+                  25
+                ],
+                "goalDiff": [
+                  62,
+                  20
+                ]
+              }
+            }
+          },
+          {
+            "id": 50801,
+            "date": 1792933200,
+            "status": "preview",
+            "home": {
+              "id": 1,
+              "name": "Athletic",
+              "slug": "athletic",
+              "score": null,
+              "difficulty": {
+                "rating": 27,
+                "standings": [
+                  34,
+                  35
+                ],
+                "homeAway": [
+                  2,
+                  20
+                ],
+                "form": [
+                  39,
+                  25
+                ],
+                "goalDiff": [
+                  24,
+                  20
+                ]
+              }
+            },
+            "away": {
+              "id": 8,
+              "name": "Getafe",
+              "slug": "getafe",
+              "score": null,
+              "difficulty": {
+                "rating": 41,
+                "standings": [
+                  44,
+                  35
+                ],
+                "homeAway": [
+                  29,
+                  20
+                ],
+                "form": [
+                  47,
+                  25
+                ],
+                "goalDiff": [
+                  40,
+                  20
+                ]
+              }
+            }
+          },
+          {
+            "id": 50803,
+            "date": 1792941300,
+            "status": "preview",
+            "home": {
+              "id": 5,
+              "name": "Celta",
+              "slug": "celta",
+              "score": null,
+              "difficulty": {
+                "rating": 57,
+                "standings": [
+                  75,
+                  35
+                ],
+                "homeAway": [
+                  40,
+                  20
+                ],
+                "form": [
+                  60,
+                  25
+                ],
+                "goalDiff": [
+                  39,
+                  20
+                ]
+              }
+            },
+            "away": {
+              "id": 87,
+              "name": "Betis",
+              "slug": "betis",
+              "score": null,
+              "difficulty": {
+                "rating": 49,
+                "standings": [
+                  54,
+                  35
+                ],
+                "homeAway": [
+                  42,
+                  20
+                ],
+                "form": [
+                  54,
+                  25
+                ],
+                "goalDiff": [
+                  42,
+                  20
+                ]
+              }
+            }
+          },
+          {
+            "id": 50806,
+            "date": 1792949400,
+            "status": "preview",
+            "home": {
+              "id": 13,
+              "name": "Real Sociedad",
+              "slug": "real-sociedad",
+              "score": null,
+              "difficulty": {
+                "rating": 33,
+                "standings": [
+                  42,
+                  35
+                ],
+                "homeAway": [
+                  22,
+                  20
+                ],
+                "form": [
+                  31,
+                  25
+                ],
+                "goalDiff": [
+                  32,
+                  20
+                ]
+              }
+            },
+            "away": {
+              "id": 10,
+              "name": "Levante",
+              "slug": "levante",
+              "score": null,
+              "difficulty": {
+                "rating": 57,
+                "standings": [
+                  74,
+                  35
+                ],
+                "homeAway": [
+                  23,
+                  20
+                ],
+                "form": [
+                  75,
+                  25
+                ],
+                "goalDiff": [
+                  39,
+                  20
+                ]
+              }
+            }
+          },
+          {
+            "id": 50799,
+            "date": 1792958400,
+            "status": "preview",
+            "home": {
+              "id": 3,
+              "name": "Barcelona",
+              "slug": "barcelona",
+              "score": null,
+              "difficulty": {
+                "rating": 55,
+                "standings": [
+                  72,
+                  35
+                ],
+                "homeAway": [
+                  29,
+                  20
+                ],
+                "form": [
+                  62,
+                  25
+                ],
+                "goalDiff": [
+                  42,
+                  20
+                ]
+              }
+            },
+            "away": {
+              "id": 15,
+              "name": "Real Madrid",
+              "slug": "real-madrid",
+              "score": null,
+              "difficulty": {
+                "rating": 87,
+                "standings": [
+                  82,
+                  35
+                ],
+                "homeAway": [
+                  100,
+                  20
+                ],
+                "form": [
+                  78,
+                  25
+                ],
+                "goalDiff": [
+                  95,
+                  20
+                ]
+              }
+            }
+          },
+          {
+            "id": 50807,
+            "date": 1793044800,
+            "status": "pending",
+            "home": {
+              "id": 17,
+              "name": "Sevilla",
+              "slug": "sevilla",
+              "score": null,
+              "difficulty": {
+                "rating": 32,
+                "standings": [
+                  47,
+                  35
+                ],
+                "homeAway": [
+                  19,
+                  20
+                ],
+                "form": [
+                  32,
+                  25
+                ],
+                "goalDiff": [
+                  20,
+                  20
+                ]
+              }
+            },
+            "away": {
+              "id": 93,
+              "name": "Osasuna",
+              "slug": "osasuna",
+              "score": null,
+              "difficulty": {
+                "rating": 53,
+                "standings": [
+                  68,
+                  35
+                ],
+                "homeAway": [
+                  36,
+                  20
+                ],
+                "form": [
+                  55,
+                  25
+                ],
+                "goalDiff": [
+                  40,
+                  20
+                ]
+              }
+            }
+          }
+        ],
+        "pool": {
+          "id": 639663
+        },
+        "probableLineups": true
+      }
+    ],
+    "players": {
+      "2001": {
+        "id": 2001,
+        "name": "Ayoze",
+        "slug": "ayoze-perez",
+        "teamID": 19,
+        "position": 4,
+        "price": 4780000,
+        "fantasyPrice": 42000000,
+        "number": 22,
+        "status": "ok",
+        "priceIncrement": 30000,
+        "iconHero": "i/p/hero/2001.png",
+        "fitness": [
+          6,
+          2,
+          9,
+          6,
+          0
+        ],
+        "points": 35,
+        "playedHome": 4,
+        "playedAway": 5,
+        "pointsHome": 21,
+        "pointsAway": 14,
+        "pointsLastSeason": 73
+      },
+      "2169": {
+        "id": 2169,
+        "name": "Bigas",
+        "slug": "bigas",
+        "teamID": 75,
+        "position": 2,
+        "price": 820000,
+        "fantasyPrice": 26000000,
+        "number": 6,
+        "status": "ok",
+        "priceIncrement": -10000,
+        "fitness": [
+          null,
+          null,
+          6,
+          null,
+          null
+        ],
+        "points": 12,
+        "playedHome": 2,
+        "playedAway": 2,
+        "pointsHome": 4,
+        "pointsAway": 8,
+        "pointsLastSeason": 124
+      },
+      "2602": {
+        "id": 2602,
+        "name": "Barrenetxea",
+        "slug": "barrenetxea",
+        "teamID": 13,
+        "position": 3,
+        "altPositions": [
+          4
+        ],
+        "price": 3750000,
+        "fantasyPrice": 43000000,
+        "number": 7,
+        "status": "ok",
+        "priceIncrement": -10000,
+        "fitness": [
+          6,
+          2,
+          10,
+          2,
+          null
+        ],
+        "points": 32,
+        "playedHome": 4,
+        "playedAway": 4,
+        "pointsHome": 16,
+        "pointsAway": 16,
+        "pointsLastSeason": 132
+      },
+      "15430": {
+        "id": 15430,
+        "name": "Joan García",
+        "slug": "joan-garcia",
+        "teamID": 3,
+        "position": 1,
+        "price": 6910000,
+        "fantasyPrice": 83000000,
+        "number": 1,
+        "status": "ok",
+        "priceIncrement": -20000,
+        "iconHero": "i/p/hero/15430.png",
+        "fitness": [
+          6,
+          2,
+          "injured",
+          2,
+          6
+        ],
+        "points": 40,
+        "playedHome": 4,
+        "playedAway": 4,
+        "pointsHome": 12,
+        "pointsAway": 28,
+        "pointsLastSeason": 220
+      },
+      "16738": {
+        "id": 16738,
+        "name": "Courtois",
+        "slug": "t-courtois",
+        "teamID": 15,
+        "position": 1,
+        "price": 5640000,
+        "fantasyPrice": 48000000,
+        "number": 1,
+        "status": "ok",
+        "priceIncrement": 50000,
+        "iconHero": "i/p/hero/16738.png",
+        "fitness": [
+          10,
+          6,
+          6,
+          2,
+          6
+        ],
+        "points": 38,
+        "playedHome": 5,
+        "playedAway": 4,
+        "pointsHome": 26,
+        "pointsAway": 12,
+        "pointsLastSeason": 146
+      },
+      "17021": {
+        "id": 17021,
+        "name": "Unai Simón",
+        "slug": "unai-simon",
+        "teamID": 1,
+        "position": 1,
+        "price": 4280000,
+        "fantasyPrice": 45000000,
+        "number": 1,
+        "status": "ok",
+        "priceIncrement": 0,
+        "iconHero": "i/p/hero/17021.png",
+        "fitness": [
+          2,
+          6,
+          2,
+          2,
+          6
+        ],
+        "points": 32,
+        "playedHome": 4,
+        "playedAway": 4,
+        "pointsHome": 8,
+        "pointsAway": 24,
+        "pointsLastSeason": 142
+      },
+      "17482": {
+        "id": 17482,
+        "name": "Dituro",
+        "slug": "matias-dituro",
+        "teamID": 75,
+        "position": 1,
+        "price": 1810000,
+        "fantasyPrice": 25000000,
+        "number": 1,
+        "status": "ok",
+        "priceIncrement": 10000,
+        "fitness": [
+          10,
+          2,
+          6,
+          2,
+          2
+        ],
+        "points": 22,
+        "playedHome": 4,
+        "playedAway": 5,
+        "pointsHome": 4,
+        "pointsAway": 18,
+        "pointsLastSeason": 88
+      },
+      "17687": {
+        "id": 17687,
+        "name": "Kang-in Lee",
+        "slug": "kang-in-lee",
+        "teamID": 2,
+        "position": 3,
+        "altPositions": [
+          4
+        ],
+        "price": 9040000,
+        "fantasyPrice": 45000000,
+        "number": 7,
+        "status": "ok",
+        "priceIncrement": -60000,
+        "fitness": [
+          2,
+          2,
+          6,
+          14,
+          2
+        ],
+        "points": 50,
+        "playedHome": 4,
+        "playedAway": 5,
+        "pointsHome": 36,
+        "pointsAway": 14,
+        "pointsLastSeason": null
+      },
+      "21008": {
+        "id": 21008,
+        "name": "Nico Williams",
+        "slug": "nico-williams",
+        "teamID": 1,
+        "position": 4,
+        "price": 6670000,
+        "fantasyPrice": 82000000,
+        "number": 10,
+        "status": "ok",
+        "priceIncrement": 80000,
+        "iconHero": "i/p/hero/21008.png",
+        "fitness": [
+          2,
+          "doubt",
+          6,
+          6,
+          13
+        ],
+        "points": 37,
+        "playedHome": 4,
+        "playedAway": 3,
+        "pointsHome": 31,
+        "pointsAway": 6,
+        "pointsLastSeason": 132
+      },
+      "23572": {
+        "id": 23572,
+        "name": "Rubén Sánchez",
+        "slug": "ruben-sanchez",
+        "teamID": 75,
+        "position": 2,
+        "altPositions": [
+          3
+        ],
+        "price": 1000000,
+        "fantasyPrice": 17000000,
+        "number": 22,
+        "status": "ok",
+        "priceIncrement": 10000,
+        "fitness": [
+          0,
+          6,
+          6,
+          2,
+          2
+        ],
+        "points": 16,
+        "playedHome": 2,
+        "playedAway": 3,
+        "pointsHome": 8,
+        "pointsAway": 8,
+        "pointsLastSeason": 64
+      },
+      "26344": {
+        "id": 26344,
+        "name": "Copete",
+        "slug": "copete",
+        "teamID": 18,
+        "position": 2,
+        "price": 150000,
+        "fantasyPrice": 19000000,
+        "number": 3,
+        "status": "ok",
+        "priceIncrement": 0,
+        "fitness": [
+          "injured",
+          "injured",
+          "injured",
+          "injured",
+          "injured"
+        ],
+        "points": 0,
+        "playedHome": 0,
+        "playedAway": 0,
+        "pointsHome": 0,
+        "pointsAway": 0,
+        "pointsLastSeason": 44
+      },
+      "26879": {
+        "id": 26879,
+        "name": "Swedberg",
+        "slug": "swedberg",
+        "teamID": 5,
+        "position": 3,
+        "altPositions": [
+          4
+        ],
+        "price": 1310000,
+        "fantasyPrice": 31000000,
+        "number": 19,
+        "status": "ok",
+        "priceIncrement": -10000,
+        "fitness": [
+          -2,
+          2,
+          6,
+          -2,
+          null
+        ],
+        "points": 8,
+        "playedHome": 5,
+        "playedAway": 3,
+        "pointsHome": 2,
+        "pointsAway": 6,
+        "pointsLastSeason": 104
+      },
+      "29034": {
+        "id": 29034,
+        "name": "Pablo Marín",
+        "slug": "pablo-marin",
+        "teamID": 13,
+        "position": 3,
+        "altPositions": [
+          2,
+          4
+        ],
+        "price": 310000,
+        "fantasyPrice": 21000000,
+        "number": 15,
+        "status": "ok",
+        "priceIncrement": 0,
+        "fitness": [
+          "sanctioned",
+          -4,
+          null,
+          "doubt",
+          "doubt"
+        ],
+        "points": -4,
+        "playedHome": 1,
+        "playedAway": 0,
+        "pointsHome": -4,
+        "pointsAway": 0,
+        "pointsLastSeason": 84
+      },
+      "30487": {
+        "id": 30487,
+        "name": "Álvaro Valles",
+        "slug": "alvaro-valles",
+        "teamID": 87,
+        "position": 1,
+        "price": 6970000,
+        "fantasyPrice": 35000000,
+        "number": 1,
+        "status": "ok",
+        "priceIncrement": -70000,
+        "iconHero": "i/p/hero/30487.png",
+        "fitness": [
+          2,
+          2,
+          6,
+          10,
+          10
+        ],
+        "points": 46,
+        "playedHome": 5,
+        "playedAway": 4,
+        "pointsHome": 26,
+        "pointsAway": 20,
+        "pointsLastSeason": 96
+      },
+      "33697": {
+        "id": 33697,
+        "name": "Raúl Moro",
+        "slug": "raul-moro",
+        "teamID": 93,
+        "position": 4,
+        "altPositions": [
+          3
+        ],
+        "price": 1040000,
+        "fantasyPrice": 20000000,
+        "number": 18,
+        "status": "ok",
+        "priceIncrement": -10000,
+        "iconHero": "i/p/hero/33697.png",
+        "fitness": [
+          2,
+          "injured",
+          2,
+          2,
+          2
+        ],
+        "points": 12,
+        "playedHome": 4,
+        "playedAway": 2,
+        "pointsHome": 8,
+        "pointsAway": 4,
+        "pointsLastSeason": 34
+      },
+      "33971": {
+        "id": 33971,
+        "name": "Bretones",
+        "slug": "bretones",
+        "teamID": 93,
+        "position": 2,
+        "altPositions": [
+          3
+        ],
+        "price": 1140000,
+        "fantasyPrice": 23000000,
+        "number": 23,
+        "status": "ok",
+        "priceIncrement": 20000,
+        "fitness": [
+          2,
+          6,
+          2,
+          -2,
+          2
+        ],
+        "points": 18,
+        "playedHome": 5,
+        "playedAway": 4,
+        "pointsHome": 10,
+        "pointsAway": 8,
+        "pointsLastSeason": 73
+      },
+      "35156": {
+        "id": 35156,
+        "name": "Pau Navarro",
+        "slug": "pau-navarro",
+        "teamID": 19,
+        "position": 2,
+        "price": 1280000,
+        "fantasyPrice": 26000000,
+        "number": 6,
+        "status": "ok",
+        "priceIncrement": -30000,
+        "fitness": [
+          null,
+          6,
+          2,
+          6,
+          2
+        ],
+        "points": 16,
+        "playedHome": 2,
+        "playedAway": 2,
+        "pointsHome": 4,
+        "pointsAway": 12,
+        "pointsLastSeason": 94
+      },
+      "37719": {
+        "id": 37719,
+        "name": "Álvaro Núñez",
+        "slug": "alvaro-nunez",
+        "teamID": 5,
+        "position": 2,
+        "altPositions": [
+          3
+        ],
+        "price": 900000,
+        "fantasyPrice": 24000000,
+        "number": 15,
+        "status": "injured",
+        "priceIncrement": -70000,
+        "statusInfo": "Rotura fibrilar en aductor de su pierna izquierda. Retorno estimado: Mediados de Noviembre.",
+        "statusChange": 1792609209,
+        "fitness": [
+          null,
+          2,
+          6,
+          null,
+          null
+        ],
+        "points": 16,
+        "playedHome": 2,
+        "playedAway": 2,
+        "pointsHome": 8,
+        "pointsAway": 8,
+        "pointsLastSeason": 78
+      },
+      "37726": {
+        "id": 37726,
+        "name": "Oriol Rey",
+        "slug": "oriol-rey",
+        "teamID": 10,
+        "position": 3,
+        "price": 980000,
+        "fantasyPrice": 17000000,
+        "number": 20,
+        "status": "ok",
+        "priceIncrement": -10000,
+        "fitness": [
+          2,
+          2,
+          2,
+          2,
+          6
+        ],
+        "points": 26,
+        "playedHome": 4,
+        "playedAway": 5,
+        "pointsHome": 16,
+        "pointsAway": 10,
+        "pointsLastSeason": 48
+      },
+      "39398": {
+        "id": 39398,
+        "name": "Luis Castro",
+        "slug": "luis-castro",
+        "teamID": 10,
+        "position": 5,
+        "price": 390000,
+        "fantasyPrice": 16000000,
+        "number": 0,
+        "status": "ok",
+        "priceIncrement": 0,
+        "fitness": [
+          3,
+          1,
+          1,
+          0,
+          0
+        ],
+        "points": 10,
+        "playedHome": 4,
+        "playedAway": 5,
+        "pointsHome": 7,
+        "pointsAway": 3,
+        "pointsLastSeason": 32
+      },
+      "39801": {
+        "id": 39801,
+        "name": "Boselli",
+        "slug": "s-boselli",
+        "teamID": 8,
+        "position": 2,
+        "altPositions": [
+          3
+        ],
+        "price": 310000,
+        "fantasyPrice": 16000000,
+        "number": 15,
+        "status": "ok",
+        "priceIncrement": 0,
+        "fitness": [
+          2,
+          2,
+          null,
+          2,
+          2
+        ],
+        "points": 12,
+        "playedHome": 4,
+        "playedAway": 3,
+        "pointsHome": 6,
+        "pointsAway": 6,
+        "pointsLastSeason": 22
+      },
+      "41153": {
+        "id": 41153,
+        "name": "Rupérez",
+        "slug": "inaki-ruperez",
+        "teamID": 13,
+        "position": 2,
+        "price": 150000,
+        "fantasyPrice": 15000000,
+        "number": 33,
+        "status": "ok",
+        "priceIncrement": 0,
+        "fitness": [
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "points": 0,
+        "playedHome": 0,
+        "playedAway": 0,
+        "pointsHome": 0,
+        "pointsAway": 0,
+        "pointsLastSeason": 2
+      },
+      "41268": {
+        "id": 41268,
+        "name": "Eriksson",
+        "slug": "simon-eriksson",
+        "teamID": 812,
+        "position": 1,
+        "price": 890000,
+        "fantasyPrice": 16000000,
+        "number": 1,
+        "status": "doubt",
+        "priceIncrement": -10000,
+        "statusInfo": "Tendinopatía en el hombro derecho.",
+        "statusChange": 1792335621,
+        "fitness": [
+          "doubt",
+          "injured",
+          "doubt",
+          "injured",
+          "injured"
+        ],
+        "points": 0,
+        "playedHome": 0,
+        "playedAway": 0,
+        "pointsHome": 0,
+        "pointsAway": 0,
+        "pointsLastSeason": null
+      },
+      "41411": {
+        "id": 41411,
+        "name": "Ramón Enríquez",
+        "slug": "ramon-enriquez",
+        "teamID": 65,
+        "position": 3,
+        "price": 320000,
+        "fantasyPrice": 16000000,
+        "number": 6,
+        "status": "ok",
+        "priceIncrement": 0,
+        "fitness": [
+          -2,
+          null,
+          2,
+          -2,
+          2
+        ],
+        "points": 4,
+        "playedHome": 4,
+        "playedAway": 4,
+        "pointsHome": 0,
+        "pointsAway": 4,
+        "pointsLastSeason": null
+      },
+      "42021": {
+        "id": 42021,
+        "name": "Rubén Gómez",
+        "slug": "ruben-gomez",
+        "teamID": 19,
+        "position": 1,
+        "price": 160000,
+        "fantasyPrice": 15000000,
+        "number": 13,
+        "status": "ok",
+        "priceIncrement": 0,
+        "fitness": [
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "points": 0,
+        "playedHome": 0,
+        "playedAway": 0,
+        "pointsHome": 0,
+        "pointsAway": 0,
+        "pointsLastSeason": null
+      },
+      "42362": {
+        "id": 42362,
+        "name": "Dumfries",
+        "slug": "denzel-dumfries",
+        "teamID": 15,
+        "position": 2,
+        "price": 2780000,
+        "fantasyPrice": 51000000,
+        "number": 24,
+        "status": "ok",
+        "priceIncrement": -60000,
+        "fitness": [
+          null,
+          0,
+          -2,
+          0,
+          6
+        ],
+        "points": 22,
+        "playedHome": 3,
+        "playedAway": 4,
+        "pointsHome": 12,
+        "pointsAway": 10,
+        "pointsLastSeason": null
+      },
+      "42557": {
+        "id": 42557,
+        "name": "Adeyemi",
+        "slug": "adeyemi",
+        "teamID": 3,
+        "position": 4,
+        "price": 10340000,
+        "fantasyPrice": 75000000,
+        "number": 14,
+        "status": "ok",
+        "priceIncrement": -60000,
+        "iconHero": "i/p/hero/42557.png",
+        "fitness": [
+          6,
+          6,
+          6,
+          10,
+          13
+        ],
+        "points": 68,
+        "playedHome": 4,
+        "playedAway": 5,
+        "pointsHome": 28,
+        "pointsAway": 40,
+        "pointsLastSeason": null
+      },
+      "42569": {
+        "id": 42569,
+        "name": "Hidalgo",
+        "slug": "hidalgo",
+        "teamID": 6,
+        "position": 5,
+        "price": 790000,
+        "fantasyPrice": 17000000,
+        "number": 0,
+        "status": "ok",
+        "priceIncrement": -10000,
+        "fitness": [
+          1,
+          0,
+          1,
+          0,
+          1
+        ],
+        "points": 11,
+        "playedHome": 5,
+        "playedAway": 4,
+        "pointsHome": 6,
+        "pointsAway": 5,
+        "pointsLastSeason": null
+      },
+      "42802": {
+        "id": 42802,
+        "name": "Saliba",
+        "slug": "nathan-saliba",
+        "teamID": 19,
+        "position": 3,
+        "price": 2270000,
+        "fantasyPrice": 50000000,
+        "number": 24,
+        "status": "doubt",
+        "priceIncrement": -50000,
+        "statusInfo": "Molestias musculares.",
+        "statusChange": 1792598716,
+        "fitness": [
+          2,
+          2,
+          2,
+          6,
+          2
+        ],
+        "points": 20,
+        "playedHome": 4,
+        "playedAway": 2,
+        "pointsHome": 12,
+        "pointsAway": 8,
+        "pointsLastSeason": null
+      },
+      "11": {
+        "id": 11,
+        "name": "David Soria",
+        "slug": "david-soria",
+        "teamID": 8,
+        "position": 1,
+        "price": 5460000,
+        "fantasyPrice": 48000000,
+        "number": 13,
+        "status": "ok",
+        "priceIncrement": -30000,
+        "fitness": [
+          6,
+          2,
+          6,
+          10,
+          6
+        ],
+        "points": 54,
+        "playedHome": 5,
+        "playedAway": 4,
+        "pointsHome": 34,
+        "pointsAway": 20,
+        "pointsLastSeason": 180
+      },
+      "20": {
+        "id": 20,
+        "name": "Eric García",
+        "slug": "eric-garcia",
+        "teamID": 3,
+        "position": 2,
+        "price": 4880000,
+        "fantasyPrice": 77000000,
+        "number": 24,
+        "status": "injured",
+        "priceIncrement": -140000,
+        "statusInfo": "Lesión muscular en el recto anterior del muslo derecho. Retorno estimado: Mediados de Noviembre.",
+        "iconHero": "i/p/hero/20.png",
+        "statusChange": 1792342811,
+        "fitness": [
+          11,
+          6,
+          -2,
+          6,
+          2
+        ],
+        "points": 35,
+        "playedHome": 3,
+        "playedAway": 5,
+        "pointsHome": 18,
+        "pointsAway": 17,
+        "pointsLastSeason": 213
+      },
+      "33": {
+        "id": 33,
+        "name": "Álvaro García",
+        "slug": "alvaro-garcia",
+        "teamID": 70,
+        "position": 4,
+        "altPositions": [
+          3
+        ],
+        "price": 3880000,
+        "fantasyPrice": 32000000,
+        "number": 18,
+        "status": "ok",
+        "priceIncrement": 50000,
+        "iconHero": "i/p/hero/33.png",
+        "fitness": [
+          13,
+          6,
+          13,
+          2,
+          6
+        ],
+        "points": 53,
+        "playedHome": 3,
+        "playedAway": 5,
+        "pointsHome": 21,
+        "pointsAway": 32,
+        "pointsLastSeason": 152
+      },
+      "91": {
+        "id": 91,
+        "name": "Mayoral",
+        "slug": "borja-mayoral",
+        "teamID": 8,
+        "position": 4,
+        "price": 610000,
+        "fantasyPrice": 28000000,
+        "number": 9,
+        "status": "ok",
+        "priceIncrement": -10000,
+        "iconHero": "i/p/hero/91.png",
+        "fitness": [
+          0,
+          null,
+          null,
+          null,
+          null
+        ],
+        "points": 2,
+        "playedHome": 2,
+        "playedAway": 1,
+        "pointsHome": 0,
+        "pointsAway": 2,
+        "pointsLastSeason": 46
+      },
+      "129": {
+        "id": 129,
+        "name": "Brahim",
+        "slug": "brahim-diaz",
+        "teamID": 15,
+        "position": 4,
+        "altPositions": [
+          3
+        ],
+        "price": 1100000,
+        "fantasyPrice": 56000000,
+        "number": 21,
+        "status": "ok",
+        "priceIncrement": -10000,
+        "iconHero": "i/p/hero/129.png",
+        "fitness": [
+          2,
+          null,
+          null,
+          2,
+          null
+        ],
+        "points": 10,
+        "playedHome": 3,
+        "playedAway": 1,
+        "pointsHome": 8,
+        "pointsAway": 2,
+        "pointsLastSeason": 59
+      },
+      "163": {
+        "id": 163,
+        "name": "Guido Rodríguez",
+        "slug": "g-rodriguez",
+        "teamID": 18,
+        "position": 3,
+        "price": 3400000,
+        "fantasyPrice": 30000000,
+        "number": 2,
+        "status": "ok",
+        "priceIncrement": 10000,
+        "fitness": [
+          2,
+          2,
+          2,
+          2,
+          "doubt"
+        ],
+        "points": 20,
+        "playedHome": 4,
+        "playedAway": 2,
+        "pointsHome": 16,
+        "pointsAway": 4,
+        "pointsLastSeason": 76
+      },
+      "429": {
+        "id": 429,
+        "name": "Rodri",
+        "slug": "rodri-hernandez",
+        "teamID": 3,
+        "position": 3,
+        "price": 16710000,
+        "fantasyPrice": 98000000,
+        "number": 16,
+        "status": "ok",
+        "priceIncrement": 80000,
+        "fitness": [
+          10,
+          6,
+          10,
+          6,
+          6
+        ],
+        "points": 56,
+        "playedHome": 4,
+        "playedAway": 4,
+        "pointsHome": 20,
+        "pointsAway": 36,
+        "pointsLastSeason": null
+      },
+      "742": {
+        "id": 742,
+        "name": "Kike García",
+        "slug": "kike-garcia",
+        "teamID": 7,
+        "position": 4,
+        "price": 390000,
+        "fantasyPrice": 30000000,
+        "number": 19,
+        "status": "injured",
+        "priceIncrement": -10000,
+        "statusInfo": "Lesión en el tendón del bíceps femoral. Retorno estimado: Mediados de Enero.",
+        "iconHero": "i/p/hero/742.png",
+        "statusChange": 1785837600,
+        "fitness": [
+          "injured",
+          "injured",
+          "injured",
+          "injured",
+          "injured"
+        ],
+        "points": 0,
+        "playedHome": 0,
+        "playedAway": 0,
+        "pointsHome": 0,
+        "pointsAway": 0,
+        "pointsLastSeason": 124
+      },
+      "832": {
+        "id": 832,
+        "name": "Juanmi",
+        "slug": "juanmi-jimenez",
+        "teamID": 8,
+        "position": 4,
+        "price": 150000,
+        "fantasyPrice": 16000000,
+        "number": 7,
+        "status": "injured",
+        "priceIncrement": 0,
+        "statusInfo": "Operación en el tendón rotuliano. Retorno estimado: Mediados de Noviembre.",
+        "iconHero": "i/p/hero/832.png",
+        "statusChange": 1775296800,
+        "fitness": [
+          "injured",
+          "injured",
+          "injured",
+          "injured",
+          "injured"
+        ],
+        "points": 0,
+        "playedHome": 0,
+        "playedAway": 0,
+        "pointsHome": 0,
+        "pointsAway": 0,
+        "pointsLastSeason": 17
+      },
+      "856": {
+        "id": 856,
+        "name": "Kiko Femenía",
+        "slug": "kiko-femenia",
+        "teamID": 8,
+        "position": 2,
+        "altPositions": [
+          3
+        ],
+        "price": 600000,
+        "fantasyPrice": 18000000,
+        "number": 17,
+        "status": "ok",
+        "priceIncrement": 0,
+        "fitness": [
+          2,
+          -2,
+          "injured",
+          "injured",
+          "injured"
+        ],
+        "points": -2,
+        "playedHome": 2,
+        "playedAway": 3,
+        "pointsHome": 2,
+        "pointsAway": -4,
+        "pointsLastSeason": 73
+      }
+    },
+    "teams": {
+      "1": {
+        "id": 1,
+        "name": "Athletic",
+        "slug": "athletic",
+        "nextGames": [
+          {
+            "id": 50801,
+            "date": 1792933200,
+            "home": {
+              "id": 1
+            },
+            "away": {
+              "id": 8
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "2": {
+        "id": 2,
+        "name": "Atlético",
+        "slug": "atletico",
+        "nextGames": [
+          {
+            "id": 50802,
+            "date": 1792868400,
+            "home": {
+              "id": 2
+            },
+            "away": {
+              "id": 6
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "3": {
+        "id": 3,
+        "name": "Barcelona",
+        "slug": "barcelona",
+        "nextGames": [
+          {
+            "id": 50799,
+            "date": 1792958400,
+            "home": {
+              "id": 3
+            },
+            "away": {
+              "id": 15
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "5": {
+        "id": 5,
+        "name": "Celta",
+        "slug": "celta",
+        "nextGames": [
+          {
+            "id": 50803,
+            "date": 1792941300,
+            "home": {
+              "id": 5
+            },
+            "away": {
+              "id": 87
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "6": {
+        "id": 6,
+        "name": "Deportivo",
+        "slug": "deportivo",
+        "nextGames": [
+          {
+            "id": 50802,
+            "date": 1792868400,
+            "home": {
+              "id": 2
+            },
+            "away": {
+              "id": 6
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "7": {
+        "id": 7,
+        "name": "Espanyol",
+        "slug": "espanyol",
+        "nextGames": [
+          {
+            "id": 50804,
+            "date": 1792851300,
+            "home": {
+              "id": 812
+            },
+            "away": {
+              "id": 7
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "8": {
+        "id": 8,
+        "name": "Getafe",
+        "slug": "getafe",
+        "nextGames": [
+          {
+            "id": 50801,
+            "date": 1792933200,
+            "home": {
+              "id": 1
+            },
+            "away": {
+              "id": 8
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "10": {
+        "id": 10,
+        "name": "Levante",
+        "slug": "levante",
+        "nextGames": [
+          {
+            "id": 50806,
+            "date": 1792949400,
+            "home": {
+              "id": 13
+            },
+            "away": {
+              "id": 10
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "13": {
+        "id": 13,
+        "name": "Real Sociedad",
+        "slug": "real-sociedad",
+        "nextGames": [
+          {
+            "id": 50806,
+            "date": 1792949400,
+            "home": {
+              "id": 13
+            },
+            "away": {
+              "id": 10
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "15": {
+        "id": 15,
+        "name": "Real Madrid",
+        "slug": "real-madrid",
+        "nextGames": [
+          {
+            "id": 50799,
+            "date": 1792958400,
+            "home": {
+              "id": 3
+            },
+            "away": {
+              "id": 15
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "17": {
+        "id": 17,
+        "name": "Sevilla",
+        "slug": "sevilla",
+        "nextGames": [
+          {
+            "id": 50807,
+            "date": 1793044800,
+            "home": {
+              "id": 17
+            },
+            "away": {
+              "id": 93
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "18": {
+        "id": 18,
+        "name": "Valencia",
+        "slug": "valencia",
+        "nextGames": [
+          {
+            "id": 50808,
+            "date": 1792859400,
+            "home": {
+              "id": 18
+            },
+            "away": {
+              "id": 19
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "19": {
+        "id": 19,
+        "name": "Villarreal",
+        "slug": "villarreal",
+        "nextGames": [
+          {
+            "id": 50808,
+            "date": 1792859400,
+            "home": {
+              "id": 18
+            },
+            "away": {
+              "id": 19
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "65": {
+        "id": 65,
+        "name": "Málaga",
+        "slug": "malaga",
+        "nextGames": [
+          {
+            "id": 50800,
+            "date": 1792782000,
+            "home": {
+              "id": 91
+            },
+            "away": {
+              "id": 65
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "70": {
+        "id": 70,
+        "name": "Rayo Vallecano",
+        "slug": "rayo-vallecano",
+        "nextGames": [
+          {
+            "id": 50805,
+            "date": 1792843200,
+            "home": {
+              "id": 70
+            },
+            "away": {
+              "id": 75
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "75": {
+        "id": 75,
+        "name": "Elche",
+        "slug": "elche",
+        "nextGames": [
+          {
+            "id": 50805,
+            "date": 1792843200,
+            "home": {
+              "id": 70
+            },
+            "away": {
+              "id": 75
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "87": {
+        "id": 87,
+        "name": "Betis",
+        "slug": "betis",
+        "nextGames": [
+          {
+            "id": 50803,
+            "date": 1792941300,
+            "home": {
+              "id": 5
+            },
+            "away": {
+              "id": 87
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "91": {
+        "id": 91,
+        "name": "Alavés",
+        "slug": "alaves",
+        "nextGames": [
+          {
+            "id": 50800,
+            "date": 1792782000,
+            "home": {
+              "id": 91
+            },
+            "away": {
+              "id": 65
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "93": {
+        "id": 93,
+        "name": "Osasuna",
+        "slug": "osasuna",
+        "nextGames": [
+          {
+            "id": 50807,
+            "date": 1793044800,
+            "home": {
+              "id": 17
+            },
+            "away": {
+              "id": 93
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      },
+      "812": {
+        "id": 812,
+        "name": "Racing",
+        "slug": "racing",
+        "nextGames": [
+          {
+            "id": 50804,
+            "date": 1792851300,
+            "home": {
+              "id": 812
+            },
+            "away": {
+              "id": 7
+            },
+            "round": {
+              "id": 4908
+            },
+            "preview": null,
+            "summary": null
+          }
+        ]
+      }
+    },
+    "update": 1792731610,
+    "etag": 1360896726,
+    "scoreID": 1
+  },
+  "meta": {
+    "sports": [
+      {
+        "name": "football",
+        "lineups": {
+          "players": 11,
+          "emptySlotPenalty": 4,
+          "types": [
+            "3-4-3",
+            "3-5-2",
+            "4-3-3",
+            "4-4-2",
+            "4-5-1",
+            "5-3-2",
+            "5-4-1"
+          ],
+          "premiumTypes": [
+            "3-6-1",
+            "3-3-4",
+            "4-2-4",
+            "4-6-0",
+            "5-2-3",
+            "3-2-5",
+            "5-1-4"
+          ]
+        },
+        "positions": [
+          {
+            "id": 1,
+            "name": "Portero",
+            "abbr": "PT"
+          },
+          {
+            "id": 2,
+            "name": "Defensa",
+            "abbr": "DF"
+          },
+          {
+            "id": 3,
+            "name": "Centrocampista",
+            "abbr": "MC"
+          },
+          {
+            "id": 4,
+            "name": "Delantero",
+            "abbr": "DL"
+          },
+          {
+            "id": 5,
+            "name": "Entrenador",
+            "abbr": "E",
+            "isCoach": true
+          }
+        ],
+        "idealLineupName": "Once ideal"
+      },
+      {
+        "name": "basketball",
+        "lineups": {
+          "players": 10,
+          "emptySlotPenalty": 15,
+          "types": [
+            "2-2-1",
+            "1-2-2",
+            "2-1-2",
+            "1-3-1",
+            "3-1-1"
+          ],
+          "premiumTypes": [
+            "2-3-0",
+            "3-2-0",
+            "1-1-3",
+            "2-0-3",
+            "0-2-3",
+            "0-3-2",
+            "3-0-2"
+          ]
+        },
+        "positions": [
+          {
+            "id": 1,
+            "name": "Base",
+            "abbr": "B",
+            "style": "background:#03a9f4;color:white"
+          },
+          {
+            "id": 2,
+            "name": "Alero",
+            "abbr": "A",
+            "style": "background:#10af00"
+          },
+          {
+            "id": 3,
+            "name": "Pívot",
+            "abbr": "P",
+            "style": "background:#f00"
+          }
+        ],
+        "idealLineupName": "Dream Team"
+      }
+    ],
+    "competitions": [
+      {
+        "id": 1,
+        "name": "Primera División",
+        "slug": "la-liga",
+        "sport": "football",
+        "currency": "€",
+        "scores": [
+          {
+            "id": 1,
+            "name": "Diario AS",
+            "kind": "as"
+          },
+          {
+            "id": 7,
+            "name": "Feeberse Score",
+            "kind": "feeberse"
+          },
+          {
+            "id": 8,
+            "name": "Media AS y Feeberse",
+            "kind": "Average"
+          },
+          {
+            "id": 2,
+            "name": "SofaScore",
+            "kind": "SofaScore"
+          },
+          {
+            "id": 5,
+            "name": "Media AS y SofaScore",
+            "kind": "Average"
+          },
+          {
+            "id": 3,
+            "name": "Estadísticas",
+            "kind": "Stats"
+          },
+          {
+            "id": 6,
+            "name": "Biwenger Social",
+            "kind": "Social"
+          }
+        ],
+        "config": {
+          "coaches": true,
+          "multiPos": true,
+          "optimizeImages": true,
+          "superPicaScores": [
+            1,
+            5,
+            8
+          ],
+          "standings": {
+            "champion": 1,
+            "playoffs": 5,
+            "other": "6,7",
+            "descends": 3
+          },
+          "leagueSponsor": {
+            "image": "https://cdn.biwenger.com/cdn-cgi/image/f=avif/campaigns/2026/football/sportium-26-27/league2x.jpg",
+            "url": "https://online.sportium.es/promoRedirect?member=DISPLAY&campaign=DEFAULT&channel=DEFAULT&zone=19560249&lp=19561165&var1=fantasy&var2=biwenger&var3=bonodoble200",
+            "title": "Sportium"
+          }
+        }
+      },
+      {
+        "id": 3,
+        "name": "Premier League",
+        "slug": "premier-league",
+        "sport": "football",
+        "currency": "£",
+        "scores": [
+          {
+            "id": 3,
+            "name": "SofaScore",
+            "kind": "SofaScore"
+          },
+          {
+            "id": 2,
+            "name": "Feeberse Score",
+            "kind": "feeberse"
+          },
+          {
+            "id": 1,
+            "name": "Estadísticas",
+            "kind": "Stats"
+          }
+        ],
+        "config": {
+          "coaches": true,
+          "standings": {
+            "champion": 1,
+            "playoffs": 5,
+            "other": 6,
+            "descends": 3
+          },
+          "leagueSponsor": {
+            "image": "https://cdn.biwenger.com/cdn-cgi/image/f=avif/campaigns/2026/football/sportium-26-27/league2x.jpg",
+            "url": "https://online.sportium.es/promoRedirect?member=DISPLAY&campaign=DEFAULT&channel=DEFAULT&zone=19560249&lp=19561165&var1=fantasy&var2=biwenger&var3=bonodoble200",
+            "title": "Sportium"
+          }
+        }
+      },
+      {
+        "id": 40,
+        "name": "Basket americano",
+        "slug": "nba",
+        "sport": "basketball",
+        "currency": "$",
+        "scores": [
+          {
+            "id": 1,
+            "name": "Estadísticas",
+            "kind": "Stats"
+          }
+        ],
+        "config": {
+          "playerIcons": "jersey",
+          "playoffs": 6,
+          "splitRounds": false,
+          "avgPlayerRoundPoints": true
+        }
+      },
+      {
+        "id": 51,
+        "name": "Champions League",
+        "slug": "champions-league",
+        "sport": "football",
+        "currency": "€",
+        "scores": [
+          {
+            "id": 5,
+            "name": "Feeberse Score",
+            "kind": "feeberse"
+          },
+          {
+            "id": 6,
+            "name": "Media AS y Feeberse",
+            "kind": "Average"
+          },
+          {
+            "id": 3,
+            "name": "SofaScore",
+            "kind": "SofaScore"
+          },
+          {
+            "id": 1,
+            "name": "Estadísticas",
+            "kind": "Stats"
+          },
+          {
+            "id": 2,
+            "name": "Diario AS",
+            "kind": "as"
+          },
+          {
+            "id": 4,
+            "name": "Media AS y SofaScore",
+            "kind": "Average"
+          }
+        ],
+        "config": {
+          "coaches": true,
+          "specialMainContainerStyles": "background-size: cover;background-image: url(https://cdn.biwenger.com/cdn-cgi/image/f=avif/img/sports/football/champions/app-bg.png);color: white;background-repeat: no-repeat;background-position: bottom center;background-attachment: fixed",
+          "leagueSponsor": {
+            "image": "https://cdn.biwenger.com/cdn-cgi/image/f=avif/campaigns/2026/football/sportium-26-27/league2x.jpg",
+            "url": "https://online.sportium.es/promoRedirect?member=DISPLAY&campaign=DEFAULT&channel=DEFAULT&zone=19560249&lp=19561165&var1=fantasy&var2=biwenger&var3=bonodoble200",
+            "title": "Sportium"
+          }
+        }
+      },
+      {
+        "id": 2,
+        "name": "Segunda División",
+        "slug": "segunda-division",
+        "sport": "football",
+        "currency": "€",
+        "scores": [
+          {
+            "id": 1,
+            "name": "Diario AS",
+            "kind": "as"
+          },
+          {
+            "id": 2,
+            "name": "SofaScore",
+            "kind": "SofaScore"
+          },
+          {
+            "id": 3,
+            "name": "Media AS y SofaScore",
+            "kind": "Average"
+          }
+        ],
+        "config": {
+          "standings": {
+            "champion": 2,
+            "playoffs": "3-6",
+            "descends": 4
+          },
+          "leagueSponsor": {
+            "image": "https://cdn.biwenger.com/cdn-cgi/image/f=avif/campaigns/2026/football/sportium-26-27/league2x.jpg",
+            "url": "https://online.sportium.es/promoRedirect?member=DISPLAY&campaign=DEFAULT&channel=DEFAULT&zone=19560249&lp=19561165&var1=fantasy&var2=biwenger&var3=bonodoble200",
+            "title": "Sportium"
+          }
+        }
+      },
+      {
+        "id": 5,
+        "name": "Serie A",
+        "slug": "serie-a",
+        "sport": "football",
+        "currency": "€",
+        "scores": [
+          {
+            "id": 3,
+            "name": "SofaScore",
+            "kind": "SofaScore"
+          },
+          {
+            "id": 1,
+            "name": "Estadísticas",
+            "kind": "Stats"
+          }
+        ],
+        "config": {
+          "standings": {
+            "champion": 1,
+            "playoffs": 4,
+            "other": 5,
+            "descends": 3
+          },
+          "leagueSponsor": {
+            "image": "https://cdn.biwenger.com/cdn-cgi/image/f=avif/campaigns/2026/football/sportium-26-27/league2x.jpg",
+            "url": "https://online.sportium.es/promoRedirect?member=DISPLAY&campaign=DEFAULT&channel=DEFAULT&zone=19560249&lp=19561165&var1=fantasy&var2=biwenger&var3=bonodoble200",
+            "title": "Sportium"
+          }
+        }
+      },
+      {
+        "id": 15,
+        "name": "Liga MX",
+        "slug": "liga-mx",
+        "sport": "football",
+        "currency": "$",
+        "scores": [
+          {
+            "id": 1,
+            "name": "SofaScore",
+            "kind": "SofaScore"
+          }
+        ],
+        "config": {
+          "coaches": true
+        }
+      },
+      {
+        "id": 6,
+        "name": "Ligue 1",
+        "slug": "ligue-1",
+        "sport": "football",
+        "currency": "€",
+        "scores": [
+          {
+            "id": 3,
+            "name": "SofaScore",
+            "kind": "SofaScore"
+          },
+          {
+            "id": 1,
+            "name": "Estadísticas",
+            "kind": "Stats"
+          }
+        ],
+        "config": {
+          "coaches": true,
+          "standings": {
+            "champion": 1,
+            "playoffs": 4,
+            "other": 5,
+            "descends": 3
+          }
+        }
+      },
+      {
+        "id": 11,
+        "name": "Liga Portugal",
+        "slug": "primeira-liga",
+        "sport": "football",
+        "currency": "€",
+        "scores": [
+          {
+            "id": 1,
+            "name": "SofaScore",
+            "kind": "SofaScore"
+          }
+        ],
+        "config": {}
+      },
+      {
+        "id": 41,
+        "name": "EuroLiga",
+        "slug": "euroleague",
+        "sport": "basketball",
+        "currency": "€",
+        "scores": [
+          {
+            "id": 1,
+            "name": "Estadísticas",
+            "kind": "Stats"
+          }
+        ],
+        "config": {
+          "standings": {
+            "playoffs": 8
+          }
+        }
+      }
+    ]
+  }
+}

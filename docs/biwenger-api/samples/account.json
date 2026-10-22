@@ -1,0 +1,98 @@
+{
+  "status": 200,
+  "data": {
+    "account": {
+      "id": 3000001,
+      "name": "Manager 1",
+      "email": "removed",
+      "phone": "removed",
+      "locale": "es",
+      "birthday": 0,
+      "status": "valid",
+      "credits": 0,
+      "created": 1501053002,
+      "newsletter": true,
+      "unreadMessages": false,
+      "lastAccess": 1792661437,
+      "dailyStreak": 1,
+      "devices": [],
+      "phoneChecked": false,
+      "source": null
+    },
+    "leagues": [
+      {
+        "id": 1000001,
+        "name": "Example League",
+        "competition": "la-liga",
+        "scoreID": 1,
+        "type": "premium",
+        "mode": "league",
+        "marketMode": "normal",
+        "created": 1659204919,
+        "icon": "https://example.invalid/icon.png",
+        "cover": "https://example.invalid/cover.png",
+        "user": {
+          "id": 2000001,
+          "name": "Manager 1",
+          "balance": 51420000,
+          "icon": "https://example.invalid/icon.png",
+          "role": "",
+          "type": "normal",
+          "joinDate": 1659208716,
+          "status": {
+            "offers": 0,
+            "bids": 0
+          },
+          "favorites": [],
+          "points": 220,
+          "position": 6
+        },
+        "settings": {
+          "secret": "removed",
+          "privacy": "private",
+          "onlyAdminPosts": false,
+          "superPicaExtraPoints": false,
+          "clause": "steal",
+          "clauseIncrement": 0,
+          "immediateSales": 0,
+          "balance": "hidden",
+          "userOffers": "always",
+          "loans": "disabled",
+          "loansMinRounds": 1,
+          "loansMaxRounds": 5,
+          "maxPurchasePrice": 0,
+          "challengesAllow": true,
+          "splitRound": "recalculation",
+          "marketShowBids": false,
+          "lineupMultiPos": true,
+          "lineupAllowExtra": true,
+          "lineupCoach": true,
+          "lineupCaptain": true,
+          "lineupCaptainMaxValue": 0,
+          "lineupCaptainPositions": 0,
+          "lineupStriker": false,
+          "bonusDailyStreak": true,
+          "lineupReserves": true,
+          "lineupMaxClubPlayers": 0,
+          "favoritesAllow": true,
+          "auctions": false,
+          "customScore": ""
+        },
+        "upgrades": {
+          "ultra": {
+            "id": "UltraLeague",
+            "currency": "EUR",
+            "price": 19.99,
+            "google": "premium_20",
+            "huawei": "premium_20",
+            "apple": "premium_20"
+          }
+        }
+      }
+    ],
+    "notifications": [],
+    "location": {},
+    "lastOfficialLeagueChange": 1790670524,
+    "version": 631
+  }
+}

@@ -1,0 +1,417 @@
+{
+  "status": 200,
+  "data": {
+    "id": 2001,
+    "name": "Ayoze",
+    "slug": "ayoze-perez",
+    "position": 4,
+    "price": 4780000,
+    "fantasyPrice": 42000000,
+    "country": "ES",
+    "number": 22,
+    "birthday": 0,
+    "status": "ok",
+    "priceIncrement": 30000,
+    "iconHero": "i/p/hero/2001.png",
+    "playedHome": 4,
+    "playedAway": 5,
+    "reports": [
+      {
+        "home": false,
+        "match": {
+          "id": 50715,
+          "date": 1786892400,
+          "status": "finished",
+          "home": {
+            "id": 812,
+            "name": "Racing",
+            "slug": "racing",
+            "score": 2
+          },
+          "away": {
+            "id": 19,
+            "name": "Villarreal",
+            "slug": "villarreal",
+            "score": 2
+          },
+          "round": {
+            "id": 4899,
+            "name": "Jornada 1",
+            "short": "J1"
+          },
+          "preview": null,
+          "summary": null
+        },
+        "events": [
+          {
+            "type": 4,
+            "period": "secondTime",
+            "metadata": 56
+          }
+        ],
+        "points": {
+          "1": 2,
+          "7": 4,
+          "8": 3,
+          "2": 3,
+          "5": 3,
+          "3": 6,
+          "6": 1
+        }
+      },
+      {
+        "home": false,
+        "match": {
+          "id": 50719,
+          "date": 1787497200,
+          "status": "finished",
+          "home": {
+            "id": 2,
+            "name": "Atlético",
+            "slug": "atletico",
+            "score": 2
+          },
+          "away": {
+            "id": 19,
+            "name": "Villarreal",
+            "slug": "villarreal",
+            "score": 2
+          },
+          "round": {
+            "id": 4900,
+            "name": "Jornada 2",
+            "short": "J2"
+          },
+          "preview": null,
+          "summary": null
+        },
+        "events": [
+          {
+            "type": 4,
+            "period": "secondTime",
+            "metadata": 61
+          }
+        ],
+        "points": {
+          "1": 2,
+          "7": 3,
+          "8": 3,
+          "2": 4,
+          "5": 3,
+          "3": 5,
+          "6": 2
+        }
+      },
+      {
+        "home": false,
+        "match": {
+          "id": 50734,
+          "date": 1787945400,
+          "status": "finished",
+          "home": {
+            "id": 91,
+            "name": "Alavés",
+            "slug": "alaves",
+            "score": 1
+          },
+          "away": {
+            "id": 19,
+            "name": "Villarreal",
+            "slug": "villarreal",
+            "score": 0
+          },
+          "round": {
+            "id": 4901,
+            "name": "Jornada 3",
+            "short": "J3"
+          },
+          "preview": null
+        },
+        "events": [
+          {
+            "type": 5,
+            "period": "secondTime",
+            "metadata": 62
+          }
+        ],
+        "points": {
+          "1": 2,
+          "7": 3,
+          "8": 3,
+          "2": 3,
+          "5": 3,
+          "3": 1,
+          "6": 4
+        }
+      },
+      {
+        "home": true,
+        "match": {
+          "id": 50747,
+          "date": 1788634800,
+          "status": "finished",
+          "home": {
+            "id": 19,
+            "name": "Villarreal",
+            "slug": "villarreal",
+            "score": 2
+          },
+          "away": {
+            "id": 6,
+            "name": "Deportivo",
+            "slug": "deportivo",
+            "score": 3
+          },
+          "round": {
+            "id": 4902,
+            "name": "Jornada 4",
+            "short": "J4"
+          },
+          "preview": null,
+          "summary": null
+        },
+        "events": [
+          {
+            "type": 3,
+            "period": "firstTime",
+            "metadata": 19
+          },
+          {
+            "type": 4,
+            "period": "secondTime",
+            "metadata": 62
+          }
+        ],
+        "points": {
+          "1": 6,
+          "7": 6,
+          "8": 6,
+          "2": 4,
+          "5": 5,
+          "3": 5,
+          "6": 5
+        }
+      },
+      {
+        "home": true,
+        "match": {
+          "id": 50756,
+          "date": 1789412400,
+          "status": "finished",
+          "home": {
+            "id": 19,
+            "name": "Villarreal",
+            "slug": "villarreal",
+            "score": 1
+          },
+          "away": {
+            "id": 87,
+            "name": "Betis",
+            "slug": "betis",
+            "score": 2
+          },
+          "round": {
+            "id": 4903,
+            "name": "Jornada 5",
+            "short": "J5"
+          },
+          "preview": null
+        },
+        "events": [
+          {
+            "type": 5,
+            "period": "secondTime",
+            "metadata": 76
+          }
+        ],
+        "points": {
+          "1": 0,
+          "7": 3,
+          "8": 2,
+          "2": 3,
+          "5": 2,
+          "3": 1,
+          "6": 1
+        }
+      },
+      {
+        "home": false,
+        "match": {
+          "id": 50766,
+          "date": 1789673400,
+          "status": "finished",
+          "home": {
+            "id": 65,
+            "name": "Málaga",
+            "slug": "malaga",
+            "score": 1
+          },
+          "away": {
+            "id": 19,
+            "name": "Villarreal",
+            "slug": "villarreal",
+            "score": 3
+          },
+          "round": {
+            "id": 5125,
+            "name": "Jornada 6 (aplazada)",
+            "short": "J6",
+            "part": 2
+          },
+          "preview": null,
+          "summary": null
+        },
+        "events": [
+          {
+            "type": 3,
+            "period": "secondTime",
+            "metadata": 47
+          },
+          {
+            "type": 4,
+            "period": "secondTime",
+            "metadata": 63
+          }
+        ],
+        "points": {
+          "1": 6,
+          "7": 8,
+          "8": 7,
+          "2": 3,
+          "5": 5,
+          "3": 6,
+          "6": 5
+        }
+      },
+      {
+        "home": true,
+        "match": {
+          "id": 50776,
+          "date": 1789921800,
+          "status": "finished",
+          "home": {
+            "id": 19,
+            "name": "Villarreal",
+            "slug": "villarreal",
+            "score": 3
+          },
+          "away": {
+            "id": 10,
+            "name": "Levante",
+            "slug": "levante",
+            "score": 1
+          },
+          "round": {
+            "id": 4905,
+            "name": "Jornada 7",
+            "short": "J7"
+          },
+          "preview": null,
+          "summary": null
+        },
+        "events": [
+          {
+            "type": 1,
+            "period": "firstTime",
+            "metadata": 41
+          },
+          {
+            "type": 4,
+            "period": "secondTime",
+            "metadata": 67
+          }
+        ],
+        "points": {
+          "1": 9,
+          "7": 9,
+          "8": 9,
+          "2": 8,
+          "5": 9,
+          "3": 7,
+          "6": 10
+        }
+      },
+      {
+        "home": false,
+        "match": {
+          "id": 50787,
+          "date": 1791658800,
+          "status": "finished",
+          "home": {
+            "id": 15,
+            "name": "Real Madrid",
+            "slug": "real-madrid",
+            "score": 1
+          },
+          "away": {
+            "id": 19,
+            "name": "Villarreal",
+            "slug": "villarreal",
+            "score": 0
+          },
+          "round": {
+            "id": 4906,
+            "name": "Jornada 8",
+            "short": "J8"
+          },
+          "preview": null,
+          "summary": null
+        },
+        "events": [],
+        "points": {
+          "1": 2,
+          "7": 4,
+          "8": 3,
+          "2": 3,
+          "5": 3,
+          "3": 4,
+          "6": 1
+        }
+      },
+      {
+        "home": true,
+        "match": {
+          "id": 50798,
+          "date": 1792246500,
+          "status": "finished",
+          "home": {
+            "id": 19,
+            "name": "Villarreal",
+            "slug": "villarreal",
+            "score": 0
+          },
+          "away": {
+            "id": 75,
+            "name": "Elche",
+            "slug": "elche",
+            "score": 0
+          },
+          "round": {
+            "id": 4907,
+            "name": "Jornada 9",
+            "short": "J9"
+          },
+          "preview": null,
+          "summary": null
+        },
+        "events": [
+          {
+            "type": 4,
+            "period": "secondTime",
+            "metadata": 84
+          }
+        ],
+        "points": {
+          "1": 6,
+          "7": 5,
+          "8": 6,
+          "2": 5,
+          "5": 6,
+          "3": 4,
+          "6": 3
+        }
+      }
+    ],
+    "canonicalURL": "https://biwenger.as.com/blog/jugadores/ayoze-perez/"
+  }
+}

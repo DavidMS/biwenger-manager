@@ -1,0 +1,307 @@
+{
+  "status": 200,
+  "data": [
+    {
+      "type": "transfer",
+      "title": "",
+      "content": [
+        {
+          "player": 41264,
+          "from": {
+            "id": 2000003,
+            "name": "Manager 3",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 813900
+        }
+      ],
+      "date": 1792645742,
+      "fixed": false,
+      "author": null
+    },
+    {
+      "type": "market",
+      "title": "",
+      "content": [
+        {
+          "player": 24734,
+          "to": {
+            "id": 2000004,
+            "name": "Manager 4",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 788300
+        },
+        {
+          "player": 22964,
+          "to": {
+            "id": 2000003,
+            "name": "Manager 3",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 3318750,
+          "bids": [
+            {
+              "user": {
+                "id": 2000002,
+                "name": "Manager 2",
+                "icon": "https://example.invalid/icon.png"
+              },
+              "amount": 3145000
+            }
+          ]
+        }
+      ],
+      "date": 1792645526,
+      "fixed": false,
+      "author": null
+    },
+    {
+      "type": "market",
+      "title": "",
+      "content": [
+        {
+          "player": 31027,
+          "to": {
+            "id": 2000006,
+            "name": "Manager 6",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 21970000,
+          "bids": [
+            {
+              "user": {
+                "id": 2000003,
+                "name": "Manager 3",
+                "icon": "https://example.invalid/icon.png"
+              },
+              "amount": 15606780
+            }
+          ]
+        }
+      ],
+      "date": 1792559021,
+      "fixed": false,
+      "author": null
+    },
+    {
+      "type": "market",
+      "title": "",
+      "content": [
+        {
+          "player": 25398,
+          "to": {
+            "id": 2000006,
+            "name": "Manager 6",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 5111440,
+          "bids": [
+            {
+              "user": {
+                "id": 2000002,
+                "name": "Manager 2",
+                "icon": "https://example.invalid/icon.png"
+              },
+              "amount": 4789000
+            },
+            {
+              "user": {
+                "id": 2000003,
+                "name": "Manager 3",
+                "icon": "https://example.invalid/icon.png"
+              },
+              "amount": 4700100
+            }
+          ]
+        },
+        {
+          "player": 41940,
+          "to": {
+            "id": 2000006,
+            "name": "Manager 6",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 950000
+        }
+      ],
+      "date": 1792472939,
+      "fixed": false,
+      "author": null
+    },
+    {
+      "type": "transfer",
+      "title": "",
+      "content": [
+        {
+          "player": 18382,
+          "from": {
+            "id": 2000005,
+            "name": "Manager 5",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 1082100
+        }
+      ],
+      "date": 1792416879,
+      "fixed": false,
+      "author": null
+    },
+    {
+      "type": "transfer",
+      "title": "",
+      "content": [
+        {
+          "player": 6259,
+          "from": {
+            "id": 2000004,
+            "name": "Manager 4",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 1514900
+        },
+        {
+          "player": 37723,
+          "from": {
+            "id": 2000004,
+            "name": "Manager 4",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 616300
+        },
+        {
+          "player": 26276,
+          "from": {
+            "id": 2000004,
+            "name": "Manager 4",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 2984000
+        }
+      ],
+      "date": 1792415354,
+      "fixed": false,
+      "author": null
+    },
+    {
+      "type": "transfer",
+      "title": "",
+      "content": [
+        {
+          "player": 17937,
+          "from": {
+            "id": 2000001,
+            "name": "Manager 1",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "to": {
+            "id": 2000002,
+            "name": "Manager 2",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 8960000,
+          "type": "clause"
+        }
+      ],
+      "date": 1792395476,
+      "fixed": false,
+      "author": null
+    },
+    {
+      "type": "market",
+      "title": "",
+      "content": [
+        {
+          "player": 33796,
+          "to": {
+            "id": 2000005,
+            "name": "Manager 5",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 2510120,
+          "bids": [
+            {
+              "user": {
+                "id": 2000002,
+                "name": "Manager 2",
+                "icon": "https://example.invalid/icon.png"
+              },
+              "amount": 2355550
+            },
+            {
+              "user": {
+                "id": 2000003,
+                "name": "Manager 3",
+                "icon": "https://example.invalid/icon.png"
+              },
+              "amount": 1380100
+            }
+          ]
+        },
+        {
+          "player": 37897,
+          "to": {
+            "id": 2000005,
+            "name": "Manager 5",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 1100100
+        },
+        {
+          "player": 43264,
+          "to": {
+            "id": 2000006,
+            "name": "Manager 6",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 2300000
+        }
+      ],
+      "date": 1792386486,
+      "fixed": false,
+      "author": null
+    },
+    {
+      "type": "transfer",
+      "title": "",
+      "content": [
+        {
+          "player": 40911,
+          "from": {
+            "id": 2000002,
+            "name": "Manager 2",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "to": {
+            "id": 2000004,
+            "name": "Manager 4",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 7080000,
+          "type": "clause"
+        }
+      ],
+      "date": 1792359228,
+      "fixed": false,
+      "author": null
+    },
+    {
+      "type": "transfer",
+      "title": "",
+      "content": [
+        {
+          "player": 2480,
+          "from": {
+            "id": 2000003,
+            "name": "Manager 3",
+            "icon": "https://example.invalid/icon.png"
+          },
+          "amount": 1931200
+        }
+      ],
+      "date": 1792252402,
+      "fixed": false,
+      "author": null
+    }
+  ]
+}
