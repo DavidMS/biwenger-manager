@@ -27,7 +27,8 @@ docs/
   tutorial/               "how we built this with AI": README.md index, one chapter per phase
   tutorial/journal/       one entry per issue, start from TEMPLATE.md
   adr/                    architecture decision records (0001-0003: ADRs, tech stack, layout)
-  biwenger-api/           reverse-engineered API reference and samples (planned, Phase 2)
+  biwenger-api/           reverse-engineered API reference: one doc per endpoint, anonymised samples/
+scripts/                  biwenger_capture.py: captures anonymised API samples (run by the human)
 .github/                  issue forms (feature, spike, bug), PR template, CI workflows (backend.yml, frontend.yml)
 ```
 

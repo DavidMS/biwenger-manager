@@ -1,0 +1,254 @@
+{
+  "status": 200,
+  "data": {
+    "status": {
+      "balance": 51420000,
+      "maximumBid": 57005000
+    },
+    "sales": [
+      {
+        "date": 1792559020,
+        "until": 1792731600,
+        "extended": true,
+        "price": 830000,
+        "player": {
+          "id": 2169
+        },
+        "user": null
+      },
+      {
+        "date": 1792645525,
+        "until": 1792731600,
+        "price": 5640000,
+        "player": {
+          "id": 16738
+        },
+        "user": null
+      },
+      {
+        "date": 1792645525,
+        "until": 1792731600,
+        "price": 4280000,
+        "player": {
+          "id": 17021
+        },
+        "user": null
+      },
+      {
+        "date": 1792645525,
+        "until": 1792731600,
+        "price": 6670000,
+        "player": {
+          "id": 21008
+        },
+        "user": null
+      },
+      {
+        "date": 1792645525,
+        "until": 1792731600,
+        "price": 310000,
+        "player": {
+          "id": 29034
+        },
+        "user": null
+      },
+      {
+        "date": 1792645525,
+        "until": 1792731600,
+        "price": 900000,
+        "player": {
+          "id": 37719
+        },
+        "user": null
+      },
+      {
+        "date": 1792645525,
+        "until": 1792731600,
+        "price": 980000,
+        "player": {
+          "id": 37726
+        },
+        "user": null
+      },
+      {
+        "date": 1792559020,
+        "until": 1792731600,
+        "extended": true,
+        "price": 390000,
+        "player": {
+          "id": 39398
+        },
+        "user": null
+      },
+      {
+        "date": 1792559020,
+        "until": 1792731600,
+        "extended": true,
+        "price": 150000,
+        "player": {
+          "id": 41153
+        },
+        "user": null
+      },
+      {
+        "date": 1792559020,
+        "until": 1792731600,
+        "extended": true,
+        "price": 160000,
+        "player": {
+          "id": 42021
+        },
+        "user": null
+      },
+      {
+        "date": 1792559020,
+        "until": 1792731600,
+        "extended": true,
+        "price": 2840000,
+        "player": {
+          "id": 42362
+        },
+        "user": null
+      },
+      {
+        "date": 1792559020,
+        "until": 1792731600,
+        "extended": true,
+        "price": 800000,
+        "player": {
+          "id": 42569
+        },
+        "user": null
+      },
+      {
+        "date": 1792620267,
+        "until": 1792793067,
+        "price": 6930000,
+        "player": {
+          "id": 15430,
+          "owner": {
+            "clause": 21221640,
+            "date": 1786856548,
+            "price": 10610820
+          }
+        },
+        "user": {
+          "id": 2000003,
+          "name": "Manager 3",
+          "icon": "https://example.invalid/icon.png"
+        }
+      },
+      {
+        "date": 1792620269,
+        "until": 1792793069,
+        "price": 1800000,
+        "player": {
+          "id": 17482,
+          "owner": {
+            "clause": 4500020,
+            "date": 1789621488,
+            "price": 2250010
+          }
+        },
+        "user": {
+          "id": 2000003,
+          "name": "Manager 3",
+          "icon": "https://example.invalid/icon.png"
+        }
+      },
+      {
+        "date": 1792620282,
+        "until": 1792793082,
+        "price": 9580000,
+        "player": {
+          "id": 17687,
+          "owner": {
+            "clause": 20141420,
+            "date": 1790312690,
+            "price": 10070710
+          }
+        },
+        "user": {
+          "id": 2000003,
+          "name": "Manager 3",
+          "icon": "https://example.invalid/icon.png"
+        }
+      },
+      {
+        "date": 1792620306,
+        "until": 1792793106,
+        "price": 1360000,
+        "player": {
+          "id": 26879,
+          "owner": {
+            "clause": 3038380,
+            "date": 1792127148,
+            "price": 1519190,
+            "clauseLockedUntil": 1793941548
+          }
+        },
+        "user": {
+          "id": 2000003,
+          "name": "Manager 3",
+          "icon": "https://example.invalid/icon.png"
+        }
+      },
+      {
+        "date": 1792624506,
+        "until": 1792797306,
+        "price": 2917110,
+        "player": {
+          "id": 42802,
+          "owner": {
+            "clause": 7160000,
+            "date": 1789707826,
+            "price": 3580000
+          }
+        },
+        "user": {
+          "id": 2000002,
+          "name": "Manager 2",
+          "icon": "https://example.invalid/icon.png"
+        }
+      },
+      {
+        "date": 1792622551,
+        "until": 1792795351,
+        "price": 310000,
+        "player": {
+          "id": 39801,
+          "owner": {
+            "clause": 620002,
+            "date": 1792127147,
+            "price": 310001,
+            "clauseLockedUntil": 1793941547
+          }
+        },
+        "user": {
+          "id": 2000005,
+          "name": "Manager 5",
+          "icon": "https://example.invalid/icon.png"
+        }
+      },
+      {
+        "date": 1792597679,
+        "until": 1792770479,
+        "price": 11250000,
+        "player": {
+          "id": 42557,
+          "owner": {
+            "clause": 20680000,
+            "date": 1789189429,
+            "price": 8200001
+          }
+        },
+        "user": {
+          "id": 2000005,
+          "name": "Manager 5",
+          "icon": "https://example.invalid/icon.png"
+        }
+      }
+    ],
+    "offers": []
+  }
+}

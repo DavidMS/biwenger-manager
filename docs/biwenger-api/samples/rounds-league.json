@@ -1,0 +1,337 @@
+{
+  "status": 200,
+  "data": {
+    "round": {
+      "id": 5176
+    },
+    "league": {
+      "id": 1000001,
+      "name": "Example League",
+      "competition": "la-liga",
+      "mode": "league",
+      "type": "premium",
+      "marketMode": "normal",
+      "scoreID": 1,
+      "standings": [
+        {
+          "id": 2000004,
+          "name": "Manager 4",
+          "icon": "https://example.invalid/icon.png",
+          "points": 515,
+          "teamValue": 64530000,
+          "teamValueInc": 120000,
+          "position": 1,
+          "lineup": {
+            "type": "3-3-4",
+            "points": 71,
+            "captain": {
+              "id": 26930
+            },
+            "coach": {
+              "id": 35316
+            },
+            "date": 1788461545,
+            "players": [
+              37600,
+              17731,
+              25815,
+              32460,
+              1249,
+              31243,
+              34127,
+              39350,
+              26930,
+              41412,
+              6259
+            ],
+            "reserves": [
+              10117,
+              null,
+              null,
+              null
+            ],
+            "discarded": [
+              40911,
+              33,
+              1952,
+              10745,
+              18178,
+              24734,
+              25892,
+              26271,
+              38962,
+              41072,
+              41605
+            ],
+            "count": true
+          }
+        },
+        {
+          "id": 2000005,
+          "name": "Manager 5",
+          "icon": "https://example.invalid/icon.png",
+          "points": 482,
+          "teamValue": 72080000,
+          "teamValueInc": 530000,
+          "position": 2,
+          "lineup": {
+            "type": "3-5-2",
+            "points": 20,
+            "captain": {
+              "id": 25769
+            },
+            "coach": {
+              "id": 42570
+            },
+            "date": 1788439196,
+            "players": [
+              2184,
+              27996,
+              10245,
+              1676,
+              19441,
+              19862,
+              26092,
+              34469,
+              34479,
+              25769,
+              18564
+            ],
+            "reserves": [
+              null,
+              856,
+              null,
+              null
+            ],
+            "discarded": [
+              11677,
+              18173,
+              24474,
+              26930,
+              28115,
+              30081,
+              30493,
+              33796,
+              35706,
+              37897,
+              39801,
+              42557,
+              43262
+            ],
+            "count": true
+          }
+        },
+        {
+          "id": 2000002,
+          "name": "Manager 2",
+          "icon": "https://example.invalid/icon.png",
+          "points": 481,
+          "teamValue": 72400000,
+          "teamValueInc": 130000,
+          "position": 3,
+          "lineup": {
+            "type": "3-5-2",
+            "points": 52,
+            "captain": {
+              "id": 26271
+            },
+            "date": 1788450664,
+            "players": [
+              41101,
+              41270,
+              26592,
+              24734,
+              19485,
+              41418,
+              30510,
+              31027,
+              15396,
+              40911,
+              26271
+            ],
+            "reserves": [
+              33886,
+              39673,
+              41560,
+              34033
+            ],
+            "discarded": [
+              17937,
+              429,
+              19577,
+              22690,
+              25403,
+              27960,
+              30495,
+              40960,
+              42802
+            ],
+            "count": true
+          }
+        },
+        {
+          "id": 2000006,
+          "name": "Manager 6",
+          "icon": "https://example.invalid/icon.png",
+          "points": 475,
+          "teamValue": 73310000,
+          "teamValueInc": 280000,
+          "position": 4,
+          "lineup": {
+            "type": "4-4-2",
+            "points": 38,
+            "captain": {
+              "id": 17756
+            },
+            "coach": {
+              "id": 19506
+            },
+            "date": 1788438698,
+            "players": [
+              14630,
+              9065,
+              41416,
+              41684,
+              32440,
+              1523,
+              19547,
+              1612,
+              3259,
+              41807,
+              17756
+            ],
+            "reserves": [
+              null,
+              null,
+              35171,
+              38308
+            ],
+            "discarded": [
+              2247,
+              9887,
+              23840,
+              25398,
+              29661,
+              31027,
+              32120,
+              40552,
+              41093,
+              41940,
+              43264
+            ],
+            "count": true
+          }
+        },
+        {
+          "id": 2000003,
+          "name": "Manager 3",
+          "icon": "https://example.invalid/icon.png",
+          "points": 444,
+          "teamValue": 72490000,
+          "teamValueInc": 100000,
+          "position": 5,
+          "lineup": {
+            "type": "3-4-3",
+            "points": 47,
+            "captain": {
+              "id": 8555
+            },
+            "coach": {
+              "id": 25020
+            },
+            "date": 1788448629,
+            "players": [
+              15430,
+              2480,
+              41264,
+              8695,
+              29184,
+              8670,
+              41606,
+              10158,
+              35678,
+              8555,
+              21008
+            ],
+            "reserves": [
+              null,
+              42394,
+              38422,
+              39431
+            ],
+            "discarded": [
+              11196,
+              17482,
+              17687,
+              19513,
+              22964,
+              24509,
+              26092,
+              26780,
+              26879,
+              40952,
+              41419
+            ],
+            "count": true
+          }
+        },
+        {
+          "id": 2000001,
+          "name": "Manager 1",
+          "icon": "https://example.invalid/icon.png",
+          "points": 220,
+          "teamValue": 22340000,
+          "teamValueInc": -70000,
+          "position": 6,
+          "lineup": {
+            "type": "3-4-3",
+            "points": 20,
+            "date": 1786800753,
+            "players": [
+              30487,
+              35156,
+              23572,
+              34181,
+              null,
+              33971,
+              41090,
+              33697,
+              17937,
+              2001,
+              2602
+            ],
+            "reserves": [
+              41268,
+              null,
+              41411,
+              null
+            ],
+            "discarded": [
+              26344,
+              33691
+            ],
+            "count": true
+          }
+        }
+      ],
+      "settings": {
+        "splitRound": "recalculation",
+        "bonusFixed": 0,
+        "bonusPoint": 30000,
+        "bonusInverse": false,
+        "bonusIdealLineup": 500000,
+        "bonusGameMVP": 250000,
+        "bonusRoundPosition": [],
+        "lineupShow": "round",
+        "lineupRoundChanges": 0,
+        "lineupRoundChangesIn": "onlyNoPlayed",
+        "lineupRoundChangeStrategy": true,
+        "bonusGoal": 0,
+        "bonusWorstLineup": 0,
+        "bonusProfitableLineup": 0,
+        "bonusLeaguePosition": [],
+        "bonusRoundPointsPosition": []
+      }
+    }
+  }
+}
