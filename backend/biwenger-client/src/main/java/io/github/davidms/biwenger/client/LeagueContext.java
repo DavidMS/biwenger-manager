@@ -5,5 +5,6 @@ package io.github.davidms.biwenger.client;
  *
  * @param leagueId the league id
  * @param userId your user id in that league, which is not the account id
+ * @param scoreId the league's scoring system, which the catalog needs
  */
-public record LeagueContext(long leagueId, long userId) {}
+public record LeagueContext(long leagueId, long userId, int scoreId) {}

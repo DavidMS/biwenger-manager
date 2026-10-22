@@ -19,14 +19,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import io.github.davidms.biwenger.client.model.Market;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.web.client.RestClient;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 class BiwengerClientAuthTest {
 
@@ -48,6 +52,11 @@ class BiwengerClientAuthTest {
   // From docs/biwenger-api/samples/account.json (anonymised ids).
   private static final long LEAGUE_ID = 1_000_001;
   private static final long USER_ID = 2_000_001;
+  private static final int SCORE_ID = 1;
+  private static final String MARKET_JSON =
+      "{\"status\": 200, \"data\": {\"status\": {\"balance\": 1, \"maximumBid\": 2}, \"sales\": []}}";
+
+  private static final JsonMapper JSON = JsonMapper.builder().build();
 
   private String baseUrl;
 
@@ -73,9 +82,9 @@ class BiwengerClientAuthTest {
     loginReturns("token-1");
     accountReturnsSample();
 
-    LeagueContext league = client(CREDENTIALS).league();
+    LeagueContext league = client(CREDENTIALS).leagueContext();
 
-    assertThat(league).isEqualTo(new LeagueContext(LEAGUE_ID, USER_ID));
+    assertThat(league).isEqualTo(new LeagueContext(LEAGUE_ID, USER_ID, SCORE_ID));
     verify(
         postRequestedFor(urlEqualTo(LOGIN))
             .withRequestBody(
@@ -92,9 +101,9 @@ class BiwengerClientAuthTest {
   void sendsTokenAndLeagueHeadersOnLeagueCalls() throws IOException {
     loginReturns("token-1");
     accountReturnsSample();
-    stubFor(get(MARKET).willReturn(okJson("{\"status\": 200, \"data\": {}}")));
+    stubFor(get(MARKET).willReturn(okJson(MARKET_JSON)));
 
-    client(CREDENTIALS).get(MARKET, Map.class);
+    client(CREDENTIALS).market();
 
     verify(
         getRequestedFor(urlEqualTo(MARKET))
@@ -109,12 +118,12 @@ class BiwengerClientAuthTest {
   void logsInOnlyOnceForManyCalls() throws IOException {
     loginReturns("token-1");
     accountReturnsSample();
-    stubFor(get(MARKET).willReturn(okJson("{}")));
+    stubFor(get(MARKET).willReturn(okJson(MARKET_JSON)));
     BiwengerClient client = client(CREDENTIALS);
 
-    client.get(MARKET, Map.class);
-    client.get(MARKET, Map.class);
-    client.league();
+    client.market();
+    client.market();
+    client.leagueContext();
 
     verify(1, postRequestedFor(urlEqualTo(LOGIN)));
     verify(1, getRequestedFor(urlEqualTo(ACCOUNT)));
@@ -124,7 +133,7 @@ class BiwengerClientAuthTest {
   void failsClearlyOnBadCredentialsWithoutShowingThem() {
     stubFor(post(LOGIN).willReturn(unauthorized().withBody("{\"message\": \"bad login\"}")));
 
-    assertThatThrownBy(() -> client(CREDENTIALS).league())
+    assertThatThrownBy(() -> client(CREDENTIALS).leagueContext())
         .isInstanceOf(BiwengerAuthenticationException.class)
         .hasMessageContaining("rejected the login (HTTP 401)")
         .hasMessageNotContaining("s3cret-password")
@@ -134,7 +143,7 @@ class BiwengerClientAuthTest {
 
   @Test
   void failsWithoutCallingBiwengerWhenCredentialsAreMissing() {
-    assertThatThrownBy(() -> client(new BiwengerCredentials(" ", null)).league())
+    assertThatThrownBy(() -> client(new BiwengerCredentials(" ", null)).leagueContext())
         .isInstanceOf(BiwengerAuthenticationException.class)
         .hasMessageContaining("BIWENGER_EMAIL and BIWENGER_PASSWORD");
 
@@ -162,11 +171,11 @@ class BiwengerClientAuthTest {
     stubFor(
         get(MARKET)
             .withHeader("Authorization", equalTo("Bearer token-2"))
-            .willReturn(okJson("{\"status\": 200, \"data\": {\"sales\": []}}")));
+            .willReturn(okJson(MARKET_JSON)));
 
-    Map<?, ?> market = client(CREDENTIALS).get(MARKET, Map.class);
+    Market market = client(CREDENTIALS).market();
 
-    assertThat(market.get("status")).isEqualTo(200);
+    assertThat(market.status().maximumBid()).isEqualTo(2);
     verify(2, postRequestedFor(urlEqualTo(LOGIN)));
     verify(
         1,
@@ -179,7 +188,7 @@ class BiwengerClientAuthTest {
     accountReturnsSample();
     stubFor(get(MARKET).willReturn(unauthorized()));
 
-    assertThatThrownBy(() -> client(CREDENTIALS).get(MARKET, Map.class))
+    assertThatThrownBy(() -> client(CREDENTIALS).market())
         .isInstanceOf(BiwengerAuthenticationException.class)
         .hasMessageContaining("fresh token");
 
@@ -188,38 +197,35 @@ class BiwengerClientAuthTest {
   }
 
   @Test
-  void failsClearlyWhenTheAccountHasNoLaLigaLeague() {
+  void failsClearlyWhenTheAccountHasNoLaLigaLeague() throws IOException {
     loginReturns("token-1");
-    stubFor(
-        get(ACCOUNT)
-            .willReturn(
-                okJson(
-                    """
-                    {"status": 200, "data": {"leagues": [
-                      {"id": 10, "competition": "premier-league", "user": {"id": 20}}]}}
-                    """)));
+    stubFor(get(ACCOUNT).willReturn(okJson(accountWithLeagues("premier-league"))));
 
-    assertThatThrownBy(() -> client(CREDENTIALS).league())
+    assertThatThrownBy(() -> client(CREDENTIALS).leagueContext())
         .isInstanceOf(BiwengerApiException.class)
         .hasMessage("The Biwenger account must have exactly one La Liga league, but it has 0");
   }
 
   @Test
-  void failsClearlyWhenTheAccountHasTwoLaLigaLeagues() {
+  void failsClearlyWhenTheAccountHasTwoLaLigaLeagues() throws IOException {
     loginReturns("token-1");
-    stubFor(
-        get(ACCOUNT)
-            .willReturn(
-                okJson(
-                    """
-                    {"status": 200, "data": {"leagues": [
-                      {"id": 10, "competition": "la-liga", "user": {"id": 20}},
-                      {"id": 11, "competition": "la-liga", "user": {"id": 21}}]}}
-                    """)));
+    stubFor(get(ACCOUNT).willReturn(okJson(accountWithLeagues("la-liga", "la-liga"))));
 
-    assertThatThrownBy(() -> client(CREDENTIALS).league())
+    assertThatThrownBy(() -> client(CREDENTIALS).leagueContext())
         .isInstanceOf(BiwengerApiException.class)
         .hasMessageEndingWith("but it has 2");
+  }
+
+  /** The account sample, with its one league repeated once per competition given. */
+  private static String accountWithLeagues(String... competitions) throws IOException {
+    ObjectNode account = (ObjectNode) JSON.readTree(sample("account.json"));
+    ArrayNode leagues = (ArrayNode) account.get("data").get("leagues");
+    JsonNode league = leagues.get(0);
+    leagues.removeAll();
+    for (String competition : competitions) {
+      leagues.add(((ObjectNode) league.deepCopy()).put("competition", competition));
+    }
+    return JSON.writeValueAsString(account);
   }
 
   @Test
@@ -232,7 +238,7 @@ class BiwengerClientAuthTest {
                     .withBody("{}")
                     .withHeader("Content-Type", "application/json")));
 
-    assertThatThrownBy(() -> client(CREDENTIALS).league())
+    assertThatThrownBy(() -> client(CREDENTIALS).leagueContext())
         .isInstanceOf(BiwengerAuthenticationException.class)
         .hasMessageContaining("sent no token");
   }
@@ -259,7 +265,8 @@ class BiwengerClientAuthTest {
             .withHeader("Authorization", equalTo("Bearer token-2"))
             .willReturn(okJson(sample("account.json"))));
 
-    assertThat(client(CREDENTIALS).league()).isEqualTo(new LeagueContext(LEAGUE_ID, USER_ID));
+    assertThat(client(CREDENTIALS).leagueContext())
+        .isEqualTo(new LeagueContext(LEAGUE_ID, USER_ID, SCORE_ID));
     verify(2, postRequestedFor(urlEqualTo(LOGIN)));
   }
 
@@ -271,7 +278,7 @@ class BiwengerClientAuthTest {
             .willReturn(
                 aResponse().withStatus(500).withBody("{\"email\": \"someone@example.com\"}")));
 
-    assertThatThrownBy(() -> client(CREDENTIALS).league())
+    assertThatThrownBy(() -> client(CREDENTIALS).leagueContext())
         .isExactlyInstanceOf(BiwengerApiException.class)
         .hasMessage("Biwenger answered HTTP 500 to GET /api/v2/account")
         .hasNoCause();
@@ -281,7 +288,7 @@ class BiwengerClientAuthTest {
   void aRateLimitedLoginIsNotReportedAsBadCredentials() {
     stubFor(post(LOGIN).willReturn(aResponse().withStatus(429)));
 
-    assertThatThrownBy(() -> client(CREDENTIALS).league())
+    assertThatThrownBy(() -> client(CREDENTIALS).leagueContext())
         .isExactlyInstanceOf(BiwengerApiException.class)
         .hasMessage("Biwenger login failed (HTTP 429)");
   }
@@ -291,10 +298,10 @@ class BiwengerClientAuthTest {
     // Regression: the interceptor once recognised the account call by its full path.
     stubFor(post("/proxy" + LOGIN).willReturn(okJson("{\"token\": \"token-1\"}")));
     stubFor(get("/proxy" + ACCOUNT).willReturn(okJson(sample("account.json"))));
-    stubFor(get("/proxy" + MARKET).willReturn(okJson("{}")));
+    stubFor(get("/proxy" + MARKET).willReturn(okJson(MARKET_JSON)));
     var client = new BiwengerClient(RestClient.create(baseUrl + "/proxy"), CREDENTIALS);
 
-    client.get(MARKET, Map.class);
+    client.market();
 
     verify(
         getRequestedFor(urlEqualTo("/proxy" + MARKET))

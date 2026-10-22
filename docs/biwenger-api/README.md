@@ -4,6 +4,8 @@ The Biwenger API is unofficial and reverse-engineered. It can change without not
 
 When a fresh capture disagrees with these pages, trust the capture and update the page.
 
+The Java side is `BiwengerClient` in `backend/biwenger-client`, with one method and one set of records (`client.model`) per endpoint below. Its tests run against these samples.
+
 ## Endpoints (read-only)
 
 `API` is `https://biwenger.as.com/api/v2`. `CDN` is `https://cf.biwenger.com/api/v2`.

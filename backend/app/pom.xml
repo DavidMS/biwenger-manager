@@ -52,6 +52,13 @@
   </dependencies>
 
   <build>
+    <!-- Tests stub Biwenger with the anonymised samples captured in #14 (root CLAUDE.md, golden rule 3). -->
+    <testResources>
+      <testResource>
+        <targetPath>samples</targetPath>
+        <directory>${project.basedir}/../../docs/biwenger-api/samples</directory>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>

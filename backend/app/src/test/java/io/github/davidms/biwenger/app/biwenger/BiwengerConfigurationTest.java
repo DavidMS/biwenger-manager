@@ -12,6 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import io.github.davidms.biwenger.client.BiwengerClient;
 import io.github.davidms.biwenger.client.LeagueContext;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,21 +44,22 @@ class BiwengerConfigurationTest {
   @Autowired BiwengerProperties properties;
 
   @Test
-  void clientUsesTheConfiguredBaseUrlCredentialsAndUserAgent() {
+  void clientUsesTheConfiguredBaseUrlCredentialsAndUserAgent() throws IOException {
     biwenger.stubFor(post("/api/v2/auth/login").willReturn(okJson("{\"token\": \"t\"}")));
-    biwenger.stubFor(
-        get("/api/v2/account")
-            .willReturn(
-                okJson(
-                    """
-                    {"status": 200, "data": {"leagues": [
-                      {"id": 10, "competition": "la-liga", "user": {"id": 20}}]}}
-                    """)));
+    biwenger.stubFor(get("/api/v2/account").willReturn(okJson(sample("account.json"))));
 
-    assertThat(client.league()).isEqualTo(new LeagueContext(10, 20));
+    // The ids in the anonymised sample.
+    assertThat(client.leagueContext()).isEqualTo(new LeagueContext(1_000_001, 2_000_001, 1));
     biwenger.verify(
         getRequestedFor(urlEqualTo("/api/v2/account"))
             .withHeader("User-Agent", equalTo(BiwengerConfiguration.USER_AGENT)));
+  }
+
+  private static String sample(String name) throws IOException {
+    try (InputStream in = BiwengerConfigurationTest.class.getResourceAsStream("/samples/" + name)) {
+      assertThat(in).as("sample %s on the test classpath", name).isNotNull();
+      return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+    }
   }
 
   @Test
