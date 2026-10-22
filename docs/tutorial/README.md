@@ -38,3 +38,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #6 | [Documentation skeleton](journal/0006-docs-skeleton.md) |
 | #7 | [GitHub scaffolding](journal/0007-github-scaffolding.md) |
 | #8 | [Backend skeleton](journal/0008-backend-skeleton.md) |
+| #9 | [Frontend skeleton](journal/0009-frontend-skeleton.md) |
