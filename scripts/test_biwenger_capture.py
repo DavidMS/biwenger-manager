@@ -102,7 +102,7 @@ class AnonymiserTest(unittest.TestCase):
         leaky = self.text + ' "Rival FC" 5559876 invite-abc123 jane@example.com'
         self.assertEqual(self.anonymiser.leaks(leaky, extra=("jane@example.com",)), [
             "manager or league name", "manager, league or account id",
-            "personal or secret field value", "email, password or token"])
+            "a value of a removed field (secret)", "email, password or token"])
 
 
 class TrimCatalogTest(unittest.TestCase):

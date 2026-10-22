@@ -63,7 +63,7 @@ class Anonymiser:
     def __init__(self):
         self.ids = {}  # real id -> fake id
         self.names = {}  # real name -> fake name
-        self.secrets = set()  # values of dropped keys, checked for leaks
+        self.secrets = {}  # value of a dropped key -> that key, checked for leaks
         self.objects = set()  # id() of dicts that are a manager, league or the account
 
     def add_account(self, account):
@@ -103,22 +103,22 @@ class Anonymiser:
         if isinstance(value, dict):
             for key, child in value.items():
                 if key.lower() in LEAK_CHECKED_KEYS:
-                    self._collect_strings(child)
+                    self._collect_strings(child, key)
                 else:
                     self.collect_secrets(child)
         elif isinstance(value, list):
             for child in value:
                 self.collect_secrets(child)
 
-    def _collect_strings(self, value):
+    def _collect_strings(self, value, key):
         if isinstance(value, str) and len(value) >= 4:
-            self.secrets.add(value)
+            self.secrets.setdefault(value, key)
         elif isinstance(value, dict):
             for child in value.values():
-                self._collect_strings(child)
+                self._collect_strings(child, key)
         elif isinstance(value, list):
             for child in value:
-                self._collect_strings(child)
+                self._collect_strings(child, key)
 
     def apply(self, value):
         if isinstance(value, dict):
@@ -160,8 +160,10 @@ class Anonymiser:
             found.append("manager or league name")
         if any(re.search(rf"(?<!\d){real}(?!\d)", text) for real in self.ids):
             found.append("manager, league or account id")
-        if any(secret in text for secret in self.secrets):
-            found.append("personal or secret field value")
+        keys = sorted({key for secret, key in self.secrets.items() if secret in text})
+        if keys:
+            # The key a value came from is safe to show; the value is not.
+            found.append(f"a value of a removed field ({', '.join(keys)})")
         if any(value and len(value) >= 4 and value.lower() in lowered for value in extra):
             found.append("email, password or token")
         return found
