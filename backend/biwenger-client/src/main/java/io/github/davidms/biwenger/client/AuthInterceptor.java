@@ -2,6 +2,7 @@ package io.github.davidms.biwenger.client;
 
 import java.io.IOException;
 import java.util.function.Supplier;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -9,8 +10,9 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
 /**
- * Adds the token and the league headers to every call, and on a {@code 401} logs in again once and
- * retries. A second {@code 401} is an error, so a bad token can never cause a login loop.
+ * Adds the token (and, for league calls, the league headers) to every call, and on a {@code 401}
+ * logs in again once and retries. A second {@code 401} is an error, so a bad token can never cause
+ * a login loop.
  */
 final class AuthInterceptor implements ClientHttpRequestInterceptor {
 
@@ -18,18 +20,26 @@ final class AuthInterceptor implements ClientHttpRequestInterceptor {
   static final String USER_HEADER = "X-User";
 
   private final BiwengerSession session;
-  private final Supplier<LeagueContext> league;
+  private final @Nullable Supplier<LeagueContext> league;
 
-  AuthInterceptor(BiwengerSession session, Supplier<LeagueContext> league) {
+  private AuthInterceptor(BiwengerSession session, @Nullable Supplier<LeagueContext> league) {
     this.session = session;
     this.league = league;
+  }
+
+  /** For the account call, which is where the league headers come from. */
+  static AuthInterceptor tokenOnly(BiwengerSession session) {
+    return new AuthInterceptor(session, null);
+  }
+
+  static AuthInterceptor withLeague(BiwengerSession session, Supplier<LeagueContext> league) {
+    return new AuthInterceptor(session, league);
   }
 
   @Override
   public ClientHttpResponse intercept(
       HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-    // The account call is where the league headers come from, so it is sent without them.
-    if (!BiwengerClient.ACCOUNT_PATH.equals(request.getURI().getPath())) {
+    if (league != null) {
       LeagueContext context = league.get();
       request.getHeaders().set(LEAGUE_HEADER, String.valueOf(context.leagueId()));
       request.getHeaders().set(USER_HEADER, String.valueOf(context.userId()));

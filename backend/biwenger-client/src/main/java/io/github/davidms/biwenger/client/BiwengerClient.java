@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 
 /**
  * Client for the unofficial Biwenger API (read-only so far). It logs in on first use, keeps the
@@ -19,6 +21,7 @@ public final class BiwengerClient {
   static final String ACCOUNT_PATH = "/api/v2/account";
   static final String LA_LIGA = "la-liga";
 
+  private final RestClient accountApi;
   private final RestClient api;
   private LeagueContext league;
 
@@ -35,7 +38,9 @@ public final class BiwengerClient {
             .defaultHeader("X-Lang", "es")
             .build();
     BiwengerSession session = new BiwengerSession(base, credentials);
-    this.api = base.mutate().requestInterceptor(new AuthInterceptor(session, this::league)).build();
+    this.accountApi = base.mutate().requestInterceptor(AuthInterceptor.tokenOnly(session)).build();
+    this.api =
+        base.mutate().requestInterceptor(AuthInterceptor.withLeague(session, this::league)).build();
   }
 
   /**
@@ -46,14 +51,27 @@ public final class BiwengerClient {
    */
   public synchronized LeagueContext league() {
     if (league == null) {
-      league = findLaLigaLeague(get(ACCOUNT_PATH, AccountResponse.class));
+      league = findLaLigaLeague(fetch(accountApi, ACCOUNT_PATH, AccountResponse.class));
     }
     return league;
   }
 
   /** A GET with the token and league headers. The endpoint methods (issue 2.3) build on it. */
   <T> T get(String path, Class<T> type) {
-    return api.get().uri(path).retrieve().body(type);
+    return fetch(api, path, type);
+  }
+
+  private static <T> T fetch(RestClient client, String path, Class<T> type) {
+    try {
+      return client.get().uri(path).retrieve().body(type);
+    } catch (RestClientResponseException e) {
+      // Not chained as the cause: its message carries the response body, which can hold personal
+      // data (the account) or anything else Biwenger sends.
+      throw new BiwengerApiException(
+          "Biwenger answered HTTP " + e.getStatusCode().value() + " to GET " + path);
+    } catch (RestClientException e) {
+      throw new BiwengerApiException("Calling Biwenger failed for GET " + path, e);
+    }
   }
 
   private static LeagueContext findLaLigaLeague(AccountResponse account) {

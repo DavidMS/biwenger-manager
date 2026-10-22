@@ -237,6 +237,70 @@ class BiwengerClientAuthTest {
         .hasMessageContaining("sent no token");
   }
 
+  @Test
+  void logsInAgainWhenTheAccountCallIsRejected() throws IOException {
+    stubFor(
+        post(LOGIN)
+            .inScenario("login")
+            .whenScenarioStateIs(STARTED)
+            .willReturn(okJson("{\"token\": \"token-1\"}"))
+            .willSetStateTo("logged in once"));
+    stubFor(
+        post(LOGIN)
+            .inScenario("login")
+            .whenScenarioStateIs("logged in once")
+            .willReturn(okJson("{\"token\": \"token-2\"}")));
+    stubFor(
+        get(ACCOUNT)
+            .withHeader("Authorization", equalTo("Bearer token-1"))
+            .willReturn(unauthorized()));
+    stubFor(
+        get(ACCOUNT)
+            .withHeader("Authorization", equalTo("Bearer token-2"))
+            .willReturn(okJson(sample("account.json"))));
+
+    assertThat(client(CREDENTIALS).league()).isEqualTo(new LeagueContext(LEAGUE_ID, USER_ID));
+    verify(2, postRequestedFor(urlEqualTo(LOGIN)));
+  }
+
+  @Test
+  void reportsAServerErrorWithoutTheResponseBody() {
+    loginReturns("token-1");
+    stubFor(
+        get(ACCOUNT)
+            .willReturn(
+                aResponse().withStatus(500).withBody("{\"email\": \"someone@example.com\"}")));
+
+    assertThatThrownBy(() -> client(CREDENTIALS).league())
+        .isExactlyInstanceOf(BiwengerApiException.class)
+        .hasMessage("Biwenger answered HTTP 500 to GET /api/v2/account")
+        .hasNoCause();
+  }
+
+  @Test
+  void aRateLimitedLoginIsNotReportedAsBadCredentials() {
+    stubFor(post(LOGIN).willReturn(aResponse().withStatus(429)));
+
+    assertThatThrownBy(() -> client(CREDENTIALS).league())
+        .isExactlyInstanceOf(BiwengerApiException.class)
+        .hasMessage("Biwenger login failed (HTTP 429)");
+  }
+
+  @Test
+  void worksWhenTheBaseUrlHasAPathPrefix() throws IOException {
+    // Regression: the interceptor once recognised the account call by its full path.
+    stubFor(post("/proxy" + LOGIN).willReturn(okJson("{\"token\": \"token-1\"}")));
+    stubFor(get("/proxy" + ACCOUNT).willReturn(okJson(sample("account.json"))));
+    stubFor(get("/proxy" + MARKET).willReturn(okJson("{}")));
+    var client = new BiwengerClient(RestClient.create(baseUrl + "/proxy"), CREDENTIALS);
+
+    client.get(MARKET, Map.class);
+
+    verify(
+        getRequestedFor(urlEqualTo("/proxy" + MARKET))
+            .withHeader("X-League", equalTo(String.valueOf(LEAGUE_ID))));
+  }
+
   private static String sample(String name) throws IOException {
     try (InputStream in = BiwengerClientAuthTest.class.getResourceAsStream("/samples/" + name)) {
       assertThat(in).as("sample %s on the test classpath", name).isNotNull();

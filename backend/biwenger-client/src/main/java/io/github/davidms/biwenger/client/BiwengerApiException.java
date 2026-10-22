@@ -6,4 +6,8 @@ public class BiwengerApiException extends RuntimeException {
   public BiwengerApiException(String message) {
     super(message);
   }
+
+  public BiwengerApiException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

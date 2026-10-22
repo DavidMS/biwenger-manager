@@ -3,14 +3,19 @@ package io.github.davidms.biwenger.client;
 import io.github.davidms.biwenger.client.AuthRecords.LoginRequest;
 import io.github.davidms.biwenger.client.AuthRecords.LoginResponse;
 import java.lang.System.Logger.Level;
+import java.util.Set;
 import org.springframework.http.MediaType;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 
 /** Logs in and keeps the token in memory. The token is never written anywhere or logged. */
 final class BiwengerSession {
 
   static final String LOGIN_PATH = "/api/v2/auth/login";
+
+  /** The statuses that mean wrong credentials. Others (429, 5xx) are not the user's fault. */
+  private static final Set<Integer> REJECTED_LOGIN = Set.of(400, 401, 403);
 
   private static final System.Logger LOG = System.getLogger(BiwengerSession.class.getName());
 
@@ -61,12 +66,18 @@ final class BiwengerSession {
               .body(new LoginRequest(credentials.email(), credentials.password()))
               .retrieve()
               .body(LoginResponse.class);
-    } catch (HttpClientErrorException e) {
+    } catch (RestClientResponseException e) {
       // Not chained as the cause: its message carries the response body, which we haven't seen yet.
-      throw new BiwengerAuthenticationException(
-          "Biwenger rejected the login (HTTP "
-              + e.getStatusCode().value()
-              + "): check BIWENGER_EMAIL and BIWENGER_PASSWORD");
+      int status = e.getStatusCode().value();
+      if (REJECTED_LOGIN.contains(status)) {
+        throw new BiwengerAuthenticationException(
+            "Biwenger rejected the login (HTTP "
+                + status
+                + "): check BIWENGER_EMAIL and BIWENGER_PASSWORD");
+      }
+      throw new BiwengerApiException("Biwenger login failed (HTTP " + status + ")");
+    } catch (RestClientException e) {
+      throw new BiwengerApiException("Calling Biwenger failed for the login", e);
     }
     if (response == null || response.token() == null || response.token().isBlank()) {
       throw new BiwengerAuthenticationException("Biwenger accepted the login but sent no token");
