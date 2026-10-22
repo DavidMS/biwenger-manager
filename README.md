@@ -4,7 +4,7 @@ A personal web app to manage a [Biwenger](https://biwenger.as.com/) fantasy foot
 
 It is also a **tutorial on building software with AI**. Almost all of it is written by [Claude Code](https://claude.com/claude-code), one GitHub issue at a time, and the whole process is documented: the prompts, what the AI did, what had to be corrected and what we learned.
 
-> **Status:** Phase 0 (AI-ready foundation) is done. There is no application code yet; Phase 1 creates the backend and frontend skeletons.
+> **Status:** Phase 1 (project skeleton). The backend, frontend and Docker setup run, but the pages are still empty; Biwenger data arrives in Phases 2–4.
 
 ## Start here
 
@@ -44,7 +44,33 @@ Each phase also has a **milestone**.
 
 ## Running it
 
-Not yet: Phase 1 adds `docker compose up`. Biwenger credentials will go in a local `.env` file (copied from `.env.example`), which is gitignored and never committed.
+You need [Docker](https://www.docker.com/products/docker-desktop/) with Compose.
+
+```bash
+cp .env.example .env      # then edit .env: set POSTGRES_PASSWORD (and later your Biwenger login)
+docker compose up --build
+```
+
+Open http://localhost:8000. Compose starts three containers:
+
+| Service | What it is | Reachable at |
+|---|---|---|
+| `frontend` | The React app, served by nginx, which also forwards `/api` to the backend | http://localhost:8000 |
+| `backend` | The Spring Boot app | Through the frontend: http://localhost:8000/actuator/health |
+| `db` | PostgreSQL 18, data kept in the `db-data` volume | `localhost:5432`, for tools like psql (this machine only) |
+
+`.env.example` documents every variable. `.env` holds your Biwenger password, so it is gitignored and never committed. Every port is bound to `127.0.0.1`, so nothing is reachable from other machines.
+
+Stop with `docker compose down`. Add `-v` to also delete the database.
+
+### Developing without Docker
+
+| Part | Needs | Run |
+|---|---|---|
+| Backend | JDK 25 (`sdk env` in `backend/`) | `cd backend && ./mvnw -pl app -am spring-boot:run` |
+| Frontend | Node 24 (`nvm use` in `frontend/`) | `cd frontend && npm install && npm run dev`, then open http://localhost:5173 |
+
+The Vite dev server forwards `/api` to the backend on port 8080, just like nginx does in Docker. The commands for tests, lint and formatting are in [CLAUDE.md](CLAUDE.md#commands).
 
 ## Disclaimer
 

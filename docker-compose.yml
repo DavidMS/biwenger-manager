@@ -1,0 +1,57 @@
+# Runs the whole app locally: `cp .env.example .env`, fill it in, then `docker compose up --build`.
+# The UI is served at http://localhost:${APP_PORT:-8000}. Variables are documented in .env.example.
+
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-biwenger}
+      POSTGRES_USER: ${POSTGRES_USER:-biwenger}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (see .env.example)}
+    volumes:
+      # PostgreSQL 18 images keep their data under /var/lib/postgresql/<version>.
+      - db-data:/var/lib/postgresql
+    ports:
+      # Only on this machine, for local tools such as psql or an IDE.
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      # Used from Phase 3, when the backend gets its database.
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-biwenger}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-biwenger}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (see .env.example)}
+      # Used from Phase 2, when the Biwenger client exists.
+      BIWENGER_EMAIL: ${BIWENGER_EMAIL:-}
+      BIWENGER_PASSWORD: ${BIWENGER_PASSWORD:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      # The JRE image has no curl or wget, so ask /actuator/health with bash's /dev/tcp.
+      test:
+        - CMD
+        - bash
+        - -c
+        - exec 3<>/dev/tcp/localhost/8080 && printf 'GET /actuator/health HTTP/1.0\r\n\r\n' >&3 && grep -q '"status":"UP"' <&3
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "127.0.0.1:${APP_PORT:-8000}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  db-data:
