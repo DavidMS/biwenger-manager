@@ -25,3 +25,26 @@ replay_pid*
 
 # Claude Code personal overrides
 .claude/settings.local.json
+# Maven wrapper jar must stay committed despite *.jar above
+!**/.mvn/wrapper/maven-wrapper.jar
+
+# Secrets: Biwenger credentials live only in .env (see CLAUDE.md). Commit .env.example instead.
+.env
+.env.*
+!.env.example
+secrets/
+
+# Build output
+target/
+node_modules/
+dist/
+coverage/
+frontend/playwright-report/
+frontend/test-results/
+
+# IDE and OS files
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+.DS_Store

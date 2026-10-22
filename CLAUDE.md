@@ -28,6 +28,7 @@ docs/
   tutorial/journal/       one entry per issue, start from TEMPLATE.md
   adr/                    architecture decision records (0001-0003: ADRs, tech stack, layout)
   biwenger-api/           reverse-engineered API reference and samples (planned, Phase 2)
+.github/                  issue forms (feature, spike, bug) and PR template
 ```
 
 Module conventions will live in `backend/CLAUDE.md` and `frontend/CLAUDE.md` (Phase 1, issue #12). Read them before working in those folders.

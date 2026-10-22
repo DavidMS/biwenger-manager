@@ -1,0 +1,50 @@
+name: Bug
+description: Something doesn't work as it should.
+title: "Bug: "
+labels: ["type:bug"]
+projects: ["DavidMS/8"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Don't paste tokens, passwords or `.env` contents. Anonymise Biwenger ids and names if needed.
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What happened, and where (page, endpoint, job, command).
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1. 
+    validations:
+      required: true
+  - type: textarea
+    id: expected-actual
+    attributes:
+      label: Expected vs actual
+      description: What should have happened, and what happened instead. Include error messages and logs.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      value: |
+        - [ ] A test reproduces the bug and now passes
+        - [ ] 
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes for Claude
+      description: Suspected cause, files to look at, related issues.
