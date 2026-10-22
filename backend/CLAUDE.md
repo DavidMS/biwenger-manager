@@ -11,7 +11,7 @@ Use JDK 25 (`sdk env` here, or `JAVA_HOME`). `./mvnw verify` runs the enforcer r
 | `biwenger-client` | `io.github.davidms.biwenger.client` | HTTP calls to Biwenger, auth, rate limiting, retries, Biwenger's request and response records | Spring Boot, Spring MVC/WebFlux, the database, `app` (ADR 0004; the enforcer rule in its `pom.xml` fails the build) |
 | `app` | `io.github.davidms.biwenger.app` | Domain, persistence, sync jobs, advisor algorithms, REST API, all Spring configuration | Biwenger's records outside the `biwenger` package |
 
-`biwenger-client` is a plain library. It takes a configured `RestClient` in its constructor. `app` builds that `RestClient` (base URL, timeouts, User-Agent) and wires the client as a bean.
+`biwenger-client` is a plain library. It takes a configured `RestClient` in its constructor. `app` builds that `RestClient` (base URL, timeouts, User-Agent) and wires the client as a bean. Only `app.biwenger` calls the client: feature services ask `app.biwenger` and get domain types back, so they never see Biwenger's records.
 
 ## Package layout in `app`
 
@@ -45,7 +45,7 @@ Three kinds of types, never mixed:
 - Services take and return domain types. Entities don't leave `persistence`, and DTOs don't leave `web`.
 - Map by hand: a `toDomain()` method on the entity, a `static from(domainObject)` factory on the response DTO. No MapStruct or reflection mappers.
 - Validate invariants in the record's compact constructor (`if (price < 0) throw new IllegalArgumentException(...)`).
-- Money is an `int` or `long` number of euros, as Biwenger sends it. No `double` for money.
+- Money is a whole number of euros, as Biwenger sends it: `long` for budgets, team values and sums, so they can't overflow. No `double` for money.
 - The domain names its own things. Biwenger's field names and codes (for example position `1`–`4`) are translated in `app.biwenger`, so a change in Biwenger's JSON touches the client records and that package only.
 
 ## Java style
@@ -53,14 +53,15 @@ Three kinds of types, never mixed:
 - Records for data, sealed interfaces for closed sets of variants, `switch` with pattern matching over them. No Lombok.
 - Constructor injection only, with no `@Autowired` on fields. One constructor, so Spring needs no annotation.
 - `Optional` for a value that may be absent in a return type, never `null`. Don't use `Optional` for fields or parameters.
-- Configuration through `@ConfigurationProperties` records under a `biwenger.*` prefix, with environment variables from `.env` (`BIWENGER_EMAIL` binds to `biwenger.email`). No secrets in `application.properties`.
-- Code that depends on the time takes a `java.time.Clock` bean, so tests can fix it and recommendations stay deterministic (root golden rule 5).
+- Configuration through `@ConfigurationProperties` records under a `biwenger.*` prefix, set by environment variables (`BIWENGER_EMAIL` binds to `biwenger.email`). Spring doesn't read `.env`: Docker Compose passes it in, and for `./mvnw spring-boot:run` you export the variables in your shell. No secrets in `application.properties`.
+- A properties record that holds a secret overrides `toString()` to mask it, because a record's generated `toString()` prints every field.
+- Code that depends on the time takes a `java.time.Clock` bean, so tests can fix it and recommendations stay deterministic (root golden rule 5). The app's zone is `Europe/Madrid`, La Liga's and Biwenger's time: the `Clock` bean uses it, and dates shown to the user (rounds, market closing) are in it.
 - Formatting is google-java-format through Spotless. The edit hook formats each file, and `./mvnw spotless:apply` fixes the whole tree.
 
 ## Error handling
 
-- The API reports errors as RFC 9457 `ProblemDetail`, through one `@RestControllerAdvice` in `app.web`. Controllers don't catch exceptions to build error responses.
-- Domain and service code throw specific unchecked exceptions (for example `PlayerNotFoundException`). The advice maps each one to a status: not found → 404, invalid input → 400, a Biwenger failure → 502.
+- The API reports errors as RFC 9457 `ProblemDetail`, through one `@RestControllerAdvice` in `app.web` that extends `ResponseEntityExceptionHandler`, so Spring's own errors (failed `@Valid`, unreadable JSON, unknown route) come back as `ProblemDetail` too. Controllers don't catch exceptions to build error responses.
+- Domain and service code throw specific unchecked exceptions (for example `PlayerNotFoundException`). The advice maps each one to a status: not found → 404, invalid input from the request → 400, a Biwenger failure → 502. Anything unexpected is a 500, including an `IllegalArgumentException` from a compact constructor fed bad Biwenger data: that is our bug or theirs, not the user's.
 - `biwenger-client` wraps every HTTP or parsing failure in `BiwengerApiException` (Phase 2), which says what failed. It never returns `null` or an empty object instead of failing.
 - Log a failure once, where it is handled, with the reason. Never log tokens, passwords or full Biwenger responses.
 - Don't catch an exception just to ignore it. If skipping is the right behaviour, log why.
@@ -73,11 +74,11 @@ Three kinds of types, never mixed:
 | Services | JUnit 5 with hand-written fakes or Mockito for their dependencies |
 | Controllers | `@WebMvcTest(XController.class)` with the service mocked through `@MockitoBean`. Check status, JSON shape and `ProblemDetail` errors. |
 | Biwenger client | WireMock serving files from `docs/biwenger-api/samples/`. Never the real API (root golden rule 3). |
-| Persistence, migrations, sync jobs | `@DataJpaTest` or `@SpringBootTest` with Testcontainers PostgreSQL |
+| Persistence, migrations, sync jobs | `@DataJpaTest` or `@SpringBootTest` with a Testcontainers `PostgreSQLContainer` wired through `@ServiceConnection` |
 | The whole app | A few `@SpringBootTest(webEnvironment = RANDOM_PORT)` tests, like `HealthEndpointTest` |
 
-- Test classes are package-private, named `<ClassUnderTest>Test`, in the same package as the class.
-- Method names describe behaviour: `suggestsTheCheapestPlayerWhenScoresTie()`, not `test1()`.
+- Test classes are package-private, in the same package as the code, named `<ClassUnderTest>Test`. Integration tests may be named after the behaviour instead, like `HealthEndpointTest`.
+- Method names describe behaviour: `breaksScoreTiesByPlayerId()`, not `test1()`.
 - Assert with AssertJ (`assertThat`), not JUnit's `assertEquals`.
 - Fix the clock and sort inputs explicitly. A test must give the same result on every run.
 
@@ -85,3 +86,4 @@ Three kinds of types, never mixed:
 
 - The schema changes only through Flyway migrations in `app/src/main/resources/db/migration`, named `V<n>__<what>.sql`. Never edit a migration that is on `main`: add a new one.
 - Hibernate validates the schema and never changes it (`spring.jpa.hibernate.ddl-auto=validate`).
+- `@Transactional` goes on service methods only, never on controllers or repositories you write. `spring.jpa.open-in-view=false`, so entities are not loaded lazily during JSON rendering.
