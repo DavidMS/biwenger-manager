@@ -13,7 +13,7 @@ Read `backend/CLAUDE.md` first if it exists.
 
 | Module | Holds | Must not depend on |
 |---|---|---|
-| `backend/biwenger-client` | HTTP client for the Biwenger API, its request/response records, auth, rate limiting, retries | Spring Web, the `app` module, the database |
+| `backend/biwenger-client` | HTTP client for the Biwenger API (Spring `RestClient`, built and configured by `app`), its request/response records, auth, rate limiting, retries | Spring Boot, Spring MVC/WebFlux, the `app` module, the database (ADR 0004) |
 | `backend/app` | Domain model, persistence, sync jobs, advisor algorithms, REST API | Biwenger response records outside the mapping layer |
 
 ## Order of work

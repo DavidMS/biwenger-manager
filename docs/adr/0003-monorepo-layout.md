@@ -1,6 +1,6 @@
 # 0003. Monorepo layout
 
-- **Status:** Accepted
+- **Status:** Accepted. The "doesn't depend on Spring Web" rule is superseded by [0004](0004-biwenger-client-uses-spring-http-client.md)
 - **Date:** 2026-10-20
 - **Issue:** #6
 

@@ -19,7 +19,7 @@ CLAUDE.md                 this file (always loaded, keep it short)
   agents/                 subagents: java-reviewer, react-reviewer, test-writer, biwenger-api-explorer,
                           tutorial-scribe
 backend/                  Java 25 + Spring Boot 4.1, Maven multi-module, package io.github.davidms.biwenger
-  biwenger-client/        Biwenger API client, plain Java (the build bans Spring Web/Boot/Data here)
+  biwenger-client/        Biwenger API client on Spring's RestClient (the build bans Boot, MVC and DB here)
   app/                    domain, sync jobs, advisor algorithms, REST API
 frontend/                 React + TypeScript + Vite, Tailwind, shadcn/ui, TanStack Query (planned, Phase 1)
 docs/

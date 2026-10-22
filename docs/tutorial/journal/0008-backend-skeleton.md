@@ -22,7 +22,7 @@ The first issue run through the `implement-issue` skill (#4) rather than by hand
 3. Asked Spring Initializr for current versions instead of trusting memory: Spring Boot 4.1.1 and Maven 3.10.0. It used Initializr's output only for the official Maven Wrapper files and the Boot 4 starter names (`spring-boot-starter-webmvc`, `-webmvc-test`, `-actuator-test`).
 4. Wrote the build:
    - **parent POM:** Java 25, an enforcer rule that requires JDK 25 with a message saying how to fix it, and Spotless with google-java-format and sortpom, checked in `verify`
-   - **`biwenger-client`:** plain Java, with an enforcer rule that bans Spring Web, Spring Boot, Spring Data and the `app` module
+   - **`biwenger-client`:** a library with an enforcer rule that bans Spring Boot, Spring MVC/WebFlux and every database library. It first banned Spring Web too; see Corrections
    - **`app`:** Spring Boot with Actuator, exposing only `/actuator/health`, plus a `@SpringBootTest` that calls it over HTTP
 5. Made the edit hook (`format-file.sh`) use the JDK named in `backend/.sdkmanrc`, since the hook runs with the default `java`.
 6. Updated the status, repo map and commands in `CLAUDE.md`.
@@ -33,7 +33,7 @@ The first issue run through the `implement-issue` skill (#4) rather than by hand
 |---|---|
 | `./mvnw verify` | Green: 3 modules, 1 test, formatting check passing |
 | Live app (`java -jar`, then `spring-boot:run` as documented) | `/actuator/health` → `{"status":"UP"}`. `/actuator/env` → 404 |
-| Add `spring-web` to `biwenger-client` | Build fails: "biwenger-client must not depend on Spring Web…" |
+| Add `spring-webmvc` / the Postgres driver to `biwenger-client` | Build fails with the ADR 0004 message. `spring-web` is allowed |
 | Build on JDK 21 | Fails: "Java 25 is required. Run `sdk env` in backend/…" |
 | Edit hook | A badly formatted Java file written by Claude was reformatted right away |
 | `java-reviewer` agent on the diff | Approve with nits (see below) |
@@ -53,15 +53,28 @@ The review also exposed a gap in our own tooling: the agent guard blocked `JAVA_
 - **The run command in `CLAUDE.md` didn't work.** `./mvnw -pl app -am spring-boot:run` also ran `spring-boot:run` on the parent POM, which has no main class. Claude only found this because it ran the documented command instead of a similar one. The parent now skips `run` by default and `app` turns it back on.
 - **macOS has no `timeout` command,** so the first run of that check silently did nothing.
 
+- **From human review: the client ban was too strict.** The human asked:
+
+  > why are you leaving Spring web out of the client for the biwenger client?
+
+  Claude had written "no Spring web deps" into the plan and ADR 0003, then read it in the strictest way: it banned the whole `spring-web` artifact. That artifact holds Spring's HTTP *client* (`RestClient`), not only server-side types. The ban added little isolation, because the mapping layer is what isolates the API. But it would have forced hand-written auth headers, JSON mapping and retries on top of the JDK's `HttpClient`. Claude explained the trade-off and recommended allowing `spring-web` while keeping Spring Boot, MVC/WebFlux and the database banned. The human replied:
+
+  > yes, allow spring-web and write ADR 0004
+
+  [ADR 0004](../../adr/0004-biwenger-client-uses-spring-http-client.md) supersedes that part of 0003. The enforcer rule, the plan, `CLAUDE.md`, the `backend-feature` skill and the `java-reviewer` agent were all updated to match.
+
 Human review may add more corrections. Record them here before merging.
 
 ## Decisions made along the way
 
 - **Package `io.github.davidms.biwenger`, groupId `io.github.davidms`.** That's the usual namespace for a GitHub-hosted project without its own domain. Open to change in review.
 - **google-java-format** (Google style, 2-space indent) as the Java style, chosen because it has no options to argue about.
-- **Enforce the module boundary in the build.** ADR 0003 says `biwenger-client` has no Spring Web. Now the build fails if it does, which also means the client will use the JDK's own HTTP client rather than Spring's `RestClient`.
+- **Enforce the module boundary in the build.** The client may use `spring-web` for `RestClient`, but the build fails if it pulls in Spring Boot, the server side or a database library (ADR 0004).
 - **Fail fast on the wrong JDK** with a message that says how to fix it, rather than a confusing compiler error.
 
 ## Lesson
 
-Check versions and commands against reality, not memory. Initializr gave the real current versions, running google-java-format by hand found the real cause of a confusing error, and running the documented command, exactly as written, found a bug that a similar command would have hidden.
+Check what you are told against reality, and that includes your own rules:
+
+- **Versions and commands:** Initializr gave the real current versions. Running google-java-format by hand found the real cause of a confusing error. Running the documented command exactly as written found a bug a similar command would have hidden.
+- **Rules:** "no Spring web deps" was a phrase Claude wrote into the plan. Turned into a build ban, it would have cost real code. Before enforcing a rule, ask what it actually protects. Here, it took the human's "why?" to ask that question.

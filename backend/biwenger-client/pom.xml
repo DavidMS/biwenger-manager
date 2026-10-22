@@ -10,11 +10,12 @@
 
   <artifactId>biwenger-client</artifactId>
   <name>Biwenger API client</name>
-  <description>Client for the unofficial Biwenger API. Plain Java: no Spring Web, no app module, no database.</description>
+  <description>Client for the unofficial Biwenger API. Uses Spring's RestClient; no Spring Boot, no server side, no database (ADR 0004).</description>
 
   <build>
     <plugins>
-      <!-- Keep the module boundary from ADR 0003 enforced by the build, not just documented. -->
+      <!-- Keep the module boundary from ADRs 0003 and 0004 enforced by the build, not just documented.
+           spring-web (RestClient) is allowed; the server side, Spring Boot and the database are not. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -28,7 +29,6 @@
               <rules>
                 <bannedDependencies>
                   <excludes>
-                    <exclude>org.springframework:spring-web</exclude>
                     <exclude>org.springframework:spring-webmvc</exclude>
                     <exclude>org.springframework:spring-webflux</exclude>
                     <exclude>org.springframework.boot:*</exclude>
@@ -40,7 +40,7 @@
                     <exclude>org.flywaydb:*</exclude>
                     <exclude>org.postgresql:*</exclude>
                   </excludes>
-                  <message>biwenger-client must not depend on Spring Web, Spring Boot or the database (ADR 0003).</message>
+                  <message>biwenger-client may use spring-web (RestClient) but not Spring MVC/WebFlux, Spring Boot or the database (ADR 0004).</message>
                 </bannedDependencies>
               </rules>
             </configuration>
