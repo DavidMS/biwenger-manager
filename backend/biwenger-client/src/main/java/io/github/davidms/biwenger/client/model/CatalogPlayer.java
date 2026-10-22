@@ -2,6 +2,7 @@ package io.github.davidms.biwenger.client.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -31,6 +32,9 @@ public record CatalogPlayer(
     @Nullable Integer pointsLastSeason) {
 
   public CatalogPlayer {
+    Objects.requireNonNull(name, "name");
+    Objects.requireNonNull(slug, "slug");
+    Objects.requireNonNull(status, "status");
     altPositions = altPositions == null ? List.of() : List.copyOf(altPositions);
     // Biwenger writes null for a round the player didn't play; List.copyOf rejects nulls.
     fitness =

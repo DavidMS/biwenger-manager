@@ -1,6 +1,7 @@
 package io.github.davidms.biwenger.client.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -12,4 +13,11 @@ public record Round(
     String name,
     @JsonProperty("short") String shortName,
     String status,
-    @Nullable Integer part) {}
+    @Nullable Integer part) {
+
+  public Round {
+    Objects.requireNonNull(name, "name");
+    Objects.requireNonNull(shortName, "shortName");
+    Objects.requireNonNull(status, "status");
+  }
+}

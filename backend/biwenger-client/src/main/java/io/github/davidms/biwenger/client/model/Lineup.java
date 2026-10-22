@@ -1,7 +1,9 @@
 package io.github.davidms.biwenger.client.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -20,9 +22,11 @@ public record Lineup(
     long date) {
 
   public Lineup {
+    Objects.requireNonNull(type, "type");
     // Unmodifiable but null-tolerant: an empty slot is a null id.
-    players = players == null ? List.of() : Collections.unmodifiableList(players);
-    reserves = reserves == null ? List.of() : Collections.unmodifiableList(reserves);
+    players = players == null ? List.of() : Collections.unmodifiableList(new ArrayList<>(players));
+    reserves =
+        reserves == null ? List.of() : Collections.unmodifiableList(new ArrayList<>(reserves));
     discarded = discarded == null ? List.of() : List.copyOf(discarded);
   }
 }

@@ -16,7 +16,7 @@ public record Fitness(@Nullable Integer points, @Nullable String status) {
   @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
   static Fitness fromJson(Object value) {
     return switch (value) {
-      case Number points -> new Fitness(points.intValue(), null);
+      case Integer points -> new Fitness(points, null);
       case String status -> new Fitness(null, status);
       default -> throw new IllegalArgumentException("Unexpected fitness value: " + value);
     };

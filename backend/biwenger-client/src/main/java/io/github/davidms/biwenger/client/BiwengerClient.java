@@ -171,9 +171,6 @@ public final class BiwengerClient {
           "The Biwenger account must have exactly one La Liga league, but it has " + laLiga.size());
     }
     AccountLeague found = laLiga.getFirst();
-    if (found.user() == null) {
-      throw new BiwengerApiException("The Biwenger account response has no user in the league");
-    }
     return new LeagueContext(found.id(), found.user().id(), found.scoreId());
   }
 }

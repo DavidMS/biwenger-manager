@@ -1,5 +1,6 @@
 package io.github.davidms.biwenger.client.model;
 
+import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -14,6 +15,10 @@ public record Sale(
     long until,
     @Nullable Boolean extended,
     @Nullable Manager user) {
+
+  public Sale {
+    Objects.requireNonNull(player, "player");
+  }
 
   public boolean isFreePlayer() {
     return user == null;

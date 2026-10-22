@@ -36,6 +36,7 @@ import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Each read endpoint against its anonymised sample from docs/biwenger-api/samples/. The samples
@@ -53,6 +54,8 @@ class BiwengerClientEndpointsTest {
   // The anonymised ids in the samples.
   private static final long LEAGUE_ID = 1_000_001;
   private static final long ME = 2_000_001;
+
+  private static final JsonMapper JSON = JsonMapper.builder().build();
 
   private BiwengerClient client;
 
@@ -140,6 +143,7 @@ class BiwengerClientEndpointsTest {
               assertThat(sale.isExtended()).isTrue();
               assertThat(sale.player().owner()).isNull();
             });
+    assertThat(sale(market, 16738).isExtended()).isFalse();
   }
 
   @Test
@@ -178,6 +182,24 @@ class BiwengerClientEndpointsTest {
     assertThat(ayoze.altPositions()).isEmpty();
     assertThat(ayoze.fitness()).extracting(Fitness::points).containsExactly(6, 2, 9, 6, 0);
     assertThat(ayoze.statusInfo()).isNull();
+  }
+
+  @Test
+  void catalogOptionalPlayerFields() throws IOException {
+    stub("/api/v2/competitions/la-liga/data?lang=es&score=1", "catalog.json");
+
+    var players = client.catalog().players();
+
+    assertThat(players.get(2602L).altPositions()).containsExactly(4);
+    assertThat(players.get(17687L).pointsLastSeason()).isNull();
+  }
+
+  @Test
+  void catalogIteratesPlayersInIdOrder() throws IOException {
+    stub("/api/v2/competitions/la-liga/data?lang=es&score=1", "catalog.json");
+
+    // The same order on every run, so anything built from it is deterministic (golden rule 5).
+    assertThat(List.copyOf(client.catalog().players().keySet())).isSorted();
   }
 
   @Test
@@ -232,6 +254,24 @@ class BiwengerClientEndpointsTest {
     assertThat(me.lineup().reserves()).hasSize(4);
     assertThat(me.lineup().captain()).isNull();
     assertThat(me.lineup().coach()).isNull();
+    assertThat(me.lineup().points()).isEqualTo(20);
+    Standing leader = standing(rounds, 2_000_004);
+    assertThat(leader.lineup().captain().id()).isEqualTo(26930);
+    assertThat(leader.lineup().coach().id()).isEqualTo(35316);
+    assertThat(leader.lineup().points()).isEqualTo(71);
+  }
+
+  @Test
+  void aMissingRequiredObjectIsReportedAsAFormatChange() throws IOException {
+    ObjectNode rounds = (ObjectNode) JSON.readTree(sample("rounds-league.json"));
+    ((ObjectNode) rounds.get("data").get("league").get("standings").get(0)).remove("lineup");
+    biwenger.stubFor(
+        get("/api/v2/rounds/league").willReturn(okJson(JSON.writeValueAsString(rounds))));
+
+    assertThatThrownBy(() -> client.roundStandings())
+        .isInstanceOf(BiwengerApiException.class)
+        .hasMessage(
+            "Biwenger's answer to GET /api/v2/rounds/league doesn't match docs/biwenger-api/");
   }
 
   @Test
