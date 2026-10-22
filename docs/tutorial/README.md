@@ -46,3 +46,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #14 | [Spike: capture and document the Biwenger read endpoints](journal/0014-biwenger-read-endpoints.md) |
 | #15 | [Biwenger authentication and league context](journal/0015-biwenger-auth.md) |
 | #16 | [Typed models and client methods for the read endpoints](journal/0016-typed-models.md) |
+| #17 | [CDN endpoints: price history and match reports](journal/0017-cdn-endpoints.md) |

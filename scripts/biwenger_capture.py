@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Capture anonymised samples of the Biwenger read endpoints (issue #14).
+"""Capture anonymised samples of the Biwenger read endpoints (issues #14 and #17).
 
 Run it yourself from the repo root: python3 scripts/biwenger_capture.py
+With --cdn it only fetches the public CDN reports in CDN_SAMPLES: no login and no .env.
 
 - Reads BIWENGER_EMAIL and BIWENGER_PASSWORD from .env (or the environment).
 - Logs in once, then makes GET requests only, two seconds apart. Nothing in Biwenger changes.
@@ -14,6 +15,7 @@ Run it yourself from the repo root: python3 scripts/biwenger_capture.py
 Samples go to docs/biwenger-api/samples/. Standard library only.
 """
 
+import argparse
 import json
 import os
 import re
@@ -27,7 +29,10 @@ API = "https://biwenger.as.com/api/v2"
 CDN = "https://cf.biwenger.com/api/v2"
 USER_AGENT = "biwenger-manager/0.1 (personal capture script; +https://github.com/DavidMS/biwenger-manager)"
 PAUSE_SECONDS = 2
-REPORT_FIELDS = "*,reports(points,home,events,status(status,statusInfo),match(*,round,home,away))"
+REPORT_FIELDS = (
+    "*,reports(points,home,events,status(status,statusInfo),match(*,round,home,away),rawStats)")
+# Public footballers for the --cdn capture: one who played every match, one who missed some.
+CDN_SAMPLES = {"player-reports": "ayoze-perez", "player-reports-missed-matches": "pablo-marin"}
 
 # Keys whose values are personal or secret, wherever they appear. Matched case-insensitively.
 DROP_KEYS = {"email", "phone", "birthday", "devices", "token", "password", "secret", "location",
@@ -229,9 +234,44 @@ class Biwenger:
         return None
 
 
-def main(root=None, out_dir=None):
+def capture_cdn(out_dir):
+    """The public player reports only: no login, no credentials, no auth headers."""
+    cdn = Biwenger()
+    print("Requests (public CDN, GET only, no login):")
+    responses = {name: cdn.request(name, f"{CDN}/players/la-liga/{slug}?lang=es&fields={REPORT_FIELDS}")
+                 for name, slug in CDN_SAMPLES.items()}
+    anonymiser = Anonymiser()
+    for response in responses.values():
+        anonymiser.collect_secrets(response)
+    print("\nSamples:")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    failed = 0
+    for name, response in responses.items():
+        if response is None:
+            failed += 1
+            print(f"  {name:<30} skipped (request failed)")
+            continue
+        text = json.dumps(anonymiser.apply(response), indent=2, ensure_ascii=False) + "\n"
+        leaks = anonymiser.leaks(text)
+        if leaks:
+            failed += 1
+            print(f"  {name:<30} NOT written: still contains {', '.join(leaks)}")
+            continue
+        (out_dir / f"{name}.json").write_text(text)
+        print(f"  {name:<30} written, {len(text):>9,} bytes")
+    return 1 if failed else 0
+
+
+def main(root=None, out_dir=None, argv=None):
     root = root or Path(__file__).resolve().parent.parent
     out_dir = out_dir or root / "docs" / "biwenger-api" / "samples"
+    parser = argparse.ArgumentParser(description="Capture anonymised Biwenger samples.")
+    parser.add_argument("--cdn", action="store_true",
+                        help="only the public CDN reports: no login, .env is not read")
+    # Unknown arguments stop here: a typo like --cnd must never fall through to the login.
+    args = parser.parse_args(sys.argv[1:] if argv is None else argv)
+    if args.cdn:
+        return capture_cdn(out_dir)
     email, password = load_credentials(root)
     api = Biwenger()
 

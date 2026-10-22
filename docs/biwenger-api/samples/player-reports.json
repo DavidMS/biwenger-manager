@@ -57,6 +57,26 @@
           "5": 3,
           "3": 6,
           "6": 1
+        },
+        "rawStats": {
+          "pos4": true,
+          "price": 5040000,
+          "score1": 2,
+          "score7": 4,
+          "score8": 3,
+          "score2": 3,
+          "score5": 3,
+          "score3": 6,
+          "score6": 1,
+          "roundPhase": 1,
+          "away": true,
+          "homeScore": 2,
+          "awayScore": 2,
+          "tie": true,
+          "cleanSheet": false,
+          "minutesPlayed": 56,
+          "picas": 1,
+          "sofascore": 6.7
         }
       },
       {
@@ -100,6 +120,26 @@
           "5": 3,
           "3": 5,
           "6": 2
+        },
+        "rawStats": {
+          "pos4": true,
+          "price": 5270000,
+          "score1": 2,
+          "score7": 3,
+          "score8": 3,
+          "score2": 4,
+          "score5": 3,
+          "score3": 5,
+          "score6": 2,
+          "roundPhase": 2,
+          "away": true,
+          "homeScore": 2,
+          "awayScore": 2,
+          "tie": true,
+          "cleanSheet": false,
+          "minutesPlayed": 61,
+          "picas": 1,
+          "sofascore": 6.8
         }
       },
       {
@@ -142,6 +182,26 @@
           "5": 3,
           "3": 1,
           "6": 4
+        },
+        "rawStats": {
+          "pos4": true,
+          "price": 5350000,
+          "score1": 2,
+          "score7": 3,
+          "score8": 3,
+          "score2": 3,
+          "score5": 3,
+          "score3": 1,
+          "score6": 4,
+          "roundPhase": 3,
+          "away": true,
+          "homeScore": 1,
+          "awayScore": 0,
+          "lost": true,
+          "cleanSheet": true,
+          "minutesPlayed": 28,
+          "picas": 1,
+          "sofascore": 6.6
         }
       },
       {
@@ -190,6 +250,27 @@
           "5": 5,
           "3": 5,
           "6": 5
+        },
+        "rawStats": {
+          "pos4": true,
+          "price": 4790000,
+          "score1": 6,
+          "score7": 6,
+          "score8": 6,
+          "score2": 4,
+          "score5": 5,
+          "score3": 5,
+          "score6": 5,
+          "roundPhase": 4,
+          "home": true,
+          "homeScore": 2,
+          "awayScore": 3,
+          "lost": true,
+          "cleanSheet": false,
+          "assists": 1,
+          "minutesPlayed": 62,
+          "picas": 2,
+          "sofascore": 6.7
         }
       },
       {
@@ -232,6 +313,26 @@
           "5": 2,
           "3": 1,
           "6": 1
+        },
+        "rawStats": {
+          "pos4": true,
+          "price": 4430000,
+          "score1": 0,
+          "score7": 3,
+          "score8": 2,
+          "score2": 3,
+          "score5": 2,
+          "score3": 1,
+          "score6": 1,
+          "roundPhase": 5,
+          "home": true,
+          "homeScore": 1,
+          "awayScore": 2,
+          "lost": true,
+          "cleanSheet": true,
+          "minutesPlayed": 14,
+          "picas": "SC",
+          "sofascore": 6.6
         }
       },
       {
@@ -281,6 +382,27 @@
           "5": 5,
           "3": 6,
           "6": 5
+        },
+        "rawStats": {
+          "pos4": true,
+          "price": 4140000,
+          "score1": 6,
+          "score7": 8,
+          "score8": 7,
+          "score2": 3,
+          "score5": 5,
+          "score3": 6,
+          "score6": 5,
+          "roundPhase": 6,
+          "away": true,
+          "homeScore": 1,
+          "awayScore": 3,
+          "win": true,
+          "cleanSheet": false,
+          "assists": 1,
+          "minutesPlayed": 63,
+          "picas": 2,
+          "sofascore": 6.4
         }
       },
       {
@@ -329,6 +451,27 @@
           "5": 9,
           "3": 7,
           "6": 10
+        },
+        "rawStats": {
+          "pos4": true,
+          "price": 4000000,
+          "score1": 9,
+          "score7": 9,
+          "score8": 9,
+          "score2": 8,
+          "score5": 9,
+          "score3": 7,
+          "score6": 10,
+          "roundPhase": 7,
+          "home": true,
+          "homeScore": 3,
+          "awayScore": 1,
+          "win": true,
+          "cleanSheet": false,
+          "goals": 1,
+          "minutesPlayed": 67,
+          "picas": 2,
+          "sofascore": 7
         }
       },
       {
@@ -366,6 +509,26 @@
           "5": 3,
           "3": 4,
           "6": 1
+        },
+        "rawStats": {
+          "pos4": true,
+          "price": 4640000,
+          "score1": 2,
+          "score7": 4,
+          "score8": 3,
+          "score2": 3,
+          "score5": 3,
+          "score3": 4,
+          "score6": 1,
+          "roundPhase": 8,
+          "away": true,
+          "homeScore": 1,
+          "awayScore": 0,
+          "lost": true,
+          "cleanSheet": false,
+          "minutesPlayed": 90,
+          "picas": 1,
+          "sofascore": 6.7
         }
       },
       {
@@ -409,6 +572,26 @@
           "5": 6,
           "3": 4,
           "6": 3
+        },
+        "rawStats": {
+          "pos4": true,
+          "price": 4690000,
+          "score1": 6,
+          "score7": 5,
+          "score8": 6,
+          "score2": 5,
+          "score5": 6,
+          "score3": 4,
+          "score6": 3,
+          "roundPhase": 9,
+          "home": true,
+          "homeScore": 0,
+          "awayScore": 0,
+          "tie": true,
+          "cleanSheet": true,
+          "minutesPlayed": 84,
+          "picas": 2,
+          "sofascore": 7.1
         }
       }
     ],

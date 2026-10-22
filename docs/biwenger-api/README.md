@@ -21,7 +21,7 @@ The Java side is `BiwengerClient` in `backend/biwenger-client`, with one method 
 | Rounds and standings | `GET API/rounds/league` | Token + league headers | [rounds-league.md](rounds-league.md) | [rounds-league.json](samples/rounds-league.json) |
 | Board (transfers) | `GET API/league/{leagueId}/board?type=transfer,market` | Token + league headers | [board.md](board.md) | [board.json](samples/board.json) |
 | Player prices | `GET CDN/players/la-liga/{slug}?lang=es&fields=*,prices` | No | [player-prices.md](player-prices.md) | [player-prices.json](samples/player-prices.json) |
-| Player reports | `GET CDN/players/la-liga/{slug}?lang=es&fields=*,reports(...)` | No | [player-reports.md](player-reports.md) | [player-reports.json](samples/player-reports.json) |
+| Player reports | `GET CDN/players/la-liga/{slug}?lang=es&fields=*,reports(...)` | No | [player-reports.md](player-reports.md) | [player-reports.json](samples/player-reports.json), [player-reports-missed-matches.json](samples/player-reports-missed-matches.json) |
 
 ## Common headers
 
@@ -60,6 +60,8 @@ General conventions seen in all samples:
 - Optional fields are often **left out** rather than set to `null` (`statusInfo`, `altPositions`, `extended`, `iconHero`, `lineup.coach`). Map them as optional.
 
 ## How the samples were captured
+
+`python3 scripts/biwenger_capture.py --cdn` fetches only the two public CDN report samples: no login and no `.env`, so Claude may run it after the human agrees (#17). The full capture below needs the login and is run by the human.
 
 The human ran `python3 scripts/biwenger_capture.py` from the repo root. The script:
 

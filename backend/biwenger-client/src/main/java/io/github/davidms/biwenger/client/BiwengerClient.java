@@ -6,6 +6,8 @@ import io.github.davidms.biwenger.client.model.BoardEntry;
 import io.github.davidms.biwenger.client.model.Catalog;
 import io.github.davidms.biwenger.client.model.League;
 import io.github.davidms.biwenger.client.model.Market;
+import io.github.davidms.biwenger.client.model.PlayerPrices;
+import io.github.davidms.biwenger.client.model.PlayerReports;
 import io.github.davidms.biwenger.client.model.RoundStandings;
 import io.github.davidms.biwenger.client.model.Squad;
 import java.util.List;
@@ -24,7 +26,7 @@ import tools.jackson.databind.json.JsonMapper;
  * Client for the unofficial Biwenger API (read-only so far), one method per endpoint
  * (docs/biwenger-api/). It logs in on first use, keeps the token in memory, logs in again once when
  * the token expires, and sends the league headers of the account's single La Liga league with every
- * call.
+ * call. The public CDN calls ({@link #playerPrices}, {@link #playerReports}) carry no token.
  *
  * <p>Thread-safe. Create one per application.
  */
@@ -37,6 +39,10 @@ public final class BiwengerClient {
   static final String CATALOG_PATH = "/api/v2/competitions/la-liga/data?lang=es&score={scoreId}";
   static final String ROUNDS_PATH = "/api/v2/rounds/league";
   static final String BOARD_PATH = "/api/v2/league/{leagueId}/board?type=transfer,market";
+  static final String PRICES_PATH = "/api/v2/players/la-liga/{slug}?lang=es&fields=*,prices";
+  static final String REPORTS_PATH =
+      "/api/v2/players/la-liga/{slug}?lang=es&fields="
+          + "*,reports(points,home,events,status(status,statusInfo),match(*,round,home,away),rawStats)";
   static final String LA_LIGA = "la-liga";
 
   /**
@@ -48,29 +54,35 @@ public final class BiwengerClient {
 
   private final RestClient accountApi;
   private final RestClient api;
+  private final RestClient cdn;
   private LeagueContext leagueContext;
 
   /**
-   * @param restClient configured by the caller with the base URL ({@code https://biwenger.as.com}),
-   *     timeouts and User-Agent (ADR 0004)
+   * @param restClient configured by the caller with the API's base URL ({@code
+   *     https://biwenger.as.com}), timeouts and User-Agent (ADR 0004)
+   * @param cdnRestClient the same, for the public CDN ({@code https://cf.biwenger.com})
    * @param credentials the Biwenger login
    */
-  public BiwengerClient(RestClient restClient, BiwengerCredentials credentials) {
-    RestClient base =
-        restClient
-            .mutate()
-            .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-            .defaultHeader("X-Lang", "es")
-            .configureMessageConverters(
-                converters ->
-                    converters.withJsonConverter(new JacksonJsonHttpMessageConverter(JSON)))
-            .build();
+  public BiwengerClient(
+      RestClient restClient, RestClient cdnRestClient, BiwengerCredentials credentials) {
+    RestClient base = withBiwengerDefaults(restClient);
+    this.cdn = withBiwengerDefaults(cdnRestClient);
     BiwengerSession session = new BiwengerSession(base, credentials);
     this.accountApi = base.mutate().requestInterceptor(AuthInterceptor.tokenOnly(session)).build();
     this.api =
         base.mutate()
             .requestInterceptor(AuthInterceptor.withLeague(session, this::leagueContext))
             .build();
+  }
+
+  private static RestClient withBiwengerDefaults(RestClient restClient) {
+    return restClient
+        .mutate()
+        .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader("X-Lang", "es")
+        .configureMessageConverters(
+            converters -> converters.withJsonConverter(new JacksonJsonHttpMessageConverter(JSON)))
+        .build();
   }
 
   /**
@@ -134,6 +146,35 @@ public final class BiwengerClient {
         BOARD_PATH,
         new ParameterizedTypeReference<Envelope<List<BoardEntry>>>() {},
         leagueContext().leagueId());
+  }
+
+  /**
+   * A player's daily value for about the last year, oldest first. Public CDN, no login.
+   *
+   * @param slug the player's {@code slug} from the catalog, such as {@code ayoze-perez}
+   */
+  public PlayerPrices playerPrices(String slug) {
+    requireSlug(slug);
+    return data(
+        cdn, PRICES_PATH, new ParameterizedTypeReference<Envelope<PlayerPrices>>() {}, slug);
+  }
+
+  /**
+   * A player's report for every club match this season: round, home or away, points per scoring
+   * system, minutes, and why he didn't play when he didn't. Public CDN, no login.
+   *
+   * @param slug the player's {@code slug} from the catalog, such as {@code ayoze-perez}
+   */
+  public PlayerReports playerReports(String slug) {
+    requireSlug(slug);
+    return data(
+        cdn, REPORTS_PATH, new ParameterizedTypeReference<Envelope<PlayerReports>>() {}, slug);
+  }
+
+  private static void requireSlug(String slug) {
+    if (slug == null || slug.isBlank()) {
+      throw new IllegalArgumentException("A player slug is required, such as ayoze-perez");
+    }
   }
 
   private static <T> T data(

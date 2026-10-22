@@ -66,7 +66,7 @@ class BiwengerClientAuthTest {
   }
 
   private BiwengerClient client(BiwengerCredentials credentials) {
-    return new BiwengerClient(RestClient.create(baseUrl), credentials);
+    return new BiwengerClient(RestClient.create(baseUrl), RestClient.create(baseUrl), credentials);
   }
 
   private static void loginReturns(String token) {
@@ -299,7 +299,9 @@ class BiwengerClientAuthTest {
     stubFor(post("/proxy" + LOGIN).willReturn(okJson("{\"token\": \"token-1\"}")));
     stubFor(get("/proxy" + ACCOUNT).willReturn(okJson(sample("account.json"))));
     stubFor(get("/proxy" + MARKET).willReturn(okJson(MARKET_JSON)));
-    var client = new BiwengerClient(RestClient.create(baseUrl + "/proxy"), CREDENTIALS);
+    var client =
+        new BiwengerClient(
+            RestClient.create(baseUrl + "/proxy"), RestClient.create(baseUrl), CREDENTIALS);
 
     client.market();
 

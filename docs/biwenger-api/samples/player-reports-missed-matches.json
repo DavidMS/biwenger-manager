@@ -1,0 +1,328 @@
+{
+  "status": 200,
+  "data": {
+    "id": 29034,
+    "name": "Pablo Marín",
+    "slug": "pablo-marin",
+    "position": 3,
+    "price": 310000,
+    "fantasyPrice": 21000000,
+    "country": "ES",
+    "number": 15,
+    "birthday": 0,
+    "status": "ok",
+    "priceIncrement": 0,
+    "playedHome": 1,
+    "playedAway": 0,
+    "reports": [
+      {
+        "match": {
+          "id": 50721,
+          "date": 1787338800,
+          "status": "finished",
+          "home": {
+            "id": 87,
+            "name": "Betis",
+            "slug": "betis",
+            "score": 1
+          },
+          "away": {
+            "id": 13,
+            "name": "Real Sociedad",
+            "slug": "real-sociedad",
+            "score": 0
+          },
+          "round": {
+            "id": 4900,
+            "name": "Jornada 2",
+            "short": "J2"
+          },
+          "preview": null
+        },
+        "status": {
+          "status": "injured"
+        },
+        "home": false
+      },
+      {
+        "match": {
+          "id": 50718,
+          "date": 1787770800,
+          "status": "finished",
+          "home": {
+            "id": 15,
+            "name": "Real Madrid",
+            "slug": "real-madrid",
+            "score": 4
+          },
+          "away": {
+            "id": 13,
+            "name": "Real Sociedad",
+            "slug": "real-sociedad",
+            "score": 1
+          },
+          "round": {
+            "id": 4937,
+            "name": "Jornada 1 (aplazada)",
+            "short": "J1",
+            "part": 2
+          },
+          "preview": null,
+          "summary": null
+        },
+        "status": {
+          "status": "injured"
+        },
+        "home": false
+      },
+      {
+        "match": {
+          "id": 50737,
+          "date": 1788022800,
+          "status": "finished",
+          "home": {
+            "id": 13,
+            "name": "Real Sociedad",
+            "slug": "real-sociedad",
+            "score": 2
+          },
+          "away": {
+            "id": 7,
+            "name": "Espanyol",
+            "slug": "espanyol",
+            "score": 1
+          },
+          "round": {
+            "id": 4901,
+            "name": "Jornada 3",
+            "short": "J3"
+          },
+          "preview": null
+        },
+        "status": {
+          "status": "doubt"
+        },
+        "home": true
+      },
+      {
+        "match": {
+          "id": 50768,
+          "date": 1788462000,
+          "status": "finished",
+          "home": {
+            "id": 13,
+            "name": "Real Sociedad",
+            "slug": "real-sociedad",
+            "score": 0
+          },
+          "away": {
+            "id": 5,
+            "name": "Celta",
+            "slug": "celta",
+            "score": 0
+          },
+          "round": {
+            "id": 4904,
+            "name": "Jornada 6",
+            "short": "J6"
+          },
+          "preview": null,
+          "summary": null
+        },
+        "status": {
+          "status": "injured"
+        },
+        "home": true
+      },
+      {
+        "match": {
+          "id": 50744,
+          "date": 1788809400,
+          "status": "finished",
+          "home": {
+            "id": 75,
+            "name": "Elche",
+            "slug": "elche",
+            "score": 2
+          },
+          "away": {
+            "id": 13,
+            "name": "Real Sociedad",
+            "slug": "real-sociedad",
+            "score": 3
+          },
+          "round": {
+            "id": 4902,
+            "name": "Jornada 4",
+            "short": "J4"
+          },
+          "preview": null,
+          "summary": null
+        },
+        "status": {
+          "status": "doubt"
+        },
+        "home": false
+      },
+      {
+        "match": {
+          "id": 50758,
+          "date": 1789326000,
+          "status": "finished",
+          "home": {
+            "id": 13,
+            "name": "Real Sociedad",
+            "slug": "real-sociedad",
+            "score": 0
+          },
+          "away": {
+            "id": 2,
+            "name": "Atlético",
+            "slug": "atletico",
+            "score": 3
+          },
+          "round": {
+            "id": 4903,
+            "name": "Jornada 5",
+            "short": "J5"
+          },
+          "preview": null,
+          "summary": null
+        },
+        "status": {
+          "status": "doubt"
+        },
+        "home": true
+      },
+      {
+        "match": {
+          "id": 50778,
+          "date": 1789930800,
+          "status": "finished",
+          "home": {
+            "id": 18,
+            "name": "Valencia",
+            "slug": "valencia",
+            "score": 2
+          },
+          "away": {
+            "id": 13,
+            "name": "Real Sociedad",
+            "slug": "real-sociedad",
+            "score": 3
+          },
+          "round": {
+            "id": 4905,
+            "name": "Jornada 7",
+            "short": "J7"
+          },
+          "preview": null,
+          "summary": null
+        },
+        "status": {
+          "status": "ok"
+        },
+        "home": false
+      },
+      {
+        "home": true,
+        "match": {
+          "id": 50788,
+          "date": 1791728100,
+          "status": "finished",
+          "home": {
+            "id": 13,
+            "name": "Real Sociedad",
+            "slug": "real-sociedad",
+            "score": 3
+          },
+          "away": {
+            "id": 6,
+            "name": "Deportivo",
+            "slug": "deportivo",
+            "score": 2
+          },
+          "round": {
+            "id": 4906,
+            "name": "Jornada 8",
+            "short": "J8"
+          },
+          "preview": null,
+          "summary": null
+        },
+        "events": [
+          {
+            "type": 7,
+            "period": "secondTime",
+            "metadata": 66
+          },
+          {
+            "type": 16,
+            "period": "secondTime",
+            "metadata": 66
+          }
+        ],
+        "points": {
+          "1": -4,
+          "7": -5,
+          "8": -5,
+          "2": -5,
+          "5": -5,
+          "3": 0,
+          "6": -3
+        },
+        "rawStats": {
+          "pos3": true,
+          "price": 350000,
+          "score1": -4,
+          "score7": -5,
+          "score8": -5,
+          "score2": -5,
+          "score5": -5,
+          "score3": 0,
+          "score6": -3,
+          "roundPhase": 8,
+          "home": true,
+          "homeScore": 3,
+          "awayScore": 2,
+          "win": true,
+          "cleanSheet": false,
+          "redCard": 1,
+          "minutesPlayed": 66,
+          "picas": 1,
+          "sofascore": 5.1
+        }
+      },
+      {
+        "match": {
+          "id": 50794,
+          "date": 1792341000,
+          "status": "finished",
+          "home": {
+            "id": 65,
+            "name": "Málaga",
+            "slug": "malaga",
+            "score": 2
+          },
+          "away": {
+            "id": 13,
+            "name": "Real Sociedad",
+            "slug": "real-sociedad",
+            "score": 5
+          },
+          "round": {
+            "id": 4907,
+            "name": "Jornada 9",
+            "short": "J9"
+          },
+          "preview": null
+        },
+        "status": {
+          "status": "sanctioned"
+        },
+        "home": false
+      }
+    ],
+    "canonicalURL": "https://biwenger.as.com/blog/jugadores/pablo-marin/"
+  }
+}

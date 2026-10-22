@@ -131,6 +131,39 @@ class SharedNameTest(unittest.TestCase):
         self.assertEqual(out["league"]["data"]["users"][0]["name"], "Manager 1")
 
 
+class CdnTest(unittest.TestCase):
+
+    def test_cdn_mode_needs_no_login_and_zeroes_birthdays(self):
+        seen = []
+
+        def request(client, name, url, body=None):
+            seen.append((name, client.headers.get("Authorization"), body))
+            return {"status": 200, "data": {"id": 1, "name": "Pedri", "birthday": 1036454400, "reports": []}}
+
+        with tempfile.TemporaryDirectory() as tmp, \
+                mock.patch.object(biwenger_capture.Biwenger, "request", request), \
+                mock.patch.object(biwenger_capture, "load_credentials") as credentials, \
+                contextlib.redirect_stdout(io.StringIO()):
+            status = biwenger_capture.main(root=Path(tmp), out_dir=Path(tmp) / "samples", argv=["--cdn"])
+            files = {f.stem: json.loads(f.read_text()) for f in (Path(tmp) / "samples").glob("*.json")}
+
+        self.assertEqual(status, 0)
+        credentials.assert_not_called()
+        self.assertEqual(sorted(files), sorted(biwenger_capture.CDN_SAMPLES))
+        self.assertEqual({auth for _, auth, _ in seen}, {None})
+        self.assertEqual({body for _, _, body in seen}, {None})
+        self.assertEqual(files["player-reports"]["data"]["birthday"], 0)
+
+
+class ArgumentsTest(unittest.TestCase):
+
+    def test_a_mistyped_option_stops_before_reading_credentials(self):
+        with mock.patch.object(biwenger_capture, "load_credentials") as credentials, \
+                contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+            biwenger_capture.main(argv=["--cnd"])
+        credentials.assert_not_called()
+
+
 class MainTest(unittest.TestCase):
     """The whole run against fake HTTP responses: what is written and what is printed."""
 
@@ -158,7 +191,7 @@ class MainTest(unittest.TestCase):
                 mock.patch.object(biwenger_capture.Biwenger, "request", request), \
                 mock.patch.object(biwenger_capture, "load_credentials", return_value=("jane@example.com", "pw-1234")), \
                 contextlib.redirect_stdout(io.StringIO()) as printed:
-            status = biwenger_capture.main(root=Path(tmp), out_dir=Path(tmp) / "samples")
+            status = biwenger_capture.main(root=Path(tmp), out_dir=Path(tmp) / "samples", argv=[])
             files = {f.stem: f.read_text() for f in (Path(tmp) / "samples").glob("*.json")}
 
         self.assertEqual(status, 0)

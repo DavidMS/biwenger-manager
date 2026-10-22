@@ -23,13 +23,11 @@ class BiwengerConfiguration {
     var httpClient = HttpClient.newBuilder().connectTimeout(properties.connectTimeout()).build();
     var requestFactory = new JdkClientHttpRequestFactory(httpClient);
     requestFactory.setReadTimeout(properties.readTimeout());
-    RestClient restClient =
-        builder
-            .baseUrl(properties.baseUrl())
-            .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT)
-            .requestFactory(requestFactory)
-            .build();
+    RestClient.Builder common =
+        builder.defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT).requestFactory(requestFactory);
     return new BiwengerClient(
-        restClient, new BiwengerCredentials(properties.email(), properties.password()));
+        common.clone().baseUrl(properties.baseUrl()).build(),
+        common.clone().baseUrl(properties.cdnBaseUrl()).build(),
+        new BiwengerCredentials(properties.email(), properties.password()));
   }
 }
