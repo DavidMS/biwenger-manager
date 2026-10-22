@@ -344,7 +344,8 @@ class BiwengerClientEndpointsTest {
         .extracting(MatchReport::minutesPlayed)
         .containsExactly(56, 61, 28, 62, 14, 63, 67, 90, 84);
     // Summed in the league's scoring system (1), the reports give the catalog's 35 points.
-    assertThat(ayoze.reports().stream().mapToInt(report -> report.points(1)).sum()).isEqualTo(35);
+    assertThat(ayoze.reports().stream().mapToInt(report -> report.points(1).orElseThrow()).sum())
+        .isEqualTo(35);
     MatchReport first = ayoze.reports().getFirst();
     assertThat(first.home()).isFalse();
     assertThat(first.match().round().shortName()).isEqualTo("J1");
@@ -371,11 +372,11 @@ class BiwengerClientEndpointsTest {
             tuple("J8", null, true),
             tuple("J9", "sanctioned", false));
     MatchReport played = reports.get(7);
-    assertThat(played.points(1)).isEqualTo(-4);
+    assertThat(played.points(1)).hasValue(-4);
     assertThat(played.minutesPlayed()).isEqualTo(66);
     MatchReport injured = reports.getFirst();
     assertThat(injured.points()).isEmpty();
-    assertThat(injured.points(1)).isNull();
+    assertThat(injured.points(1)).isEmpty();
     assertThat(injured.minutesPlayed()).isZero();
   }
 
@@ -391,6 +392,31 @@ class BiwengerClientEndpointsTest {
             .withoutHeader("Authorization")
             .withoutHeader("X-League")
             .withHeader("X-Lang", equalTo("es")));
+  }
+
+  @Test
+  void aPriceWithAnImpossibleDateIsReportedAsAFormatChange() {
+    biwenger.stubFor(
+        get(urlEqualTo("/api/v2/players/la-liga/ayoze-perez?lang=es&fields=*,prices"))
+            .willReturn(
+                okJson(
+                    """
+                    {"status": 200, "data": {"id": 2001, "name": "Ayoze", "slug": "ayoze-perez",
+                      "position": 4, "price": 1, "priceIncrement": 0, "status": "ok",
+                      "prices": [[251322, 1]]}}
+                    """)));
+
+    assertThatThrownBy(() -> client.playerPrices("ayoze-perez"))
+        .isInstanceOf(BiwengerApiException.class)
+        .hasMessageContaining("doesn't match docs/biwenger-api/");
+  }
+
+  @Test
+  void aSlugIsRequired() {
+    assertThatThrownBy(() -> client.playerReports(" "))
+        .isInstanceOf(IllegalArgumentException.class);
+    biwenger.verify(
+        0, getRequestedFor(urlEqualTo("/api/v2/players/la-liga/?lang=es&fields=*,prices")));
   }
 
   private static @Nullable String statusOf(MatchReport report) {

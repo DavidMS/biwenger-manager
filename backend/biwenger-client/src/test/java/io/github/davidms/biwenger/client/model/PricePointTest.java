@@ -24,6 +24,9 @@ class PricePointTest {
         .isInstanceOf(IllegalArgumentException.class);
     assertThatThrownBy(() -> PricePoint.fromJson(Arrays.asList(251022L, null)))
         .isInstanceOf(IllegalArgumentException.class);
+    // Eight digits: Biwenger switched to YYYYMMDD. Must fail, not decode to the year 4025.
+    assertThatThrownBy(() -> PricePoint.fromJson(List.of(20251022L, 1L)))
+        .isInstanceOf(IllegalArgumentException.class);
     // Month 13 is not a date.
     assertThatThrownBy(() -> PricePoint.fromJson(List.of(251322L, 1L)))
         .isInstanceOf(java.time.DateTimeException.class);

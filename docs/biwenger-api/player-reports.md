@@ -14,7 +14,7 @@ Returns one player's **per-match reports** this season: the match, home or away,
 
 Headers sent: `Accept: application/json`, `X-Lang: es`, `User-Agent`. No auth headers (public CDN).
 
-The `fields` value must be URL-encoded by the client. **pybiwenger's string is missing the last `)`** (`...match(*,round,home,away)`); ours closes it. We have not checked how the server treats the unbalanced version.
+The `*`, parentheses and commas in `fields` are legal in a query string and are sent as they are. **pybiwenger's string is missing the last `)`** (`...match(*,round,home,away)`); ours closes it. We have not checked how the server treats the unbalanced version.
 
 ## Response
 

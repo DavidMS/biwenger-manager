@@ -155,6 +155,15 @@ class CdnTest(unittest.TestCase):
         self.assertEqual(files["player-reports"]["data"]["birthday"], 0)
 
 
+class ArgumentsTest(unittest.TestCase):
+
+    def test_a_mistyped_option_stops_before_reading_credentials(self):
+        with mock.patch.object(biwenger_capture, "load_credentials") as credentials, \
+                contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+            biwenger_capture.main(argv=["--cnd"])
+        credentials.assert_not_called()
+
+
 class MainTest(unittest.TestCase):
     """The whole run against fake HTTP responses: what is written and what is printed."""
 

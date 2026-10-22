@@ -21,6 +21,10 @@ public record PricePoint(LocalDate date, long price) {
       throw new IllegalArgumentException("Expected [YYMMDD, price] but got " + pair);
     }
     long yymmdd = pair.get(0);
+    // Six digits only: a switch to YYYYMMDD must fail, not decode to the year 4025.
+    if (yymmdd < 0 || yymmdd > 991_231) {
+      throw new IllegalArgumentException("Expected a YYMMDD date but got " + yymmdd);
+    }
     var date =
         LocalDate.of(
             2000 + (int) (yymmdd / 10_000), (int) (yymmdd / 100 % 100), (int) (yymmdd % 100));

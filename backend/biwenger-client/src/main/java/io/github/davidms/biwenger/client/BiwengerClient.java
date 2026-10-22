@@ -154,6 +154,7 @@ public final class BiwengerClient {
    * @param slug the player's {@code slug} from the catalog, such as {@code ayoze-perez}
    */
   public PlayerPrices playerPrices(String slug) {
+    requireSlug(slug);
     return data(
         cdn, PRICES_PATH, new ParameterizedTypeReference<Envelope<PlayerPrices>>() {}, slug);
   }
@@ -165,8 +166,15 @@ public final class BiwengerClient {
    * @param slug the player's {@code slug} from the catalog, such as {@code ayoze-perez}
    */
   public PlayerReports playerReports(String slug) {
+    requireSlug(slug);
     return data(
         cdn, REPORTS_PATH, new ParameterizedTypeReference<Envelope<PlayerReports>>() {}, slug);
+  }
+
+  private static void requireSlug(String slug) {
+    if (slug == null || slug.isBlank()) {
+      throw new IllegalArgumentException("A player slug is required, such as ayoze-perez");
+    }
   }
 
   private static <T> T data(

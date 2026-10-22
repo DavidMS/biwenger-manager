@@ -15,6 +15,7 @@ With --cdn it only fetches the public CDN reports in CDN_SAMPLES: no login and n
 Samples go to docs/biwenger-api/samples/. Standard library only.
 """
 
+import argparse
 import json
 import os
 import re
@@ -264,7 +265,12 @@ def capture_cdn(out_dir):
 def main(root=None, out_dir=None, argv=None):
     root = root or Path(__file__).resolve().parent.parent
     out_dir = out_dir or root / "docs" / "biwenger-api" / "samples"
-    if "--cdn" in (sys.argv[1:] if argv is None else argv):
+    parser = argparse.ArgumentParser(description="Capture anonymised Biwenger samples.")
+    parser.add_argument("--cdn", action="store_true",
+                        help="only the public CDN reports: no login, .env is not read")
+    # Unknown arguments stop here: a typo like --cnd must never fall through to the login.
+    args = parser.parse_args(sys.argv[1:] if argv is None else argv)
+    if args.cdn:
         return capture_cdn(out_dir)
     email, password = load_credentials(root)
     api = Biwenger()
