@@ -4,7 +4,7 @@ A personal web app to manage a [Biwenger](https://biwenger.as.com/) fantasy foot
 
 ## Status
 
-Phase 1 (project skeleton). The backend (health endpoint only) and frontend (layout and empty pages) skeletons exist. Items marked *(planned)* below don't exist yet.
+Phase 1 (project skeleton) is done: the backend (health endpoint only) and frontend (layout and empty pages) build, run in Docker Compose and are checked by CI. Phase 2 (Biwenger API client) is next. Items marked *(planned)* below don't exist yet.
 
 ## Repo map
 

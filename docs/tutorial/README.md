@@ -17,7 +17,7 @@ Prompts are always quoted exactly as they were typed, typos included.
 |---|---|---|---|
 | 00 | [Planning with AI](00-planning-with-ai.md) | Before Phase 0 | Written |
 | 01 | [Setting up Claude Code](01-setting-up-claude-code.md) | 0 — AI-ready foundation | Written |
-| 02 | Scaffolding a project with AI | 1 — Project skeleton | Planned |
+| 02 | [Scaffolding a project with AI](02-scaffolding-with-ai.md) | 1 — Project skeleton | Written |
 | 03 | Reverse-engineering an API with AI | 2 — Biwenger API client | Planned |
 | 04 | Letting AI design a schema | 3 — Domain, persistence and history | Planned |
 | 05 | Building UI with AI | 4 — Read-only UI | Planned |
@@ -42,3 +42,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #10 | [Docker Compose](journal/0010-docker-compose.md) |
 | #11 | [CI with GitHub Actions](journal/0011-ci-github-actions.md) |
 | #12 | [Module conventions: backend and frontend CLAUDE.md](journal/0012-module-conventions.md) |
+| #13 | [Tutorial chapter 02](journal/0013-tutorial-chapter-02.md) |

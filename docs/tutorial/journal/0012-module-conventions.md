@@ -53,7 +53,11 @@ Both reviewer agents read the conventions against the code and the library versi
 
 - **The format hook had been silently doing nothing for frontend files.** Writing `frontend/CLAUDE.md` showed that CI's `format:check` also checks Markdown, which the hook didn't format. Fixing that turned up a bigger problem: Prettier loads its plugins from the current directory. From the repo root it failed with "Cannot find package 'prettier-plugin-tailwindcss'", and the hook hides errors by design. It only worked when the session happened to be in `frontend/`, which is how the #9 check passed. The hook now runs Prettier from `frontend/` and also covers `.md`. Tested from the root on a `.md` file and on a `.tsx` file, and the Tailwind classes came out sorted.
 
-Human review may add more corrections. Record them here before merging.
+**Human review:** the human accepted every convention listed under *Decisions*, and the package name `io.github.davidms` left open since #8:
+
+> I accept all the conventions. PR is merged continue with #13
+
+The PR was merged unchanged. This note was added afterwards, in #13.
 
 ## Decisions made along the way
 

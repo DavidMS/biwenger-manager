@@ -67,7 +67,7 @@ Human review may add more corrections. Record them here before merging.
 
 ## Decisions made along the way
 
-- **Package `io.github.davidms.biwenger`, groupId `io.github.davidms`.** That's the usual namespace for a GitHub-hosted project without its own domain. Open to change in review.
+- **Package `io.github.davidms.biwenger`, groupId `io.github.davidms`.** That's the usual namespace for a GitHub-hosted project without its own domain. Left open in review here, and confirmed by the human in #12.
 - **google-java-format** (Google style, 2-space indent) as the Java style, chosen because it has no options to argue about.
 - **Enforce the module boundary in the build.** The client may use `spring-web` for `RestClient`, but the build fails if it pulls in Spring Boot, the server side or a database library (ADR 0004).
 - **Fail fast on the wrong JDK** with a message that says how to fix it, rather than a confusing compiler error.
