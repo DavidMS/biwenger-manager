@@ -1,0 +1,44 @@
+# Build, test and format-check the backend on every PR (and on main) that touches it.
+name: backend
+
+# Path filters: a PR that doesn't touch this folder gets no check at all. Don't make the
+# check "required" in branch protection as is, or those PRs wait for it forever.
+on:
+  pull_request:
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend.yml"
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend.yml"
+
+permissions:
+  contents: read
+
+# On a PR, a new push cancels the run still going for the previous one. On main a run that has
+# started is left to finish, so merged commits get a result.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verify:
+    name: backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+      # The same JDK as local development: version and vendor (tem = Temurin) come from
+      # backend/.sdkmanrc. setup-java also adds -ntp to keep Maven download progress out of the log.
+      - uses: actions/setup-java@v6
+        with:
+          java-version-file: backend/.sdkmanrc
+          cache: maven
+      # Compile, run the tests, check formatting (Spotless) and the enforcer rules.
+      - name: Verify
+        run: ./mvnw --batch-mode verify

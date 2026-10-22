@@ -28,7 +28,7 @@ docs/
   tutorial/journal/       one entry per issue, start from TEMPLATE.md
   adr/                    architecture decision records (0001-0003: ADRs, tech stack, layout)
   biwenger-api/           reverse-engineered API reference and samples (planned, Phase 2)
-.github/                  issue forms (feature, spike, bug) and PR template
+.github/                  issue forms (feature, spike, bug), PR template, CI workflows (backend.yml, frontend.yml)
 ```
 
 Module conventions will live in `backend/CLAUDE.md` and `frontend/CLAUDE.md` (Phase 1, issue #12). Read them before working in those folders.
@@ -66,7 +66,7 @@ The backend needs **JDK 25**: `backend/.sdkmanrc` names it, so run `sdk env` in 
 3. Branch from an up-to-date `main`: `feat/<n>-<slug>` (use `fix/`, `docs/` or `chore/` when more fitting).
 4. Implement and test. Commit with [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`.
 5. Add a journal entry in `docs/tutorial/journal/` (prompt used, what Claude did, what was corrected, lesson learned).
-6. Open a PR whose body says `Closes #<n>` and lists how each acceptance criterion was met. Move the card to *In review*.
+6. Open a PR whose body says `Closes #<n>` and lists how each acceptance criterion was met. Move the card to *In review*. CI runs the `backend` and `frontend` checks (the commands above) for the folders the PR changes, and they must be green.
 7. The human reviews and merges. Never merge or push to `main` yourself.
 
 ## Biwenger API

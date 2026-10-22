@@ -40,3 +40,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #8 | [Backend skeleton](journal/0008-backend-skeleton.md) |
 | #9 | [Frontend skeleton](journal/0009-frontend-skeleton.md) |
 | #10 | [Docker Compose](journal/0010-docker-compose.md) |
+| #11 | [CI with GitHub Actions](journal/0011-ci-github-actions.md) |
