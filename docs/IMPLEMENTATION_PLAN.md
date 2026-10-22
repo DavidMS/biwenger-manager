@@ -72,7 +72,7 @@ biwenger-manager/
 │   └── agents/                   # Specialised subagents (see Phase 0)
 ├── backend/
 │   ├── CLAUDE.md                 # Backend-specific conventions
-│   ├── biwenger-client/          # Biwenger API client (no Spring web deps)
+│   ├── biwenger-client/          # Biwenger API client (RestClient, no Boot or DB; ADR 0004)
 │   └── app/                      # Spring Boot app: domain, advisor, REST API
 ├── frontend/
 │   ├── CLAUDE.md                 # Frontend-specific conventions

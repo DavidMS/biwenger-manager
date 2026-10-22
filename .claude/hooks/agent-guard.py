@@ -15,7 +15,7 @@ COMMON = [
     r"cat .+", r"head( .*)?", r"tail( .*)?", r"grep .+", r"wc( .*)?", r"sort( .*)?", r"uniq( .*)?",
     r"git (status|diff|log|show|rev-parse|merge-base)( .*)?",
 ]
-MAVEN = [r"(\./|\S*/)?mvnw( .*)?"]
+MAVEN = [r"(JAVA_HOME=\S+ )?(\./|\S*/)?mvnw( .*)?"]  # JAVA_HOME prefix: backend needs JDK 25
 NPM = [
     r"npm (test|ci)( .*)?", r"npm run (test|lint|build|typecheck|format:check)( .*)?",
     r"npx (vitest|eslint|tsc|prettier --check)(?!.*--fix)( .*)?",  # --fix would change files

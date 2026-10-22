@@ -14,6 +14,9 @@ root="${CLAUDE_PROJECT_DIR:-$(git -C "$(dirname "$file")" rev-parse --show-tople
 case "$file" in
   *.java)
     if [ -x "$root/backend/mvnw" ]; then
+      # Use the project's JDK from backend/.sdkmanrc when SDKMAN has it, whatever the default java is.
+      jdk="$HOME/.sdkman/candidates/java/$(sed -n 's/^java=//p' "$root/backend/.sdkmanrc" 2>/dev/null)"
+      [ -x "$jdk/bin/java" ] && export JAVA_HOME="$jdk"
       (cd "$root/backend" && ./mvnw -q spotless:apply -DspotlessFiles="$(printf '%s' "$file" | sed 's/[.[\*^$()+?{|]/\\&/g')") >/dev/null 2>&1
     fi
     ;;

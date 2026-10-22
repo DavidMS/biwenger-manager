@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.github.davidms</groupId>
+    <artifactId>biwenger-manager-backend</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>biwenger-client</artifactId>
+  <name>Biwenger API client</name>
+  <description>Client for the unofficial Biwenger API. Uses Spring's RestClient; no Spring Boot, no server side, no database (ADR 0004).</description>
+
+  <build>
+    <plugins>
+      <!-- Keep the module boundary from ADRs 0003 and 0004 enforced by the build, not just documented.
+           spring-web (RestClient) is allowed; the server side, Spring Boot and the database are not. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-client-boundary</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedDependencies>
+                  <excludes>
+                    <exclude>org.springframework:spring-webmvc</exclude>
+                    <exclude>org.springframework:spring-webflux</exclude>
+                    <exclude>org.springframework.boot:*</exclude>
+                    <exclude>org.springframework.data:*</exclude>
+                    <exclude>org.springframework:spring-jdbc</exclude>
+                    <exclude>org.springframework:spring-orm</exclude>
+                    <exclude>jakarta.persistence:*</exclude>
+                    <exclude>org.hibernate.orm:*</exclude>
+                    <exclude>org.flywaydb:*</exclude>
+                    <exclude>org.postgresql:*</exclude>
+                  </excludes>
+                  <message>biwenger-client may use spring-web (RestClient) but not Spring MVC/WebFlux, Spring Boot or the database (ADR 0004).</message>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

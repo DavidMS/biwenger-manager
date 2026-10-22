@@ -23,7 +23,7 @@ You are a senior Java and Spring Boot reviewer for the Biwenger Manager backend 
 
 ## What to check
 
-- **Layering.** `biwenger-client` has no Spring Web, `app` or database dependencies. Biwenger response records don't leak past the mapping layer. Controllers are thin; logic is in services; domain types have no framework annotations.
+- **Layering.** `biwenger-client` uses `spring-web` (`RestClient`) only: no Spring Boot, Spring MVC/WebFlux, `app` or database dependencies (ADR 0004). Biwenger response records don't leak past the mapping layer. Controllers are thin; logic is in services; domain types have no framework annotations.
 - **Spring idioms.** Constructor injection only, `@Transactional` at the service layer, configuration via `@ConfigurationProperties`, `RestClient` for HTTP, `ProblemDetail` via one `@RestControllerAdvice`.
 - **Correctness and null safety.** `Optional` instead of returning `null`, validated inputs, no swallowed exceptions, explicit time zones, integer euros handled without overflow.
 - **Determinism.** Advisor code gives the same output for the same input: no randomness, no unordered iteration feeding results, ties broken by player id, no LLM calls.

@@ -4,7 +4,7 @@ A personal web app to manage a [Biwenger](https://biwenger.as.com/) fantasy foot
 
 ## Status
 
-Phase 0 (AI-ready foundation). There is no application code yet. Items marked *(planned)* below don't exist yet.
+Phase 1 (project skeleton). The backend skeleton exists (health endpoint only); the frontend doesn't yet. Items marked *(planned)* below don't exist yet.
 
 ## Repo map
 
@@ -18,8 +18,8 @@ CLAUDE.md                 this file (always loaded, keep it short)
                           biwenger-api, write-adr, tutorial-chapter
   agents/                 subagents: java-reviewer, react-reviewer, test-writer, biwenger-api-explorer,
                           tutorial-scribe
-backend/                  Java 25 + Spring Boot 4, Maven multi-module (planned, Phase 1)
-  biwenger-client/        Biwenger API client, no Spring web dependencies
+backend/                  Java 25 + Spring Boot 4.1, Maven multi-module, package io.github.davidms.biwenger
+  biwenger-client/        Biwenger API client on Spring's RestClient (the build bans Boot, MVC and DB here)
   app/                    domain, sync jobs, advisor algorithms, REST API
 frontend/                 React + TypeScript + Vite, Tailwind, shadcn/ui, TanStack Query (planned, Phase 1)
 docs/
@@ -35,14 +35,16 @@ Module conventions will live in `backend/CLAUDE.md` and `frontend/CLAUDE.md` (Ph
 
 ## Commands
 
-*(planned, Phase 1. Update this section when the skeletons exist.)*
+The backend needs **JDK 25**: `backend/.sdkmanrc` names it, so run `sdk env` in `backend/` (or set `JAVA_HOME`). The build fails with a clear message on another JDK. Frontend and Docker commands are *(planned)*.
 
 | Task | Command |
 |---|---|
-| Backend build + tests | `cd backend && ./mvnw verify` |
-| Frontend tests | `cd frontend && npm test` |
-| Frontend build | `cd frontend && npm run build` |
-| Run everything locally | `docker compose up` |
+| Backend build + tests + format check | `cd backend && ./mvnw verify` |
+| Fix backend formatting | `cd backend && ./mvnw spotless:apply` (the edit hook does this per file) |
+| Run the backend | `cd backend && ./mvnw -pl app -am spring-boot:run`, then `curl localhost:8080/actuator/health` |
+| Frontend tests *(planned)* | `cd frontend && npm test` |
+| Frontend build *(planned)* | `cd frontend && npm run build` |
+| Run everything locally *(planned)* | `docker compose up` |
 
 ## Golden rules
 
