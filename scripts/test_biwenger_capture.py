@@ -42,8 +42,8 @@ def sample_responses():
 
 def anonymise(league, responses):
     anonymiser = Anonymiser()
-    anonymiser.add_account(responses["account"]["data"]["account"])
     anonymiser.add_manager(league["user"])
+    anonymiser.add_account(responses["account"]["data"]["account"])
     anonymiser.add_league(league, 1)
     for response in responses.values():
         anonymiser.find_managers(response)
@@ -113,6 +113,16 @@ class TrimCatalogTest(unittest.TestCase):
         self.assertEqual(total, 100)
         self.assertEqual(list(trimmed["data"]["players"])[:2], ["50", "99"])
         self.assertEqual(len(trimmed["data"]["players"]), 12)
+
+
+class SharedNameTest(unittest.TestCase):
+
+    def test_your_team_is_manager_1_when_it_shares_your_account_name(self):
+        league, responses = sample_responses()
+        responses["account"]["data"]["account"]["name"] = league["user"]["name"]
+        _, out = anonymise(league, responses)
+        self.assertEqual(out["account"]["data"]["leagues"][0]["user"]["name"], "Manager 1")
+        self.assertEqual(out["league"]["data"]["users"][0]["name"], "Manager 1")
 
 
 class MainTest(unittest.TestCase):

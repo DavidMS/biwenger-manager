@@ -264,8 +264,9 @@ def main(root=None, out_dir=None):
         responses["player-reports"] = cdn.request("player-reports", f"{CDN}/players/la-liga/{slug}?lang=es&fields={REPORT_FIELDS}")
 
     anonymiser = Anonymiser()
+    # You are always Manager 1. Register your team first: its name is often your account name too.
+    anonymiser.add_manager(league["user"])
     anonymiser.add_account((account.get("data") or {}).get("account") or {})
-    anonymiser.add_manager(league["user"])  # you are always Manager 1
     for n, other in enumerate([league] + [lg for lg in leagues if lg is not league], start=1):
         anonymiser.add_league(other, n)
     for response in responses.values():
