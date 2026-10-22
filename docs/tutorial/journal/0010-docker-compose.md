@@ -27,7 +27,7 @@
 
 ## Verification
 
-Run with `docker compose -p bm-check --env-file .env.example`, so no real `.env` was created or read.
+Run as a separate Compose project (`-p bm-check`) with `--env-file` pointing at a copy of `.env.example` in Claude's scratch folder, so no real `.env` was created or read.
 
 | Check | Result |
 |---|---|
