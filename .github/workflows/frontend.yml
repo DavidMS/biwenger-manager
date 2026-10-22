@@ -1,6 +1,8 @@
 # Lint, format-check, test and build the frontend on every PR (and on main) that touches it.
 name: frontend
 
+# Path filters: a PR that doesn't touch this folder gets no check at all. Don't make the
+# check "required" in branch protection as is, or those PRs wait for it forever.
 on:
   pull_request:
     paths:
@@ -15,10 +17,11 @@ on:
 permissions:
   contents: read
 
-# A new push to the same branch cancels the run still going for the previous one.
+# On a PR, a new push cancels the run still going for the previous one. On main a run that has
+# started is left to finish, so merged commits get a result.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   check:
@@ -36,9 +39,14 @@ jobs:
           node-version-file: frontend/.nvmrc
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run format:check
-      - run: npm test
+      - name: Install
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Format check
+        run: npm run format:check
+      - name: Test
+        run: npm test
       # Includes the TypeScript type check (tsc -b).
-      - run: npm run build
+      - name: Build
+        run: npm run build
