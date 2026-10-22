@@ -35,7 +35,7 @@ Module conventions will live in `backend/CLAUDE.md` and `frontend/CLAUDE.md` (Ph
 
 ## Commands
 
-The backend needs **JDK 25**: `backend/.sdkmanrc` names it, so run `sdk env` in `backend/` (or set `JAVA_HOME`). The build fails with a clear message on another JDK. The frontend needs **Node 24** (`frontend/.nvmrc`, `nvm use`); `npm install` refuses unsupported versions (`engine-strict`). Docker is *(planned)*.
+The backend needs **JDK 25**: `backend/.sdkmanrc` names it, so run `sdk env` in `backend/` (or set `JAVA_HOME`). The build fails with a clear message on another JDK. The frontend needs **Node 24** (`frontend/.nvmrc`, `nvm use`); `npm install` refuses unsupported versions (`engine-strict`). Docker Compose runs PostgreSQL, backend and frontend; every variable is in `.env.example`.
 
 | Task | Command |
 |---|---|
@@ -46,7 +46,7 @@ The backend needs **JDK 25**: `backend/.sdkmanrc` names it, so run `sdk env` in 
 | Frontend lint + format check | `cd frontend && npm run lint && npm run format:check` |
 | Frontend build (includes type check) | `cd frontend && npm run build` |
 | Run the frontend | `cd frontend && npm run dev`, then open http://localhost:5173 |
-| Run everything locally *(planned)* | `docker compose up` |
+| Run everything locally | `cp .env.example .env` (once), then `docker compose up --build`. UI at http://localhost:8000 |
 
 ## Golden rules
 
