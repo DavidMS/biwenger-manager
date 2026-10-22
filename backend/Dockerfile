@@ -4,14 +4,10 @@
 # with `./mvnw verify`, not in the image build.
 FROM eclipse-temurin:25-jdk AS build
 WORKDIR /workspace
-COPY mvnw pom.xml ./
-COPY .mvn .mvn
-COPY biwenger-client/pom.xml biwenger-client/
-COPY app/pom.xml app/
-COPY biwenger-client/src biwenger-client/src
-COPY app/src app/src
+# Everything not excluded by .dockerignore; the Maven cache mount makes rebuilds cheap.
+COPY . .
 RUN --mount=type=cache,target=/root/.m2 \
-    ./mvnw -B -q -pl app -am package -DskipTests -Dspotless.check.skip=true
+    ./mvnw -B -q -pl app -am package -DskipTests
 
 # Run: JRE only, as a non-root user.
 FROM eclipse-temurin:25-jre

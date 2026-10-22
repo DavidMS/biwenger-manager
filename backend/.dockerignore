@@ -1,3 +1,7 @@
 **/target/
 .sdkmanrc
+.idea/
+*.iml
+.DS_Store
 Dockerfile
+.dockerignore
