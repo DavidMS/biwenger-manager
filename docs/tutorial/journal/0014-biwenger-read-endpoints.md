@@ -31,7 +31,7 @@ Claude asked two questions (with `AskUserQuestion`). The human chose:
    - **No raw response or token ever touches the disk.**
    - Before writing a file, it searches it for the email, password, token, every real name and id, and the values of removed fields. A file that fails isn't written.
    - It prints only endpoint names, status codes and sizes. No URLs, because they hold the league id.
-3. Wrote 11 tests on made-up data, including a full run with faked HTTP that checks both the files and the printed output. One test was broken on purpose to see it fail.
+3. Wrote tests on made-up data (10 by the end), including a full run with faked HTTP that checks both the files and the printed output. One test was broken on purpose to see it fail.
 4. The human ran it three times (see Corrections). The third run wrote all 9 samples.
 5. Reviewed the samples by hand, using scripts that list every string field and every number field, without reading the raw data. Also dropped 40 KB of ad configuration from the catalog sample and the script.
 6. Delegated the docs to the `biwenger-api-explorer` agent, as the issue asked, with an explicit "make no requests to Biwenger". It wrote `docs/biwenger-api/README.md` and one page per endpoint. Claude checked its main claims against the samples (standings, the scoring list, the price format, the maximum-bid formula, the squad players missing from the catalog). All held.
@@ -66,4 +66,4 @@ Human review may add more corrections. Record them here before merging.
 
 ## Lesson
 
-When the AI must not see the data, give it a way to ask questions about the data without seeing it. Here that was a leak check that names the field but not the value, and summaries of field names and types. Each run told Claude enough to fix the script, and the human's credentials and league never left their machine unprotected.
+When the AI must not see the data, give it a way to ask questions about the data without seeing it. Here that was a leak check that names the field but not the value, and summaries of field names and types. Each run told Claude enough to fix the script, while the credentials, the token and the raw responses never entered Claude's context.
