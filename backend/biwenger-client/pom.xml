@@ -12,7 +12,41 @@
   <name>Biwenger API client</name>
   <description>Client for the unofficial Biwenger API. Uses Spring's RestClient; no Spring Boot, no server side, no database (ADR 0004).</description>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>tools.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.wiremock</groupId>
+      <artifactId>wiremock-standalone</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
   <build>
+    <!-- Tests stub Biwenger with the anonymised samples captured in #14 (root CLAUDE.md, golden rule 3). -->
+    <testResources>
+      <testResource>
+        <targetPath>samples</targetPath>
+        <directory>${project.basedir}/../../docs/biwenger-api/samples</directory>
+      </testResource>
+    </testResources>
     <plugins>
       <!-- Keep the module boundary from ADRs 0003 and 0004 enforced by the build, not just documented.
            spring-web (RestClient) is allowed; the server side, Spring Boot and the database are not. -->

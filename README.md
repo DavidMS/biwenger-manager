@@ -6,7 +6,7 @@ A personal web app to manage a [Biwenger](https://biwenger.as.com/) fantasy foot
 
 It is also a **tutorial on building software with AI**. Almost all of it is written by [Claude Code](https://claude.com/claude-code), one GitHub issue at a time, and the whole process is documented: the prompts, what the AI did, what had to be corrected and what we learned.
 
-> **Status:** Phase 1 (project skeleton) is done. The backend, frontend, Docker setup and CI work, but the pages are still empty; Biwenger data arrives in Phases 2–4.
+> **Status:** Phase 2 (Biwenger API client) in progress. The API is documented from real captures and the backend can log in to Biwenger; the pages are still empty until Phases 3–4.
 
 ## Start here
 
@@ -62,6 +62,8 @@ Open http://localhost:8000. Compose starts three containers:
 | `db` | PostgreSQL 18, data kept in the `db-data` volume | `localhost:5432`, for tools like psql (this machine only) |
 
 `.env.example` documents every variable. `.env` holds your Biwenger password, so it is gitignored and never committed. Every port is bound to `127.0.0.1`, so nothing is reachable from other machines.
+
+The backend gets the Biwenger login as environment variables, so anyone who can run `docker inspect` on this machine can read it. That's acceptable for a single-user app on your own computer. Don't run it on a shared machine. The backend keeps the Biwenger token in memory only, and never logs the password or the token.
 
 Stop with `docker compose down`. Add `-v` to also delete the database.
 
