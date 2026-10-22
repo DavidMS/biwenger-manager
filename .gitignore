@@ -48,3 +48,6 @@ frontend/test-results/
 .vscode/*
 !.vscode/extensions.json
 .DS_Store
+
+# Python bytecode (scripts/)
+__pycache__/
