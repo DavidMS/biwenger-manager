@@ -27,6 +27,8 @@
     <spotless.version>3.10.4</spotless.version>
     <!-- 1.37.0 fails inside spotless-maven-plugin 3.10.4 (InvocationTargetException on every file). -->
     <google-java-format.version>1.36.1</google-java-format.version>
+    <!-- 4.x is still in beta. The standalone jar shades its Jetty and Jackson, so they can't clash with Boot's. -->
+    <wiremock.version>3.13.2</wiremock.version>
   </properties>
 
   <dependencyManagement>
@@ -35,6 +37,12 @@
         <groupId>io.github.davidms</groupId>
         <artifactId>biwenger-client</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.wiremock</groupId>
+        <artifactId>wiremock-standalone</artifactId>
+        <version>${wiremock.version}</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
