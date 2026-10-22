@@ -36,6 +36,7 @@ class BiwengerConfigurationTest {
   @DynamicPropertySource
   static void biwengerSettings(DynamicPropertyRegistry registry) {
     registry.add("biwenger.base-url", biwenger::baseUrl);
+    registry.add("biwenger.cdn-base-url", () -> biwenger.baseUrl() + "/cdn");
     registry.add("biwenger.email", () -> "manager@example.com");
     registry.add("biwenger.password", () -> "s3cret-password");
   }
@@ -52,6 +53,19 @@ class BiwengerConfigurationTest {
     assertThat(client.leagueContext()).isEqualTo(new LeagueContext(1_000_001, 2_000_001, 1));
     biwenger.verify(
         getRequestedFor(urlEqualTo("/api/v2/account"))
+            .withHeader("User-Agent", equalTo(BiwengerConfiguration.USER_AGENT)));
+  }
+
+  @Test
+  void cdnCallsUseTheConfiguredCdnBaseUrl() throws IOException {
+    biwenger.stubFor(
+        get("/cdn/api/v2/players/la-liga/ayoze-perez?lang=es&fields=*,prices")
+            .willReturn(okJson(sample("player-prices.json"))));
+
+    assertThat(client.playerPrices("ayoze-perez").prices()).isNotEmpty();
+    biwenger.verify(
+        getRequestedFor(
+                urlEqualTo("/cdn/api/v2/players/la-liga/ayoze-perez?lang=es&fields=*,prices"))
             .withHeader("User-Agent", equalTo(BiwengerConfiguration.USER_AGENT)));
   }
 

@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,6 +21,10 @@ import io.github.davidms.biwenger.client.model.CatalogPlayer;
 import io.github.davidms.biwenger.client.model.Fitness;
 import io.github.davidms.biwenger.client.model.League;
 import io.github.davidms.biwenger.client.model.Market;
+import io.github.davidms.biwenger.client.model.MatchReport;
+import io.github.davidms.biwenger.client.model.PlayerPrices;
+import io.github.davidms.biwenger.client.model.PlayerReports;
+import io.github.davidms.biwenger.client.model.PricePoint;
 import io.github.davidms.biwenger.client.model.Round;
 import io.github.davidms.biwenger.client.model.RoundStandings;
 import io.github.davidms.biwenger.client.model.Sale;
@@ -28,7 +33,9 @@ import io.github.davidms.biwenger.client.model.Standing;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -57,6 +64,10 @@ class BiwengerClientEndpointsTest {
 
   private static final JsonMapper JSON = JsonMapper.builder().build();
 
+  private static final String REPORTS_URL =
+      "/api/v2/players/la-liga/%s?lang=es&fields="
+          + "*,reports(points,home,events,status(status,statusInfo),match(*,round,home,away),rawStats)";
+
   private BiwengerClient client;
 
   @BeforeEach
@@ -65,6 +76,7 @@ class BiwengerClientEndpointsTest {
     stub(BiwengerClient.ACCOUNT_PATH, "account.json");
     client =
         new BiwengerClient(
+            RestClient.create(biwenger.baseUrl()),
             RestClient.create(biwenger.baseUrl()),
             new BiwengerCredentials("manager@example.com", "s3cret-password"));
   }
@@ -307,6 +319,85 @@ class BiwengerClientEndpointsTest {
   }
 
   @Test
+  void playerPricesAreDatedValuesOldestFirst() throws IOException {
+    stub("/api/v2/players/la-liga/ayoze-perez?lang=es&fields=*,prices", "player-prices.json");
+
+    PlayerPrices prices = client.playerPrices("ayoze-perez");
+
+    assertThat(prices.id()).isEqualTo(2001);
+    assertThat(prices.prices()).hasSize(366);
+    assertThat(prices.prices().getFirst())
+        .isEqualTo(new PricePoint(LocalDate.of(2025, 10, 22), 6_730_000));
+    assertThat(prices.prices().getLast())
+        .isEqualTo(new PricePoint(LocalDate.of(2026, 10, 22), prices.price()));
+    assertThat(prices.prices()).extracting(PricePoint::date).isSorted().doesNotHaveDuplicates();
+  }
+
+  @Test
+  void playerReportsOfAPlayerWhoPlayedEveryMatch() throws IOException {
+    stub(REPORTS_URL.formatted("ayoze-perez"), "player-reports.json");
+
+    PlayerReports ayoze = client.playerReports("ayoze-perez");
+
+    assertThat(ayoze.reports()).hasSize(9).allMatch(MatchReport::played);
+    assertThat(ayoze.reports())
+        .extracting(MatchReport::minutesPlayed)
+        .containsExactly(56, 61, 28, 62, 14, 63, 67, 90, 84);
+    // Summed in the league's scoring system (1), the reports give the catalog's 35 points.
+    assertThat(ayoze.reports().stream().mapToInt(report -> report.points(1)).sum()).isEqualTo(35);
+    MatchReport first = ayoze.reports().getFirst();
+    assertThat(first.home()).isFalse();
+    assertThat(first.match().round().shortName()).isEqualTo("J1");
+    assertThat(first.points()).containsKeys(1, 2, 3, 5, 6, 7, 8);
+    assertThat(ayoze.reports().get(5).match().round().part()).isEqualTo(2);
+  }
+
+  @Test
+  void playerReportsSayWhyAPlayerMissedAMatch() throws IOException {
+    stub(REPORTS_URL.formatted("pablo-marin"), "player-reports-missed-matches.json");
+
+    List<MatchReport> reports = client.playerReports("pablo-marin").reports();
+
+    assertThat(reports)
+        .extracting(r -> r.match().round().shortName(), r -> statusOf(r), MatchReport::played)
+        .containsExactly(
+            tuple("J2", "injured", false),
+            tuple("J1", "injured", false),
+            tuple("J3", "doubt", false),
+            tuple("J6", "injured", false),
+            tuple("J4", "doubt", false),
+            tuple("J5", "doubt", false),
+            tuple("J7", "ok", false),
+            tuple("J8", null, true),
+            tuple("J9", "sanctioned", false));
+    MatchReport played = reports.get(7);
+    assertThat(played.points(1)).isEqualTo(-4);
+    assertThat(played.minutesPlayed()).isEqualTo(66);
+    MatchReport injured = reports.getFirst();
+    assertThat(injured.points()).isEmpty();
+    assertThat(injured.points(1)).isNull();
+    assertThat(injured.minutesPlayed()).isZero();
+  }
+
+  @Test
+  void cdnCallsNeitherLogInNorSendTheToken() throws IOException {
+    stub("/api/v2/players/la-liga/ayoze-perez?lang=es&fields=*,prices", "player-prices.json");
+
+    client.playerPrices("ayoze-perez");
+
+    biwenger.verify(0, postRequestedFor(urlEqualTo(BiwengerSession.LOGIN_PATH)));
+    biwenger.verify(
+        getRequestedFor(urlEqualTo("/api/v2/players/la-liga/ayoze-perez?lang=es&fields=*,prices"))
+            .withoutHeader("Authorization")
+            .withoutHeader("X-League")
+            .withHeader("X-Lang", equalTo("es")));
+  }
+
+  private static @Nullable String statusOf(MatchReport report) {
+    return report.status() == null ? null : report.status().status();
+  }
+
+  @Test
   void ignoresUnknownFieldsEvenIfTheCallersMapperRejectsThem() throws IOException {
     // A caller (Boot's spring.jackson settings, say) might configure a strict mapper.
     var strict =
@@ -321,7 +412,8 @@ class BiwengerClientEndpointsTest {
     stub("/api/v2/market", "market.json");
 
     Market market =
-        new BiwengerClient(strictRestClient, new BiwengerCredentials("m@example.com", "pw"))
+        new BiwengerClient(
+                strictRestClient, strictRestClient, new BiwengerCredentials("m@example.com", "pw"))
             .market();
 
     assertThat(market.sales()).hasSize(19);

@@ -14,6 +14,7 @@ public record BiwengerProperties(
     String email,
     String password,
     @DefaultValue("https://biwenger.as.com") URI baseUrl,
+    @DefaultValue("https://cf.biwenger.com") URI cdnBaseUrl,
     @DefaultValue("5s") Duration connectTimeout,
     @DefaultValue("20s") Duration readTimeout) {
 
@@ -26,6 +27,8 @@ public record BiwengerProperties(
         + mask(password)
         + ", baseUrl="
         + baseUrl
+        + ", cdnBaseUrl="
+        + cdnBaseUrl
         + ", connectTimeout="
         + connectTimeout
         + ", readTimeout="

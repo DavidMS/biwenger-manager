@@ -11,7 +11,7 @@ The reference is [`docs/biwenger-api/`](../../../docs/biwenger-api/README.md): o
 
 ## The client
 
-`BiwengerClient` (in `backend/biwenger-client`) has one method per read endpoint: `account()`, `league()`, `squad()`, `market()`, `catalog()`, `roundStandings()` and `board()`. Each returns records from `client.model` (the conventions are in `backend/CLAUDE.md`). `leagueContext()` gives the league, user and scoring ids. The CDN endpoints come in 2.4.
+`BiwengerClient` (in `backend/biwenger-client`) has one method per read endpoint: `account()`, `league()`, `squad()`, `market()`, `catalog()`, `roundStandings()` and `board()`. Each returns records from `client.model` (the conventions are in `backend/CLAUDE.md`). `leagueContext()` gives the league, user and scoring ids. `playerPrices(slug)` and `playerReports(slug)` call the public CDN without the token.
 
 ## Auth flow
 
@@ -47,7 +47,7 @@ Base `https://biwenger.as.com` unless the URL says otherwise.
 | Rounds and standings | `GET /api/v2/rounds/league` | The current round, and `data.league.standings[]` sorted by position: points, `teamValue`, `teamValueInc` and each manager's last lineup |
 | Board (transfers) | `GET /api/v2/league/{leagueId}/board?type=transfer,market` | `data` is an **array**, newest first: auction wins with the losing bids, sales to the game, clause buys. Pagination unknown |
 | Player detail | `GET https://cf.biwenger.com/api/v2/players/la-liga/{slug}?lang=es&fields=*,prices` | Price history: about a year of daily `[YYMMDD, price]` pairs, oldest first. No auth |
-| Player reports | same URL with `&fields=*,reports(points,home,events,status(status,statusInfo),match(*,round,home,away))` | Per-match points for **every** scoring system, keyed by score id. pybiwenger's version of this string lacks the last `)` |
+| Player reports | same URL with `&fields=*,reports(points,home,events,status(status,statusInfo),match(*,round,home,away),rawStats)` | One report per club match, played or not. Played: points for **every** scoring system (keyed by score id) and `rawStats` (minutes), which must be asked for in `fields`. Not played: only a `status` (`injured`, `doubt`, `sanctioned`, `ok`). pybiwenger's version of this string lacks the last `)` |
 
 Omitting `season` returns the current one. The catalog calls 2026/2027 season `"2027"`.
 
