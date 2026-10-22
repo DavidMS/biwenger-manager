@@ -44,3 +44,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #12 | [Module conventions: backend and frontend CLAUDE.md](journal/0012-module-conventions.md) |
 | #13 | [Tutorial chapter 02](journal/0013-tutorial-chapter-02.md) |
 | #14 | [Spike: capture and document the Biwenger read endpoints](journal/0014-biwenger-read-endpoints.md) |
+| #15 | [Biwenger authentication and league context](journal/0015-biwenger-auth.md) |
