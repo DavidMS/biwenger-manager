@@ -31,7 +31,7 @@ docs/
 .github/                  issue forms (feature, spike, bug), PR template, CI workflows (backend.yml, frontend.yml)
 ```
 
-Module conventions will live in `backend/CLAUDE.md` and `frontend/CLAUDE.md` (Phase 1, issue #12). Read them before working in those folders.
+Module conventions are in `backend/CLAUDE.md` and `frontend/CLAUDE.md`: package and folder layout, types, error handling, styling and tests. Read them before working in those folders.
 
 ## Commands
 

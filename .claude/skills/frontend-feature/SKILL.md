@@ -5,30 +5,25 @@ description: How to add a page or feature to the React + TypeScript + Vite front
 
 # Add a frontend feature
 
-> **Provisional.** The frontend doesn't exist yet. Phase 1 (#12) creates `frontend/CLAUDE.md` with the real conventions and refines this skill. When the two disagree, `frontend/CLAUDE.md` wins.
-
-Read `frontend/CLAUDE.md` first if it exists. Stack: React, TypeScript (strict), Vite, Tailwind CSS, shadcn/ui, TanStack Query, Vitest + React Testing Library.
+Read `frontend/CLAUDE.md` first. It holds the conventions: folder structure, components, data fetching, TypeScript, styling and tests. This skill is the order of work. When the two disagree, `frontend/CLAUDE.md` wins.
 
 ## Order of work
 
-1. **Types.** TypeScript types for the backend's response DTOs in `src/api/types.ts` (or the feature's folder). Match the backend JSON exactly.
-2. **API function.** A plain async function in `src/api/<feature>.ts` that calls the backend (`/api/<feature>`) and returns typed data. It throws on non-2xx responses. Components never call `fetch` directly.
-3. **Query hook.** `use<Thing>()` in `src/features/<feature>/hooks.ts`, wrapping `useQuery` or `useMutation`. Keep query keys in one place per feature, e.g. `['market', filters]`. Mutations invalidate the queries they change.
-4. **Components.** Small function components in `src/features/<feature>/`. Use shadcn/ui primitives and Tailwind classes, no custom CSS files. Every data view handles loading, error and empty states.
-5. **Route.** Add the page to the router and the navigation.
-6. **Tests**, then `npm test` and `npm run build`.
+The feature lives in `src/features/<feature>/`.
 
-## Tests
+1. **Types** (`types.ts`). Types for the backend's JSON, matching its response DTOs exactly. Check them against the backend's DTO records or a real response.
+2. **API functions** (`api.ts`). Plain async functions that call `/api/<feature>` and return typed data, throwing on a non-2xx response.
+3. **Hooks** (`hooks.ts`). A query-key object (`<feature>Keys`) and `use<Thing>()` hooks around `useQuery` or `useMutation`. Mutations invalidate what they change.
+4. **Components** (`<Component>.tsx` + `<Component>.test.tsx`). shadcn/ui and Tailwind tokens. Handle loading, error and empty states. Tests mock `api.ts` and query by role and name. Add missing shadcn components with `npx shadcn add <name>`.
+5. **Page and route.** The page in `src/pages/` stays thin: `PageHeader` plus the feature's components. Register it in `app/routes.tsx`, and in `app/navigation.ts` if it belongs in the menu.
+6. **Check:** `npm run lint && npm run format:check && npm test && npm run build`. Then open it with `npm run dev` (backend running) and look at it once, at desktop and phone width.
 
-- Vitest + React Testing Library. Query by role and accessible name (`getByRole('button', { name: /suggest buys/i })`), not by class or test id.
-- Mock the API module, not `fetch` internals. Test loading, error, empty and populated states.
-- Wrap components in a fresh `QueryClient` per test, with retries off.
-- Pure helpers (formatting money, sorting) get plain unit tests.
+Skip the steps a feature doesn't need, but keep the order.
 
-## Rules
+## Before the PR
 
-- All UI text is in English.
-- Money: Biwenger values are integers in euros. Format them in one shared helper.
-- Any button that triggers a Biwenger write (bid, sell, accept offer, save lineup) opens a confirmation dialog that shows the consequences first. It calls the backend's *propose* endpoint, then *confirm* only after the user agrees.
-- Recommendations come from the backend. The frontend displays them and their explanations; it doesn't compute them.
-- Accessible by default: labels on inputs, buttons with text or `aria-label`, keyboard reachable dialogs.
+- Every new component and helper is tested, directly or through its parent. Make each new test fail once to see that it can.
+- No `fetch` in components, no `any`, no raw colours, no new CSS files.
+- Any button that writes to Biwenger (bid, sell, accept offer, save lineup) opens a confirmation dialog and goes through the backend's propose → confirm endpoints.
+- Recommendations are shown, not computed, in the frontend.
+- If the change adds a convention, update `frontend/CLAUDE.md` in the same PR.

@@ -56,7 +56,7 @@ A skill is a folder with a `SKILL.md`: a `description` in the frontmatter, then 
 | Skill | Use |
 |---|---|
 | `implement-issue` | The whole loop for one issue. Run `/implement-issue 12` |
-| `backend-feature`, `frontend-feature` | Order of work and test types for each side (provisional until Phase 1) |
+| `backend-feature`, `frontend-feature` | Order of work for each side. Since #12 the conventions themselves are in `backend/CLAUDE.md` and `frontend/CLAUDE.md` |
 | `biwenger-api` | Endpoints, headers, auth flow, game rules, how to capture a new endpoint |
 | `write-adr` | Template and numbering for [ADRs](../adr/) |
 | `tutorial-chapter` | Structure and tone for these chapters and the journal |

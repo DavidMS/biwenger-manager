@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # PostToolUse hook (Edit|Write): format the file Claude just changed.
 #   *.java                      -> Spotless, via the Maven wrapper in backend/
-#   *.ts/.tsx/.js/.jsx/.css/.json under frontend/ -> Prettier from frontend/node_modules
+#   *.ts/.tsx/.js/.jsx/.css/.json/.md under frontend/ -> Prettier from frontend/node_modules
 # Does nothing until those tools exist (Phase 1) and never fails the edit.
 
 input=$(cat)
@@ -20,9 +20,10 @@ case "$file" in
       (cd "$root/backend" && ./mvnw -q spotless:apply -DspotlessFiles="$(printf '%s' "$file" | sed 's/[.[\*^$()+?{|]/\\&/g')") >/dev/null 2>&1
     fi
     ;;
-  "$root"/frontend/*.ts|"$root"/frontend/*.tsx|"$root"/frontend/*.js|"$root"/frontend/*.jsx|"$root"/frontend/*.css|"$root"/frontend/*.json)
+  "$root"/frontend/*.ts|"$root"/frontend/*.tsx|"$root"/frontend/*.js|"$root"/frontend/*.jsx|"$root"/frontend/*.css|"$root"/frontend/*.json|"$root"/frontend/*.md)
     if [ -x "$root/frontend/node_modules/.bin/prettier" ]; then
-      "$root/frontend/node_modules/.bin/prettier" --write --log-level warn "$file" >/dev/null 2>&1
+      # Run from frontend/: Prettier resolves its plugins (Tailwind class sorting) from the current directory.
+      (cd "$root/frontend" && ./node_modules/.bin/prettier --write --log-level warn "$file") >/dev/null 2>&1
     fi
     ;;
 esac
