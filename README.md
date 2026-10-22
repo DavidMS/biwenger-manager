@@ -1,5 +1,7 @@
 # Biwenger Manager
 
+[![backend](https://github.com/DavidMS/biwenger-manager/actions/workflows/backend.yml/badge.svg)](https://github.com/DavidMS/biwenger-manager/actions/workflows/backend.yml) [![frontend](https://github.com/DavidMS/biwenger-manager/actions/workflows/frontend.yml/badge.svg)](https://github.com/DavidMS/biwenger-manager/actions/workflows/frontend.yml)
+
 A personal web app to manage a [Biwenger](https://biwenger.as.com/) fantasy football account (La Liga, one league). It shows your squad, the market and the standings, suggests buys, sells and the best lineup with **deterministic algorithms**, and will carry out Biwenger actions only after you confirm them.
 
 It is also a **tutorial on building software with AI**. Almost all of it is written by [Claude Code](https://claude.com/claude-code), one GitHub issue at a time, and the whole process is documented: the prompts, what the AI did, what had to be corrected and what we learned.

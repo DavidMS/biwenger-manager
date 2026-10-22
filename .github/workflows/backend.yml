@@ -1,0 +1,39 @@
+# Build, test and format-check the backend on every PR (and on main) that touches it.
+name: backend
+
+on:
+  pull_request:
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend.yml"
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend.yml"
+
+permissions:
+  contents: read
+
+# A new push to the same branch cancels the run still going for the previous one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+      # The same JDK as local development: version and vendor come from backend/.sdkmanrc.
+      - uses: actions/setup-java@v6
+        with:
+          java-version-file: backend/.sdkmanrc
+          cache: maven
+      # Compile, run the tests, check formatting (Spotless) and the enforcer rules.
+      - run: ./mvnw --batch-mode verify
