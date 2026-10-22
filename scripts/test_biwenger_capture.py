@@ -18,7 +18,8 @@ from biwenger_capture import Anonymiser, trim_catalog
 
 def sample_responses():
     me = {"id": 5551234, "name": "Los Galácticos", "icon": "https://cdn/u/5551234.png", "balance": 1200000}
-    rival = {"id": 5559876, "name": "Rival FC", "icon": "https://cdn/u/5559876.png", "points": 80}
+    rival = {"id": 5559876, "name": "Rival FC", "icon": "https://cdn/u/5559876.png", "points": 80,
+             "twitter": "rival_handle"}
     league = {"id": 7770001, "name": "Liga de los Amigos", "competition": "la-liga", "scoreID": 5,
               "icon": "https://cdn/l/7770001.png", "user": me,
               "settings": {"secret": "invite-abc123", "clause": "on"}}
@@ -33,7 +34,8 @@ def sample_responses():
     board = {"data": [{"type": "transfer", "content": [{"player": 101, "from": dict(rival), "to": dict(me),
                                                         "amount": 500000}],
                        "title": "Rival FC vendió a Los Galácticos"}]}
-    catalog = {"data": {"players": {"101": {"id": 101, "name": "Pedri", "slug": "pedri", "teamID": 3},
+    catalog = {"data": {"players": {"101": {"id": 101, "name": "Pedri", "slug": "pedri", "teamID": 3,
+                                            "twitter": "Pedri"},
                                     "102": {"id": 102, "name": "Vinícius Júnior", "slug": "vinicius-junior"}},
                         "teams": {"3": {"id": 3, "name": "Barcelona", "slug": "barcelona"},
                                   "15": {"id": 15, "name": "Real Madrid", "slug": "real-madrid"}}}}
@@ -66,6 +68,7 @@ class AnonymiserTest(unittest.TestCase):
         self.assertEqual(account["devices"], [])
         self.assertEqual(self.out["account"]["data"]["location"], {})
         self.assertEqual(self.out["account"]["data"]["leagues"][0]["settings"]["secret"], "removed")
+        self.assertEqual(self.out["league"]["data"]["users"][1]["twitter"], "removed")
 
     def test_you_are_manager_1_and_names_are_consistent_across_responses(self):
         users = self.out["league"]["data"]["users"]
@@ -87,6 +90,7 @@ class AnonymiserTest(unittest.TestCase):
     def test_keeps_public_football_data(self):
         players = self.out["catalog"]["data"]["players"]
         self.assertEqual(players["101"]["name"], "Pedri")
+        self.assertEqual(players["101"]["twitter"], "Pedri")
         self.assertEqual(self.out["catalog"]["data"]["teams"]["3"]["name"], "Barcelona")
         # The account's city is removed, but the same word in public data is not a leak.
         self.assertEqual(self.out["catalog"]["data"]["teams"]["15"]["name"], "Real Madrid")
@@ -95,7 +99,7 @@ class AnonymiserTest(unittest.TestCase):
     def test_output_has_no_leaks(self):
         self.assertEqual(self.anonymiser.leaks(self.text, extra=("jane@example.com",)), [])
         for real in ("jane@example.com", "push-token-xyz", "invite-abc123", "Jane Real", "Los Galácticos",
-                     "Rival FC", "Liga de los Amigos", "5551234", "7770001"):
+                     "Rival FC", "rival_handle", "Liga de los Amigos", "5551234", "7770001"):
             self.assertNotIn(real, self.text)
 
     def test_leak_check_names_what_is_left_without_showing_it(self):

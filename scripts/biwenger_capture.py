@@ -31,7 +31,9 @@ REPORT_FIELDS = "*,reports(points,home,events,status(status,statusInfo),match(*,
 
 # Keys whose values are personal or secret, wherever they appear. Matched case-insensitively.
 DROP_KEYS = {"email", "phone", "birthday", "devices", "token", "password", "secret", "location",
-             "ip", "facebook", "twitter", "instagram", "google_id", "apple_id"}
+             "ip", "google_id", "apple_id"}
+# Removed only from managers, leagues and the account: footballers' social handles are public.
+PERSONAL_SOCIAL_KEYS = {"facebook", "twitter", "instagram"}
 # Of those, the ones whose values are also searched for in the output. Not location or birthday:
 # a city like "Madrid" also appears in public football data ("Real Madrid").
 LEAK_CHECKED_KEYS = DROP_KEYS - {"location", "birthday"}
@@ -102,7 +104,7 @@ class Anonymiser:
     def collect_secrets(self, value):
         if isinstance(value, dict):
             for key, child in value.items():
-                if key.lower() in LEAK_CHECKED_KEYS:
+                if key.lower() in LEAK_CHECKED_KEYS or self._personal_social(value, key):
                     self._collect_strings(child, key)
                 else:
                     self.collect_secrets(child)
@@ -125,7 +127,7 @@ class Anonymiser:
             out = {}
             for key, child in value.items():
                 new_key = self._text(key)
-                if key.lower() in DROP_KEYS:
+                if key.lower() in DROP_KEYS or self._personal_social(value, key):
                     out[new_key] = placeholder(child)
                 elif id(value) in self.objects and key in ("icon", "cover") and isinstance(child, str):
                     out[new_key] = f"https://example.invalid/{key}.png"
@@ -141,6 +143,9 @@ class Anonymiser:
         if isinstance(value, str):
             return self._text(value)
         return value
+
+    def _personal_social(self, obj, key):
+        return id(obj) in self.objects and key.lower() in PERSONAL_SOCIAL_KEYS
 
     def _text(self, text):
         if text in self.names:
