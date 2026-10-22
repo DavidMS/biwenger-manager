@@ -7,14 +7,6 @@ import { NotFoundPage } from '@/pages/NotFoundPage'
 import { SquadPage } from '@/pages/SquadPage'
 import { StandingsPage } from '@/pages/StandingsPage'
 
-export const navItems = [
-  { to: '/', label: 'Dashboard' },
-  { to: '/squad', label: 'Squad' },
-  { to: '/market', label: 'Market' },
-  { to: '/standings', label: 'Standings' },
-  { to: '/advisor', label: 'Advisor' },
-] as const
-
 export const routes: RouteObject[] = [
   {
     element: <AppLayout />,

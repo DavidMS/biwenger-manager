@@ -2,11 +2,14 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { RouterProvider, createMemoryRouter } from 'react-router'
 import { describe, expect, it } from 'vitest'
+import { navItems } from '@/app/navigation'
 import { routes } from '@/app/routes'
 
 function renderAt(path: string) {
+  const user = userEvent.setup()
   const router = createMemoryRouter(routes, { initialEntries: [path] })
   render(<RouterProvider router={router} />)
+  return { user }
 }
 
 describe('AppLayout', () => {
@@ -38,22 +41,24 @@ describe('AppLayout', () => {
     )
   })
 
-  it('navigates to a section when its link is clicked', async () => {
-    renderAt('/')
+  it.each(navItems)(
+    'opens the $label page from its navigation link',
+    async ({ label }) => {
+      // Start somewhere else so every link, including Dashboard, really navigates.
+      const { user } = renderAt('/nowhere')
 
-    await userEvent.click(screen.getByRole('link', { name: 'Market' }))
+      await user.click(screen.getByRole('link', { name: label }))
 
-    expect(
-      screen.getByRole('heading', { level: 1, name: 'Market' }),
-    ).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Market' })).toHaveAttribute(
-      'aria-current',
-      'page',
-    )
-    expect(screen.getByRole('link', { name: 'Dashboard' })).not.toHaveAttribute(
-      'aria-current',
-    )
-  })
+      expect(
+        screen.getByRole('heading', { level: 1, name: label }),
+      ).toBeInTheDocument()
+      const nav = screen.getByRole('navigation', { name: 'Main' })
+      const current = within(nav)
+        .getAllByRole('link')
+        .filter((link) => link.getAttribute('aria-current') === 'page')
+      expect(current.map((link) => link.textContent)).toEqual([label])
+    },
+  )
 
   it('shows a not found page for unknown addresses', () => {
     renderAt('/nowhere')

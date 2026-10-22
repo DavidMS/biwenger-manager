@@ -1,7 +1,6 @@
 import { NavLink, Outlet } from 'react-router'
-import { navItems } from '@/app/routes'
+import { navItems } from '@/app/navigation'
 import { buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 
 export function AppLayout() {
   return (
@@ -19,12 +18,10 @@ export function AppLayout() {
                     to={item.to}
                     end={item.to === '/'}
                     className={({ isActive }) =>
-                      cn(
-                        buttonVariants({
-                          variant: isActive ? 'secondary' : 'ghost',
-                          size: 'sm',
-                        }),
-                      )
+                      buttonVariants({
+                        variant: isActive ? 'secondary' : 'ghost',
+                        size: 'sm',
+                      })
                     }
                   >
                     {item.label}
