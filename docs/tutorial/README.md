@@ -41,3 +41,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #9 | [Frontend skeleton](journal/0009-frontend-skeleton.md) |
 | #10 | [Docker Compose](journal/0010-docker-compose.md) |
 | #11 | [CI with GitHub Actions](journal/0011-ci-github-actions.md) |
+| #12 | [Module conventions: backend and frontend CLAUDE.md](journal/0012-module-conventions.md) |
