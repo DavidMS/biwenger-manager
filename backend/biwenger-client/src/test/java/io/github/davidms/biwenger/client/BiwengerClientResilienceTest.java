@@ -204,6 +204,29 @@ class BiwengerClientResilienceTest {
         .hasCause(failure);
   }
 
+  @Test
+  void saysWhichFailuresMayPassByThemselves() {
+    BiwengerClient client = client(RETRIES);
+    record Case(
+        com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder answer,
+        boolean transientFailure) {}
+    for (var c :
+        List.of(
+            new Case(aResponse().withStatus(503), true),
+            new Case(aResponse().withStatus(429), true),
+            new Case(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER), true),
+            new Case(aResponse().withStatus(404), false),
+            // A required field missing: Biwenger changed its format, retrying won't help.
+            new Case(okJson("{\"status\": 200, \"data\": {\"sales\": []}}"), false))) {
+      biwenger.stubFor(get(MARKET).willReturn(c.answer()));
+
+      assertThatThrownBy(client::market)
+          .isInstanceOfSatisfying(
+              BiwengerApiException.class,
+              e -> assertThat(e.isTransient()).as(e.getMessage()).isEqualTo(c.transientFailure()));
+    }
+  }
+
   /** Market answers in order; the last one repeats. */
   private static void marketAnswers(
       com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder first,

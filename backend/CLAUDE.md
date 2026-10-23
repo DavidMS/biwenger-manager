@@ -89,6 +89,8 @@ Three kinds of types, never mixed:
 | Persistence, migrations, sync jobs | `@DataJpaTest` or `@SpringBootTest` with a Testcontainers `PostgreSQLContainer` wired through `@ServiceConnection` |
 | The whole app | A few `@SpringBootTest(webEnvironment = RANDOM_PORT)` tests, like `HealthEndpointTest` |
 
+**Every `@SpringBootTest` that reaches Biwenger points *both* `biwenger.base-url` and `biwenger.cdn-base-url` at WireMock** with `@DynamicPropertySource`. As a safety net, `app/src/test/resources/config/application.properties` points both at `127.0.0.1:9`, where nothing listens, so a forgotten URL fails the test instead of calling the real API. In #78 a test that set only the API URL sent 39 real requests to the public CDN; never remove the net.
+
 - Test classes are package-private, in the same package as the code, named `<ClassUnderTest>Test`. Integration tests may be named after the behaviour instead, like `HealthEndpointTest`.
 - Method names describe behaviour: `breaksScoreTiesByPlayerId()`, not `test1()`.
 - Assert with AssertJ (`assertThat`), not JUnit's `assertEquals`.

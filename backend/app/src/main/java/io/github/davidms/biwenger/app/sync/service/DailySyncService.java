@@ -33,6 +33,7 @@ public class DailySyncService {
   private final BiwengerGateway biwenger;
   private final SnapshotWriter writer;
   private final SyncRunRecorder recorder;
+  private final PointsRefresher points;
   private final SyncRunRepository runs;
   private final Clock clock;
   private final AtomicBoolean running = new AtomicBoolean();
@@ -41,11 +42,13 @@ public class DailySyncService {
       BiwengerGateway biwenger,
       SnapshotWriter writer,
       SyncRunRecorder recorder,
+      PointsRefresher points,
       SyncRunRepository runs,
       Clock clock) {
     this.biwenger = biwenger;
     this.writer = writer;
     this.recorder = recorder;
+    this.points = points;
     this.runs = runs;
     this.clock = clock;
   }
@@ -123,6 +126,8 @@ public class DailySyncService {
       LocalDate day = LocalDate.ofInstant(started, clock.getZone());
       DailyData data = biwenger.dailyData();
       writer.write(day, started, data);
+      // Inside the sync, so it can't overlap one; it never throws (the snapshot is stored).
+      points.refreshIfRoundsFinished(data);
       var summary =
           new SyncSummary(
               day,

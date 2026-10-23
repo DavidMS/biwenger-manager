@@ -233,8 +233,11 @@ public final class BiwengerClient {
     } catch (RestClientResponseException e) {
       // Not chained as the cause: its message carries the response body, which can hold personal
       // data (the account) or anything else Biwenger sends.
+      int status = e.getStatusCode().value();
       throw new BiwengerApiException(
-          "Biwenger answered HTTP " + e.getStatusCode().value() + " to GET " + path);
+          "Biwenger answered HTTP " + status + " to GET " + path,
+          null,
+          BiwengerApiException.isTransientStatus(status));
     } catch (RestClientException e) {
       if (e.getCause() instanceof HttpMessageNotReadableException) {
         // A required field is missing or has another type: Biwenger probably changed its format.
@@ -253,7 +256,7 @@ public final class BiwengerClient {
   static BiwengerApiException networkFailure(String call, RestClientException e) {
     for (Throwable cause = e; cause != null; cause = cause.getCause()) {
       if (cause instanceof HttpTimeoutException || cause instanceof SocketTimeoutException) {
-        return new BiwengerApiException("Biwenger did not answer " + call + " in time", e);
+        return new BiwengerApiException("Biwenger did not answer " + call + " in time", e, true);
       }
     }
     Throwable root = e;
@@ -261,7 +264,9 @@ public final class BiwengerClient {
       root = root.getCause();
     }
     return new BiwengerApiException(
-        "Could not reach Biwenger for " + call + " (" + root.getClass().getSimpleName() + ")", e);
+        "Could not reach Biwenger for " + call + " (" + root.getClass().getSimpleName() + ")",
+        e,
+        true);
   }
 
   private static LeagueContext findLaLigaLeague(Account account) {

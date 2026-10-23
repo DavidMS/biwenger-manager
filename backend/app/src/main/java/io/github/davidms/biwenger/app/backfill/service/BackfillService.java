@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,6 +30,7 @@ public class BackfillService {
   private final HistoryWriter writer;
   private final Clock clock;
   private volatile boolean stopRequested;
+  private final AtomicBoolean running = new AtomicBoolean();
 
   BackfillService(BiwengerGateway biwenger, HistoryWriter writer, Clock clock) {
     this.biwenger = biwenger;
@@ -41,7 +43,21 @@ public class BackfillService {
     stopRequested = true;
   }
 
+  /** Whether a backfill is running now: the points refresh (#78) waits for it. */
+  public boolean isRunning() {
+    return running.get();
+  }
+
   public BackfillSummary run() {
+    running.set(true);
+    try {
+      return runPlayers();
+    } finally {
+      running.set(false);
+    }
+  }
+
+  private BackfillSummary runPlayers() {
     stopRequested = false;
     Instant started = clock.instant();
     LocalDate today = LocalDate.ofInstant(started, clock.getZone());
