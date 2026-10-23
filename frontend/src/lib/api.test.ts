@@ -14,6 +14,10 @@ function answer(
   )
 }
 
+function sentHeaders(call = 0) {
+  return new Headers(vi.mocked(fetch).mock.calls[call][1]?.headers)
+}
+
 describe('api', () => {
   it('returns the JSON of a successful answer', async () => {
     answer(200, { running: false })
@@ -21,10 +25,23 @@ describe('api', () => {
     await expect(getJson('/api/sync/status')).resolves.toEqual({
       running: false,
     })
-    expect(fetch).toHaveBeenCalledWith(
-      '/api/sync/status',
-      expect.objectContaining({ headers: { Accept: 'application/json' } }),
-    )
+    expect(sentHeaders().get('Accept')).toBe('application/json')
+  })
+
+  it('posts JSON with a JSON content type, and keeps the Accept header', async () => {
+    answer(200, { ok: true })
+
+    await postJson('/api/actions', { player: 2001 })
+
+    expect(sentHeaders().get('Content-Type')).toBe('application/json')
+    expect(sentHeaders().get('Accept')).toBe('application/json')
+    expect(vi.mocked(fetch).mock.calls[0][1]?.body).toBe('{"player":2001}')
+  })
+
+  it('returns nothing for 204 No Content', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(null, { status: 204 }))
+
+    await expect(postJson('/api/whatever')).resolves.toBeUndefined()
   })
 
   it('turns a problem detail into an ApiError', async () => {

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.davidms.biwenger.app.Samples;
+import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
 import io.github.davidms.biwenger.app.common.Money;
 import io.github.davidms.biwenger.app.league.domain.League;
 import io.github.davidms.biwenger.app.league.domain.Manager;
@@ -20,6 +21,7 @@ import io.github.davidms.biwenger.app.player.domain.PlayerStatus;
 import io.github.davidms.biwenger.app.player.domain.Position;
 import io.github.davidms.biwenger.app.player.domain.RoundForm;
 import io.github.davidms.biwenger.app.player.domain.Team;
+import io.github.davidms.biwenger.client.model.Account;
 import io.github.davidms.biwenger.client.model.Catalog;
 import io.github.davidms.biwenger.client.model.Fitness;
 import io.github.davidms.biwenger.client.model.Market;
@@ -248,13 +250,11 @@ class BiwengerMapperTest {
 
   @Test
   void mapsTheConnectedAccount() {
-    var account = sampleData("account.json", io.github.davidms.biwenger.client.model.Account.class);
+    var account = sampleData("account.json", Account.class);
 
     // In the sample the account's name is the same as its team's (both anonymised).
     assertThat(BiwengerMapper.connectedAccount(account, 1_000_001))
-        .isEqualTo(
-            new io.github.davidms.biwenger.app.account.domain.ConnectedAccount(
-                "Manager 1", "Manager 1", "Example League"));
+        .isEqualTo(new ConnectedAccount("Manager 1", "Manager 1", "Example League"));
     assertThatThrownBy(() -> BiwengerMapper.connectedAccount(account, 42))
         .hasMessageContaining("doesn't match docs/biwenger-api/");
   }

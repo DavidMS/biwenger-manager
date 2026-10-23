@@ -5,6 +5,8 @@ import type { ReactElement } from 'react'
 import { RouterProvider, createMemoryRouter } from 'react-router'
 import { routes } from '@/app/routes'
 
+type UserEventOptions = Parameters<typeof userEvent.setup>[0]
+
 /** A fresh client per test: no shared cache, and no retries to wait for. */
 function testQueryClient() {
   return new QueryClient({
@@ -12,16 +14,21 @@ function testQueryClient() {
   })
 }
 
-/** Renders one component with what data-fetching components need. */
-export function renderWithProviders(ui: ReactElement) {
-  const user = userEvent.setup()
-  render(
-    <QueryClientProvider client={testQueryClient()}>{ui}</QueryClientProvider>,
-  )
-  return { user }
+/**
+ * Renders one component with what data-fetching components need. With fake timers, pass
+ * `{ advanceTimers: vi.advanceTimersByTime }` so user-event's own waits move with them.
+ */
+export function renderWithProviders(
+  ui: ReactElement,
+  userOptions?: UserEventOptions,
+) {
+  const user = userEvent.setup(userOptions)
+  const queryClient = testQueryClient()
+  render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>)
+  return { user, queryClient }
 }
 
-/** Renders the whole app at {@code path}, routes included. */
+/** Renders the whole app at `path`, routes included. */
 export function renderApp(path: string) {
   const user = userEvent.setup()
   const router = createMemoryRouter(routes, { initialEntries: [path] })

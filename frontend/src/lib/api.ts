@@ -18,14 +18,17 @@ export class ApiError extends Error {
 type ProblemDetail = { title?: string; detail?: string; status?: number }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(path, {
-    ...init,
-    headers: { Accept: 'application/json', ...init?.headers },
-  })
+  const headers = new Headers(init?.headers)
+  if (!headers.has('Accept')) {
+    headers.set('Accept', 'application/json')
+  }
+  const response = await fetch(path, { ...init, headers })
   if (!response.ok) {
     throw await toApiError(response)
   }
-  return (await response.json()) as T
+  // 204 No Content, or an empty body: nothing to parse.
+  const text = await response.text()
+  return (text ? JSON.parse(text) : undefined) as T
 }
 
 async function toApiError(response: Response): Promise<ApiError> {
@@ -37,8 +40,9 @@ async function toApiError(response: Response): Promise<ApiError> {
   }
   return new ApiError(
     response.status,
-    problem.title ?? response.statusText ?? 'Request failed',
-    problem.detail ?? `The server answered ${response.status}.`,
+    // statusText is '' over HTTP/2, so `||`, not `??`.
+    problem.title || response.statusText || 'Request failed',
+    problem.detail || `The server answered ${response.status}.`,
   )
 }
 
@@ -46,6 +50,15 @@ export function getJson<T>(path: string): Promise<T> {
   return request<T>(path)
 }
 
-export function postJson<T>(path: string): Promise<T> {
-  return request<T>(path, { method: 'POST' })
+/**
+ * A POST, with an optional JSON body. It always declares a JSON content type: a write endpoint
+ * must require it, so another web page can't send one without the browser asking first
+ * (backend/CLAUDE.md).
+ */
+export function postJson<T>(path: string, body?: unknown): Promise<T> {
+  return request<T>(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  })
 }

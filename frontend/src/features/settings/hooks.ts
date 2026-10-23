@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useRef } from 'react'
 import { fetchAccount, fetchSyncStatus, startSync } from './api'
 import type { SyncStatus } from './types'
 
@@ -38,7 +39,7 @@ export function useSyncStatus() {
 export function useStartSync() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: startSync,
+    mutationFn: () => startSync(),
     onSuccess: (status) => {
       // The answer is the new status: show "running" at once, and the polling takes over.
       queryClient.setQueryData(settingsKeys.syncStatus(), status)
@@ -46,4 +47,31 @@ export function useStartSync() {
     onSettled: () =>
       queryClient.invalidateQueries({ queryKey: settingsKeys.syncStatus() }),
   })
+}
+
+/**
+ * The sync's status, the "Sync now" action, and what happens when a run finishes: an old start
+ * error no longer applies, and every other view refreshes, because the sync changed the data
+ * they show.
+ */
+export function useSync() {
+  const queryClient = useQueryClient()
+  const status = useSyncStatus()
+  const start = useStartSync()
+  const running = status.data?.running ?? false
+  const wasRunning = useRef(running)
+  const { reset } = start
+
+  useEffect(() => {
+    if (wasRunning.current && !running) {
+      reset()
+      void queryClient.invalidateQueries({
+        predicate: (query) =>
+          query.queryKey[1] !== settingsKeys.syncStatus()[1],
+      })
+    }
+    wasRunning.current = running
+  }, [running, reset, queryClient])
+
+  return { status, start, running }
 }

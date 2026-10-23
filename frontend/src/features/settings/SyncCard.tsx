@@ -1,65 +1,54 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { SectionCard } from '@/components/layout/SectionCard'
+import { EmptyState } from '@/components/state/EmptyState'
+import { ErrorState } from '@/components/state/ErrorState'
+import { LoadingState } from '@/components/state/LoadingState'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import { ApiError } from '@/lib/api'
 import { formatDateTime, formatDay } from '@/lib/format'
-import { useStartSync, useSyncStatus } from './hooks'
+import { useSync } from './hooks'
 import type { SyncRun } from './types'
 
 export function SyncCard() {
-  const status = useSyncStatus()
-  const start = useStartSync()
-  const running = status.data?.running ?? false
+  const { status, start, running } = useSync()
+  const busy = running || start.isPending
   const alreadyRunning =
     start.error instanceof ApiError && start.error.status === 409
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Data sync</CardTitle>
-        <CardDescription>
-          Every morning at 07:30 the app reads the catalog, the market and the
-          standings from Biwenger. It only reads.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {status.isPending && <p className="text-muted-foreground">Loading…</p>}
+    <SectionCard
+      title="Data sync"
+      description="Every morning at 07:30 the app reads the catalog, the market and the standings from Biwenger. It only reads."
+    >
+      {/* Announced when it changes: "Running", then the result. */}
+      <div role="status" className="space-y-2">
+        {status.isPending && <LoadingState />}
         {status.isError && (
-          <Alert variant="destructive">
-            <AlertTitle>Sync status unavailable</AlertTitle>
-            <AlertDescription>{status.error.message}</AlertDescription>
-          </Alert>
+          <ErrorState error={status.error} title="Sync status unavailable" />
         )}
         {status.isSuccess &&
           (status.data.lastRun ? (
             <LastRun run={status.data.lastRun} />
           ) : (
-            <p className="text-muted-foreground">No sync has run yet.</p>
+            <EmptyState>No sync has run yet.</EmptyState>
           ))}
-        {start.isError && !alreadyRunning && (
-          <Alert variant="destructive">
-            <AlertTitle>Sync not started</AlertTitle>
-            <AlertDescription>{start.error.message}</AlertDescription>
-          </Alert>
-        )}
-        {alreadyRunning && (
+        {alreadyRunning && running && (
           <p className="text-muted-foreground">A sync is already running.</p>
         )}
-        <Button
-          onClick={() => start.mutate()}
-          disabled={running || start.isPending}
-        >
-          {running ? 'Syncing…' : 'Sync now'}
-        </Button>
-      </CardContent>
-    </Card>
+      </div>
+      {start.isError && !alreadyRunning && (
+        <ErrorState error={start.error} title="Sync not started" />
+      )}
+      {/* aria-disabled, not disabled: the button keeps focus while the sync runs. */}
+      <Button
+        aria-disabled={busy}
+        onClick={() => {
+          if (!busy) start.mutate()
+        }}
+      >
+        {running ? 'Syncing…' : 'Sync now'}
+      </Button>
+    </SectionCard>
   )
 }
 
@@ -69,7 +58,7 @@ type LastRunProps = {
 
 function LastRun({ run }: LastRunProps) {
   return (
-    <div className="space-y-2">
+    <>
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-muted-foreground">Last sync</span>
         <ResultBadge run={run} />
@@ -88,7 +77,7 @@ function LastRun({ run }: LastRunProps) {
       {run.result === 'FAILED' && (
         <p className="text-destructive">{run.error}</p>
       )}
-    </div>
+    </>
   )
 }
 

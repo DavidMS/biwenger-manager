@@ -83,7 +83,8 @@ final class BiwengerSession {
       throw BiwengerClient.networkFailure("the login", e);
     }
     if (response == null || response.token() == null || response.token().isBlank()) {
-      throw new BiwengerAuthenticationException("Biwenger accepted the login but sent no token");
+      // Biwenger misbehaving, not wrong credentials: not an authentication error.
+      throw new BiwengerApiException("Biwenger accepted the login but sent no token");
     }
     LOG.log(Level.INFO, "Logged in to Biwenger");
     return response.token();

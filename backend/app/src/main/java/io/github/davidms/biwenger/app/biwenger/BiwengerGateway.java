@@ -20,7 +20,10 @@ public class BiwengerGateway {
     this.client = client;
   }
 
-  /** The account, your team in the La Liga league, and that league. One call, or none if known. */
+  /**
+   * The account, your team in the La Liga league, and that league. Two account calls on a cold
+   * start (the client reads it once to find the league), one after that; callers cache it.
+   */
   public ConnectedAccount connectedAccount() {
     var league = client.leagueContext();
     return BiwengerMapper.connectedAccount(client.account(), league.leagueId());
