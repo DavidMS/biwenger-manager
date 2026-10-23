@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -75,6 +76,7 @@ class DailySyncTest {
   @DynamicPropertySource
   static void biwengerSettings(DynamicPropertyRegistry registry) {
     registry.add("biwenger.base-url", biwenger::baseUrl);
+    registry.add("biwenger.cdn-base-url", () -> biwenger.baseUrl() + "/cdn");
     registry.add("biwenger.email", () -> "manager@example.com");
     registry.add("biwenger.password", () -> "s3cret-password");
     registry.add("biwenger.min-request-interval", () -> "0s");
@@ -94,13 +96,18 @@ class DailySyncTest {
     stub("/api/v2/competitions/la-liga/data?lang=es&score=1", sample("catalog.json"));
     stub("/api/v2/market", sample("market.json"));
     stub("/api/v2/rounds/league", sample("rounds-league.json"));
+    // The points refresh (#78) runs inside the sync when a round has finished.
+    biwenger.stubFor(
+        get(urlPathMatching("/cdn/api/v2/players/la-liga/.*"))
+            .willReturn(okJson(sample("player-reports.json"))));
   }
 
   /** The container is shared with other test classes, which count rows: leave nothing behind. */
   @AfterEach
   void emptyTables() {
     jdbc.execute(
-        "TRUNCATE player, player_price_snapshot, market_snapshot, league_standing_snapshot, sync_run");
+        "TRUNCATE player, player_price_snapshot, market_snapshot, league_standing_snapshot, sync_run,"
+            + " player_points_report, points_refresh");
   }
 
   @Test

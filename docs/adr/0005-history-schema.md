@@ -32,6 +32,7 @@ We will use **option 2**, with these rules:
 
   A bug in the code then fails loudly instead of storing a contradiction.
 - **The backfill (#24) must not overwrite a daily-sync row.** The daily sync knows the status and points, and the backfill would null them. The backfill also writes about 200,000 rows, where Spring Data's `save()` runs a `SELECT` before each `INSERT`. So it writes in batches with `INSERT … ON CONFLICT DO NOTHING`, and the daily sync may keep using `save()` (about 550 players a day). It also leaves today to the daily sync: writing today's price while a sync is running could collide with it and roll back the sync's whole day.
+- **Match points are refreshed by the daily sync (#78),** for every catalog player, when a round has finished since the last refresh (`points_refresh` remembers which). The sync waits for a running backfill by skipping that day, and leaves the rounds pending if any player failed.
 - **Money is `BIGINT` euros,** and times are `TIMESTAMPTZ` in UTC (`hibernate.jdbc.time_zone=UTC`).
 
 Flyway owns the schema; Hibernate only validates it (`ddl-auto=validate`).

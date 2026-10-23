@@ -86,6 +86,8 @@ Three kinds of types, never mixed:
 | Services | JUnit 5 with hand-written fakes or Mockito for their dependencies |
 | Controllers | `@WebMvcTest(XController.class)` with the service mocked through `@MockitoBean`. Check status, JSON shape and `ProblemDetail` errors. |
 | Biwenger client | WireMock serving files from `docs/biwenger-api/samples/`. Never the real API (root golden rule 3). |
+
+**Every `@SpringBootTest` that reaches Biwenger points *both* `biwenger.base-url` and `biwenger.cdn-base-url` at WireMock** with `@DynamicPropertySource`. As a safety net, `app/src/test/resources/config/application.properties` points both at `127.0.0.1:9`, where nothing listens, so a forgotten URL fails the test instead of calling the real API. In #78 a test that set only the API URL sent 39 real requests to the public CDN; never remove the net.
 | Persistence, migrations, sync jobs | `@DataJpaTest` or `@SpringBootTest` with a Testcontainers `PostgreSQLContainer` wired through `@ServiceConnection` |
 | The whole app | A few `@SpringBootTest(webEnvironment = RANDOM_PORT)` tests, like `HealthEndpointTest` |
 

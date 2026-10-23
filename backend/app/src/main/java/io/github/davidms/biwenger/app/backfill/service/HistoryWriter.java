@@ -1,14 +1,12 @@
 package io.github.davidms.biwenger.app.backfill.service;
 
 import io.github.davidms.biwenger.app.biwenger.PlayerHistory;
-import io.github.davidms.biwenger.app.player.domain.MatchResult;
+import io.github.davidms.biwenger.app.player.persistence.MatchReportWriter;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -30,19 +28,6 @@ class HistoryWriter {
       ON CONFLICT (player_id, snapshot_date) DO NOTHING
       """;
 
-  // The backfill is the only source of match reports, so a newer answer replaces an older one.
-  private static final String MATCH =
-      """
-      INSERT INTO player_points_report (player_id, match_id, round_id, match_date, home, played,
-        score_id, points, minutes_played, absence, synced_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT (player_id, match_id) DO UPDATE SET
-        round_id = EXCLUDED.round_id, match_date = EXCLUDED.match_date, home = EXCLUDED.home,
-        played = EXCLUDED.played, score_id = EXCLUDED.score_id, points = EXCLUDED.points,
-        minutes_played = EXCLUDED.minutes_played, absence = EXCLUDED.absence,
-        synced_at = EXCLUDED.synced_at
-      """;
-
   private static final String DONE =
       """
       INSERT INTO backfill_progress (season, player_id, prices, matches, completed_at)
@@ -52,9 +37,11 @@ class HistoryWriter {
       """;
 
   private final JdbcTemplate jdbc;
+  private final MatchReportWriter reports;
 
-  HistoryWriter(JdbcTemplate jdbc) {
+  HistoryWriter(JdbcTemplate jdbc, MatchReportWriter reports) {
     this.jdbc = jdbc;
+    this.reports = reports;
   }
 
   /** The players already done this season. */
@@ -88,39 +75,7 @@ class HistoryWriter {
                       playerId, Date.valueOf(price.day()), price.price().euros(), synced
                     })
             .toList());
-    jdbc.batchUpdate(
-        MATCH,
-        history.matches().stream().map(m -> matchRow(playerId, scoreId, m, synced)).toList());
+    reports.upsert(playerId, scoreId, history.matches(), syncedAt);
     jdbc.update(DONE, season, playerId, pastPrices.size(), history.matches().size(), synced);
-  }
-
-  private static Object[] matchRow(
-      long playerId, int scoreId, MatchResult match, Timestamp synced) {
-    List<Object> row =
-        new ArrayList<>(
-            List.of(
-                playerId,
-                match.matchId(),
-                match.roundId(),
-                Timestamp.from(match.date()),
-                match.home()));
-    switch (match.outcome()) {
-      case MatchResult.Played(int points, int minutes) -> {
-        row.add(true);
-        row.add(scoreId);
-        row.add(points);
-        row.add(minutes);
-        row.add(null);
-      }
-      case MatchResult.Missed(var reason) -> {
-        row.add(false);
-        row.add(scoreId);
-        row.add(null);
-        row.add(0);
-        row.add(reason.name());
-      }
-    }
-    row.add(synced);
-    return row.toArray();
   }
 }
