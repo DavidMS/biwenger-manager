@@ -44,6 +44,8 @@ PERSONAL_SOCIAL_KEYS = {"facebook", "twitter", "instagram"}
 LEAK_CHECKED_KEYS = DROP_KEYS - {"location", "birthday"}
 # Keys that make a {id, name} object a manager rather than a player, team or round.
 MANAGER_HINTS = {"icon", "balance", "teamValue", "joinDate", "role"}
+# Hosts of personal profile pictures (a manager's icon can be their Google or Facebook photo).
+PERSONAL_AVATAR_HOSTS = ("googleusercontent.com", "fbcdn.net", "graph.facebook.com", "gravatar.com")
 CATALOG_EXTRA_PLAYERS = 10
 CATALOG_MAX_PLAYERS = 40
 BOARD_MAX_ENTRIES = 20
@@ -71,7 +73,6 @@ class Anonymiser:
         self.ids = {}  # real id -> fake id
         self.names = {}  # real name -> fake name
         self.secrets = {}  # value of a dropped key -> that key, checked for leaks
-        self.objects = set()  # id() of dicts that are a manager, league or the account
 
     def add_account(self, account):
         self._add(account, "Account Owner", 3_000_001)
@@ -82,13 +83,11 @@ class Anonymiser:
     def add_manager(self, manager):
         real_id = manager.get("id")
         if real_id in self.ids:
-            self.objects.add(id(manager))
             return
         n = 1 + sum(1 for fake in self.ids.values() if 2_000_000 < fake < 3_000_000)
         self._add(manager, f"Manager {n}", 2_000_000 + n)
 
     def _add(self, obj, fake_name, fake_id):
-        self.objects.add(id(obj))
         if isinstance(obj.get("id"), int) and obj["id"] not in self.ids:
             self.ids[obj["id"]] = fake_id
         if isinstance(obj.get("name"), str) and obj["name"] not in self.names:
@@ -134,7 +133,7 @@ class Anonymiser:
                 new_key = self._text(key)
                 if key.lower() in DROP_KEYS or self._personal_social(value, key):
                     out[new_key] = placeholder(child)
-                elif id(value) in self.objects and key in ("icon", "cover") and isinstance(child, str):
+                elif self._known(value) and key in ("icon", "cover") and isinstance(child, str):
                     out[new_key] = f"https://example.invalid/{key}.png"
                 else:
                     out[new_key] = self.apply(child)
@@ -149,8 +148,12 @@ class Anonymiser:
             return self._text(value)
         return value
 
+    def _known(self, obj):
+        """A manager, league or the account: recognised by its id, so it also works on a copy."""
+        return isinstance(obj.get("id"), int) and not isinstance(obj.get("id"), bool) and obj["id"] in self.ids
+
     def _personal_social(self, obj, key):
-        return id(obj) in self.objects and key.lower() in PERSONAL_SOCIAL_KEYS
+        return self._known(obj) and key.lower() in PERSONAL_SOCIAL_KEYS
 
     def _text(self, text):
         if text in self.names:
@@ -176,6 +179,9 @@ class Anonymiser:
             found.append(f"a value of a removed field ({', '.join(keys)})")
         if any(value and len(value) >= 4 and value.lower() in lowered for value in extra):
             found.append("email, password or token")
+        # A safety net that needs no list of known values: personal profile pictures.
+        if any(host in lowered for host in PERSONAL_AVATAR_HOSTS):
+            found.append("a personal avatar URL")
         return found
 
 

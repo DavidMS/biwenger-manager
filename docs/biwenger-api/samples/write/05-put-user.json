@@ -1,0 +1,72 @@
+{
+  "method": "PUT",
+  "path": "/api/v2/user",
+  "query": "fields=*%2Clineup(date)",
+  "requestHeaders": {
+    "accept": "application/json",
+    "content-type": "application/json; charset=utf-8",
+    "x-lang": "es",
+    "x-league": "1000001",
+    "x-user": "2000001",
+    "x-version": "631"
+  },
+  "otherRequestHeaderNames": [
+    "accept-encoding",
+    "accept-language",
+    "cache-control",
+    "content-length",
+    "origin",
+    "pragma",
+    "priority",
+    "referer",
+    "sec-ch-ua",
+    "sec-ch-ua-mobile",
+    "sec-ch-ua-platform",
+    "sec-fetch-dest",
+    "sec-fetch-mode",
+    "sec-fetch-site",
+    "user-agent"
+  ],
+  "requestBody": {
+    "lineup": {
+      "type": "3-4-3",
+      "playersID": [
+        30487,
+        35156,
+        23572,
+        26344,
+        null,
+        33971,
+        41090,
+        33697,
+        null,
+        2001,
+        2602
+      ],
+      "reservesID": [
+        41268,
+        null,
+        41411,
+        null
+      ]
+    }
+  },
+  "status": 200,
+  "responseBody": {
+    "status": 200,
+    "data": {
+      "name": "Manager 1",
+      "icon": "https://example.invalid/icon.png",
+      "points": 226,
+      "balance": 51600000,
+      "joinDate": 1659208716,
+      "lastAccess": 1792745503,
+      "id": 2000001,
+      "role": "",
+      "credits": 0,
+      "lineup": {
+        "date": 1792745522
+      }
+    }
+  }
+}
