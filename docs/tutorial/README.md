@@ -51,3 +51,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #19 | [Spike: discover the Biwenger write endpoints](journal/0019-write-endpoints.md) |
 | #20 | [Tutorial chapter 03](journal/0020-tutorial-chapter-03.md) |
 | #21 | [Domain model and API-to-domain mapping](journal/0021-domain-model.md) |
+| #22 | [Database schema with Flyway](journal/0022-flyway-schema.md) |
