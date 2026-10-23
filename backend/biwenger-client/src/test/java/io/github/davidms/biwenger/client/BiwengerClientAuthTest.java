@@ -233,7 +233,7 @@ class BiwengerClientAuthTest {
   }
 
   @Test
-  void loginFailureWithoutTokenIsAnAuthenticationError() {
+  void aLoginWithoutTokenIsABiwengerFaultNotBadCredentials() {
     stubFor(
         post(LOGIN)
             .willReturn(
@@ -243,7 +243,7 @@ class BiwengerClientAuthTest {
                     .withHeader("Content-Type", "application/json")));
 
     assertThatThrownBy(() -> client(CREDENTIALS).leagueContext())
-        .isInstanceOf(BiwengerAuthenticationException.class)
+        .isExactlyInstanceOf(BiwengerApiException.class)
         .hasMessageContaining("sent no token");
   }
 

@@ -1,5 +1,6 @@
 package io.github.davidms.biwenger.app.biwenger;
 
+import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
 import io.github.davidms.biwenger.app.common.Money;
 import io.github.davidms.biwenger.app.league.domain.League;
 import io.github.davidms.biwenger.app.league.domain.Manager;
@@ -16,6 +17,7 @@ import io.github.davidms.biwenger.app.player.domain.PlayerStatus;
 import io.github.davidms.biwenger.app.player.domain.Position;
 import io.github.davidms.biwenger.app.player.domain.RoundForm;
 import io.github.davidms.biwenger.app.player.domain.Team;
+import io.github.davidms.biwenger.client.model.Account;
 import io.github.davidms.biwenger.client.model.Catalog;
 import io.github.davidms.biwenger.client.model.CatalogPlayer;
 import io.github.davidms.biwenger.client.model.Fitness;
@@ -42,6 +44,21 @@ import java.util.stream.Collectors;
 public final class BiwengerMapper {
 
   private BiwengerMapper() {}
+
+  /** The account's name, its team in league {@code leagueId}, and that league's name. */
+  public static ConnectedAccount connectedAccount(Account account, long leagueId) {
+    var league =
+        account.leagues().stream()
+            .filter(candidate -> candidate.id() == leagueId)
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException(
+                        "Biwenger's account doesn't match docs/biwenger-api/: league "
+                            + leagueId
+                            + " is missing"));
+    return new ConnectedAccount(account.account().name(), league.user().name(), league.name());
+  }
 
   /** Every catalog player, ordered by id. */
   public static List<Player> players(Catalog catalog) {

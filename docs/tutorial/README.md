@@ -57,3 +57,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #25 | [Manual sync endpoint and sync status](journal/0025-manual-sync.md) |
 | #78 | [Keep match points up to date after each round](journal/0078-points-refresh.md) |
 | #26 | [Tutorial chapter 04](journal/0026-tutorial-chapter-04.md) |
+| #27 | [Settings page: connected account, league and last sync](journal/0027-settings-page.md) |
