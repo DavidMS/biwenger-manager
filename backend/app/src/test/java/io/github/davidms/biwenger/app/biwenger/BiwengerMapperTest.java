@@ -8,7 +8,9 @@ import io.github.davidms.biwenger.app.league.domain.League;
 import io.github.davidms.biwenger.app.league.domain.Manager;
 import io.github.davidms.biwenger.app.league.domain.Round;
 import io.github.davidms.biwenger.app.league.domain.RoundStatus;
+import io.github.davidms.biwenger.app.league.domain.Standing;
 import io.github.davidms.biwenger.app.market.domain.MarketListing;
+import io.github.davidms.biwenger.app.market.domain.Ownership;
 import io.github.davidms.biwenger.app.market.domain.Seller;
 import io.github.davidms.biwenger.app.player.domain.Player;
 import io.github.davidms.biwenger.app.player.domain.PlayerStatus;
@@ -18,6 +20,7 @@ import io.github.davidms.biwenger.app.player.domain.Team;
 import io.github.davidms.biwenger.client.model.Catalog;
 import io.github.davidms.biwenger.client.model.Fitness;
 import io.github.davidms.biwenger.client.model.Market;
+import io.github.davidms.biwenger.client.model.RoundStandings;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
@@ -134,9 +137,61 @@ class BiwengerMapperTest {
     MarketListing byManager =
         listings.stream().filter(l -> l.playerId() == 15430).findFirst().orElseThrow();
     assertThat(byManager.seller())
-        .isEqualTo(new Seller.ByManager(new Manager(2_000_003, "Manager 3")));
+        .isEqualTo(
+            new Seller.ByManager(
+                new Manager(2_000_003, "Manager 3"),
+                new Ownership(
+                    Money.euros(21_221_640),
+                    Money.euros(10_610_820),
+                    Instant.ofEpochSecond(1_786_856_548),
+                    Instant.ofEpochSecond(1_786_856_548))));
     assertThat(byManager.price()).isEqualTo(Money.euros(6_930_000));
     assertThat(byManager.closesAt()).isEqualTo(Instant.ofEpochSecond(1_792_793_067));
+  }
+
+  @Test
+  void mapsAClauseLockOnASale() throws IOException {
+    MarketListing locked =
+        BiwengerMapper.listings(market).stream()
+            .filter(l -> l.playerId() == 26879)
+            .findFirst()
+            .orElseThrow();
+
+    var ownership = ((Seller.ByManager) locked.seller()).ownership();
+    assertThat(ownership.clauseUnlocksAt()).isEqualTo(Instant.ofEpochSecond(1_793_941_548));
+    assertThat(ownership.clauseLockedAt(Instant.ofEpochSecond(1_792_745_310))).isTrue();
+  }
+
+  @Test
+  void aManagersSaleWithoutOwnershipDataIsAFormatChange() {
+    var sale =
+        new io.github.davidms.biwenger.client.model.Sale(
+            new io.github.davidms.biwenger.client.model.SalePlayer(15430, null),
+            6_930_000,
+            1_792_620_267,
+            1_792_793_067,
+            null,
+            new io.github.davidms.biwenger.client.model.Manager(2_000_003, "Manager 3", null));
+
+    assertThatThrownBy(() -> BiwengerMapper.listing(sale))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageStartingWith("Biwenger's market doesn't match docs/biwenger-api/");
+  }
+
+  @Test
+  void mapsTheStandingsByPosition() throws IOException {
+    List<Standing> standings =
+        BiwengerMapper.standings(data("rounds-league.json", RoundStandings.class));
+
+    assertThat(standings)
+        .hasSize(6)
+        .extracting(Standing::position)
+        .containsExactly(1, 2, 3, 4, 5, 6);
+    assertThat(standings.getFirst().manager().name()).isEqualTo("Manager 4");
+    Standing me =
+        standings.stream().filter(s -> s.manager().id() == 2_000_001).findFirst().orElseThrow();
+    assertThat(me.teamValue()).isEqualTo(Money.euros(22_340_000));
+    assertThat(me.teamValueChange()).isEqualTo(Money.euros(-70_000));
   }
 
   @Test

@@ -93,8 +93,14 @@ Three kinds of types, never mixed:
 - Assert with AssertJ (`assertThat`), not JUnit's `assertEquals`.
 - Fix the clock and sort inputs explicitly. A test must give the same result on every run.
 
-## Persistence (from Phase 3)
+## Persistence
+
+The schema and its rules are in [ADR 0005](../docs/adr/0005-history-schema.md): one row per natural key and Madrid day, so a second sync the same day updates instead of duplicating.
+
 
 - The schema changes only through Flyway migrations in `app/src/main/resources/db/migration`, named `V<n>__<what>.sql`. Never edit a migration that is on `main`: add a new one.
 - Hibernate validates the schema and never changes it (`spring.jpa.hibernate.ddl-auto=validate`).
+- Entities live in `<feature>/persistence`, have a protected no-arg constructor, are built with `static from(domain, …)` and turn back with `toDomain()`. Composite keys are `@Embeddable` records (`PriceSnapshotId`).
+- Write the database's own checks too (`CHECK`, `NOT NULL`), and test that it rejects a bad row: it's the last line of defence.
+- `@SpringBootTest` and `@DataJpaTest` classes `@Import(TestcontainersConfiguration.class)`: one shared PostgreSQL container for the whole run. `@DataJpaTest` also needs `@AutoConfigureTestDatabase(replace = NONE)`. Flush and clear the `EntityManager` before reading back, or the test only sees the session's cache.
 - `@Transactional` goes on service methods only, never on controllers or repositories you write. `spring.jpa.open-in-view=false`, so entities are not loaded lazily during JSON rendering.

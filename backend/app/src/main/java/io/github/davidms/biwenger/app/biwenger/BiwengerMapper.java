@@ -5,7 +5,9 @@ import io.github.davidms.biwenger.app.league.domain.League;
 import io.github.davidms.biwenger.app.league.domain.Manager;
 import io.github.davidms.biwenger.app.league.domain.Round;
 import io.github.davidms.biwenger.app.league.domain.RoundStatus;
+import io.github.davidms.biwenger.app.league.domain.Standing;
 import io.github.davidms.biwenger.app.market.domain.MarketListing;
+import io.github.davidms.biwenger.app.market.domain.Ownership;
 import io.github.davidms.biwenger.app.market.domain.Seller;
 import io.github.davidms.biwenger.app.player.domain.Player;
 import io.github.davidms.biwenger.app.player.domain.PlayerStatus;
@@ -16,6 +18,7 @@ import io.github.davidms.biwenger.client.model.Catalog;
 import io.github.davidms.biwenger.client.model.CatalogPlayer;
 import io.github.davidms.biwenger.client.model.Fitness;
 import io.github.davidms.biwenger.client.model.Market;
+import io.github.davidms.biwenger.client.model.RoundStandings;
 import io.github.davidms.biwenger.client.model.Sale;
 import java.time.Instant;
 import java.util.Comparator;
@@ -105,13 +108,50 @@ public final class BiwengerMapper {
 
   public static MarketListing listing(Sale sale) {
     Seller seller =
-        sale.user() == null ? new Seller.Game() : new Seller.ByManager(manager(sale.user()));
+        sale.user() == null
+            ? new Seller.Game()
+            : new Seller.ByManager(manager(sale.user()), ownership(sale));
     return new MarketListing(
         sale.player().id(),
         seller,
         Money.euros(sale.price()),
         Instant.ofEpochSecond(sale.date()),
         Instant.ofEpochSecond(sale.until()));
+  }
+
+  /** A manager's sale always carries how he owns the player, in the market's answer. */
+  static Ownership ownership(Sale sale) {
+    var owner = sale.player().owner();
+    if (owner == null || owner.price() == null) {
+      // Biwenger dropped data we rely on: report it as a format change, like the client does.
+      throw new IllegalArgumentException(
+          "Biwenger's market doesn't match docs/biwenger-api/: player "
+              + sale.player().id()
+              + " is sold by a manager but has no owner price");
+    }
+    Instant acquiredAt = Instant.ofEpochSecond(owner.date());
+    return new Ownership(
+        Money.euros(owner.clause()),
+        Money.euros(owner.price()),
+        acquiredAt,
+        owner.clauseLockedUntil() == null
+            ? acquiredAt
+            : Instant.ofEpochSecond(owner.clauseLockedUntil()));
+  }
+
+  /** The league table, by position. */
+  public static List<Standing> standings(RoundStandings rounds) {
+    return rounds.league().standings().stream()
+        .map(
+            standing ->
+                new Standing(
+                    new Manager(standing.id(), standing.name()),
+                    standing.position(),
+                    standing.points(),
+                    Money.euros(standing.teamValue()),
+                    Money.euros(standing.teamValueInc())))
+        .sorted(Comparator.comparingInt(Standing::position))
+        .toList();
   }
 
   public static Manager manager(io.github.davidms.biwenger.client.model.Manager manager) {

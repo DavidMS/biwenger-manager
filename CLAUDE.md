@@ -26,7 +26,7 @@ docs/
   IMPLEMENTATION_PLAN.md  phases, tasks and decisions
   tutorial/               "how we built this with AI": README.md index, one chapter per phase
   tutorial/journal/       one entry per issue, start from TEMPLATE.md
-  adr/                    architecture decision records (0001-0004: ADRs, tech stack, layout, client HTTP)
+  adr/                    architecture decision records (0001-0005: ADRs, tech stack, layout, client HTTP, history schema)
   biwenger-api/           reverse-engineered API reference: one doc per endpoint, anonymised samples/
 scripts/                  biwenger_capture.py (read samples) and biwenger_har_extract.py (write samples from a
                           browser HAR): both run by the human, Claude reads only their anonymised output
@@ -41,9 +41,9 @@ The backend needs **JDK 25**: `backend/.sdkmanrc` names it, so run `sdk env` in 
 
 | Task | Command |
 |---|---|
-| Backend build + tests + format check | `cd backend && ./mvnw verify` |
+| Backend build + tests + format check | `cd backend && ./mvnw verify` (Docker must be running: tests use a PostgreSQL container) |
 | Fix backend formatting | `cd backend && ./mvnw spotless:apply` (the edit hook does this per file) |
-| Run the backend | `cd backend && ./mvnw -pl app -am spring-boot:run`, then `curl localhost:8080/actuator/health` |
+| Run the backend | `docker compose up -d db`, then `cd backend && SPRING_DATASOURCE_PASSWORD=<your POSTGRES_PASSWORD> ./mvnw -pl app -am spring-boot:run`, then `curl localhost:8080/actuator/health` |
 | Frontend tests | `cd frontend && npm test` (Vitest + Testing Library) |
 | Frontend lint + format check | `cd frontend && npm run lint && npm run format:check` |
 | Frontend build (includes type check) | `cd frontend && npm run build` |
