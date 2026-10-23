@@ -32,6 +32,7 @@ services:
       BIWENGER_PASSWORD: ${BIWENGER_PASSWORD:-}
       BIWENGER_SYNC_CRON: ${BIWENGER_SYNC_CRON:-0 30 7 * * *}
       BIWENGER_SYNC_ENABLED: ${BIWENGER_SYNC_ENABLED:-true}
+      BIWENGER_BACKFILL_ENABLED: ${BIWENGER_BACKFILL_ENABLED:-false}
     depends_on:
       db:
         condition: service_healthy

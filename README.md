@@ -67,6 +67,8 @@ The backend gets the Biwenger login as environment variables, so anyone who can 
 
 Every morning at 07:30 (Madrid time), the backend reads the player catalog, the market and your league's standings from Biwenger and stores the day's snapshot, building the history Biwenger doesn't keep. It only reads; nothing in your account changes. Change the time or turn it off with `BIWENGER_SYNC_CRON` and `BIWENGER_SYNC_ENABLED` in `.env`.
 
+To fill in the season so far, set `BIWENGER_BACKFILL_ENABLED=true` in `.env` and restart the backend (`docker compose up -d backend`). In the background, it imports every player's price history and match points from Biwenger's public CDN: about 1,100 requests, roughly 10 minutes, with progress in `docker compose logs backend`. If it's interrupted, the next start resumes it; once finished it does nothing, so the setting can stay on.
+
 Stop with `docker compose down`. Add `-v` to also delete the database.
 
 ### Developing without Docker

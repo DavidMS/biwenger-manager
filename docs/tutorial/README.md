@@ -53,3 +53,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #21 | [Domain model and API-to-domain mapping](journal/0021-domain-model.md) |
 | #22 | [Database schema with Flyway](journal/0022-flyway-schema.md) |
 | #23 | [Daily sync job](journal/0023-daily-sync.md) |
+| #24 | [Backfill the season's price history and match points](journal/0024-history-backfill.md) |
