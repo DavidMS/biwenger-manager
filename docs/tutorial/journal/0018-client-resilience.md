@@ -49,4 +49,4 @@ Human review may add more corrections. Record them here before merging.
 
 ## Lesson
 
-Make time a parameter. Rate limits and backoff are about waiting, and tests that really wait are slow and flaky. With an injected clock and pause, every wait became a value the test can assert. And the most important rule here, "never resend a write", got a test of its own months before the first write exists.
+Make time a parameter. Rate limits and backoff are about waiting, and tests that really wait are slow and flaky. With an injected clock and pause, every wait became a value the test can assert. And the most important rule here, "never resend a write", got a test of its own before the first write exists.
