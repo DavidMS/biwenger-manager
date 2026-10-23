@@ -117,6 +117,27 @@ class HarExtractTest(unittest.TestCase):
         self.assertNotIn(TOKEN, printed)
 
 
+class SeveralFilesTest(unittest.TestCase):
+
+    def test_the_account_in_one_file_anonymises_the_other(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            first, second = Path(tmp) / "a.har", Path(tmp) / "b.har"
+            first.write_text(json.dumps(har(
+                entry("GET", "/api/v2/account", response_body=ACCOUNT),
+                entry("POST", "/api/v2/offers", {"amount": 150000, "to": 5551234}))))
+            second.write_text(json.dumps(har(
+                entry("PUT", "/api/v2/user", {"lineup": {"players": [101]}, "user": 5551234}))))
+            out = Path(tmp) / "samples"
+            with contextlib.redirect_stdout(io.StringIO()):
+                status = biwenger_har_extract.main([str(first), str(second)], out_dir=out)
+            files = {f.name: f.read_text() for f in sorted(out.glob("*.json"))}
+
+        self.assertEqual(status, 0)
+        self.assertEqual(sorted(files), ["01-post-offers.json", "02-put-user.json"])
+        self.assertIn('"user": 2000001', files["02-put-user.json"])
+        self.assertNotIn("5551234", "".join(files.values()))
+
+
 class SafetyTest(unittest.TestCase):
 
     def test_refuses_a_har_inside_the_repo(self):

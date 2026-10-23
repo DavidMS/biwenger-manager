@@ -2,6 +2,8 @@
 """Extract anonymised samples of Biwenger *write* requests from a browser HAR file (issue #19).
 
 Run it yourself from the repo root:  python3 scripts/biwenger_har_extract.py ~/Downloads/biwenger.har
+Several HAR files from the same session can be given at once: the account call from any of them
+anonymises all of them, and the samples are numbered in order across the files.
 With --list it only prints what the HAR holds (methods, paths with numbers masked, status, whether
 the answer was saved), to find out why an extraction fails.
 
@@ -158,16 +160,22 @@ def list_entries(har):
 
 def main(argv=None, out_dir=None):
     parser = argparse.ArgumentParser(description="Extract anonymised Biwenger write samples.")
-    parser.add_argument("har", type=Path, help="the HAR file exported from DevTools")
+    parser.add_argument("har", type=Path, nargs="+", help="HAR file(s) exported from DevTools")
     parser.add_argument("--list", action="store_true", help="only list what the HAR holds")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
     out_dir = out_dir or REPO / "docs/biwenger-api/samples/write"
 
-    if args.har.resolve().is_relative_to(REPO):
-        sys.exit(
-            f"{args.har} is inside the repo, where it could be committed by accident, and it holds\n"
-            "your session. Move it out first, for example: mv " + str(args.har) + " ~/Downloads/biwenger.har")
-    har = json.loads(args.har.read_text(encoding="utf-8"))
+    for path in args.har:
+        if path.resolve().is_relative_to(REPO):
+            sys.exit(
+                f"{path} is inside the repo, where it could be committed by accident, and it holds\n"
+                f"your session. Move it out first, for example: mv {path} ~/Downloads/biwenger.har")
+    # One log with every file's entries, in the order given.
+    har = {"log": {"entries": [
+        entry
+        for path in args.har
+        for entry in (json.loads(path.read_text(encoding="utf-8")).get("log") or {}).get("entries")
+        or []]}}
     if args.list:
         list_entries(har)
         return 0
@@ -177,6 +185,9 @@ def main(argv=None, out_dir=None):
     writes = [(m, p, q, rq, rs) for m, p, q, rq, rs in entries(har) if m not in ("GET", "OPTIONS")]
     print(f"{len(writes)} write request(s) found:")
     out_dir.mkdir(parents=True, exist_ok=True)
+    # Each run writes the whole set: earlier samples would otherwise mix with this run's numbering.
+    for old in out_dir.glob("[0-9][0-9]-*.json"):
+        old.unlink()
     failed, index = 0, 0
     for method, path, query, request, response in writes:
         if path == LOGIN_PATH:
