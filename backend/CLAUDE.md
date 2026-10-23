@@ -11,7 +11,7 @@ Use JDK 25 (`sdk env` here, or `JAVA_HOME`). `./mvnw verify` runs the enforcer r
 | `biwenger-client` | `io.github.davidms.biwenger.client` | HTTP calls to Biwenger, auth, rate limiting, retries, Biwenger's request and response records | Spring Boot, Spring MVC/WebFlux, the database, `app` (ADR 0004; the enforcer rule in its `pom.xml` fails the build) |
 | `app` | `io.github.davidms.biwenger.app` | Domain, persistence, sync jobs, advisor algorithms, REST API, all Spring configuration | Biwenger's records outside the `biwenger` package |
 
-`biwenger-client` is a plain library. It takes a configured `RestClient` in its constructor. `app` builds that `RestClient` (base URL, timeouts, User-Agent) and wires the client as a bean. Only `app.biwenger` calls the client: feature services ask `app.biwenger` and get domain types back, so they never see Biwenger's records.
+`biwenger-client` is a plain library. It takes a configured `RestClient` in its constructor. `app` builds that `RestClient` (base URL, timeouts, User-Agent) and wires the client as a bean. Only `app.biwenger` calls the client: feature services ask `BiwengerGateway` and get domain types back, so they never see Biwenger's records.
 
 Biwenger's JSON is read into records in `io.github.davidms.biwenger.client.model`, one per object in `docs/biwenger-api/`. They mirror the JSON, not our domain:
 

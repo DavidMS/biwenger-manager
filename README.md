@@ -65,6 +65,8 @@ Open http://localhost:8000. Compose starts three containers:
 
 The backend gets the Biwenger login as environment variables, so anyone who can run `docker inspect` on this machine can read it. That's acceptable for a single-user app on your own computer. Don't run it on a shared machine. The backend keeps the Biwenger token in memory only, and never logs the password or the token.
 
+Every morning at 07:30 (Madrid time), the backend reads the player catalog, the market and your league's standings from Biwenger and stores the day's snapshot, building the history Biwenger doesn't keep. It only reads; nothing in your account changes. Change the time or turn it off with `BIWENGER_SYNC_CRON` and `BIWENGER_SYNC_ENABLED` in `.env`.
+
 Stop with `docker compose down`. Add `-v` to also delete the database.
 
 ### Developing without Docker
