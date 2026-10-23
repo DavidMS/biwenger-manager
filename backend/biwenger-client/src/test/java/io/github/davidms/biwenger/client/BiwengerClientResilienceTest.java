@@ -173,6 +173,37 @@ class BiwengerClientResilienceTest {
     assertThat(time.pauses).containsExactly(ms(500), ms(500), ms(500));
   }
 
+  @Test
+  void anInterruptedThreadStopsInsteadOfRetrying() {
+    biwenger.stubFor(get(MARKET).willReturn(aResponse().withStatus(503)));
+    BiwengerClient client = client(RETRIES);
+    client.leagueContext(); // log in and read the account first
+
+    Thread.currentThread().interrupt();
+    try {
+      assertThatThrownBy(client::market).isInstanceOf(BiwengerApiException.class);
+    } finally {
+      Thread.interrupted(); // clear the flag for the next test
+    }
+
+    // The JDK client won't even send on an interrupted thread; what matters is no retry and no
+    // backoff. (The fake pause ignores interrupts, so before the fix the loop paused twice.)
+    biwenger.verify(0, getRequestedFor(MARKET));
+    assertThat(time.pauses).isEmpty();
+  }
+
+  @Test
+  void aConnectTimeoutIsReportedAsATimeout() {
+    // An end-to-end connect timeout needs an unroutable address, which is slow and flaky in CI.
+    var failure =
+        new org.springframework.web.client.ResourceAccessException(
+            "I/O error", new java.net.http.HttpConnectTimeoutException("connect timed out"));
+
+    assertThat(BiwengerClient.networkFailure("GET /api/v2/market", failure))
+        .hasMessage("Biwenger did not answer GET /api/v2/market in time")
+        .hasCause(failure);
+  }
+
   /** Market answers in order; the last one repeats. */
   private static void marketAnswers(
       com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder first,

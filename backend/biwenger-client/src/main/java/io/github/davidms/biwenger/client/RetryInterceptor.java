@@ -37,13 +37,20 @@ final class RetryInterceptor implements ClientHttpRequestInterceptor {
       String failure;
       try {
         ClientHttpResponse response = execution.execute(request, body);
-        if (last || !response.getStatusCode().is5xxServerError()) {
-          return response;
+        try {
+          if (last || !response.getStatusCode().is5xxServerError()) {
+            return response;
+          }
+          failure = "HTTP " + response.getStatusCode().value();
+        } catch (IOException | RuntimeException e) {
+          response.close();
+          throw e;
         }
-        failure = "HTTP " + response.getStatusCode().value();
         response.close();
       } catch (IOException e) {
-        if (last) {
+        // An interrupt means stop, not try again. (Not by type: SocketTimeoutException is an
+        // InterruptedIOException too, and a timeout is worth a retry.)
+        if (last || Thread.currentThread().isInterrupted()) {
           throw e;
         }
         failure = e.getClass().getSimpleName();
