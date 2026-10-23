@@ -54,3 +54,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #22 | [Database schema with Flyway](journal/0022-flyway-schema.md) |
 | #23 | [Daily sync job](journal/0023-daily-sync.md) |
 | #24 | [Backfill the season's price history and match points](journal/0024-history-backfill.md) |
+| #25 | [Manual sync endpoint and sync status](journal/0025-manual-sync.md) |

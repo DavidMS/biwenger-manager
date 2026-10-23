@@ -12,7 +12,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import io.github.davidms.biwenger.app.MutableClock;
 import io.github.davidms.biwenger.app.TestcontainersConfiguration;
+import io.github.davidms.biwenger.app.sync.domain.SyncResult;
+import io.github.davidms.biwenger.app.sync.domain.SyncRun;
+import io.github.davidms.biwenger.app.sync.domain.SyncTrigger;
 import io.github.davidms.biwenger.app.sync.service.DailySyncService;
+import io.github.davidms.biwenger.app.sync.service.SyncAlreadyRunningException;
 import io.github.davidms.biwenger.app.sync.service.SyncSummary;
 import io.github.davidms.biwenger.client.BiwengerApiException;
 import java.io.IOException;
@@ -96,12 +100,12 @@ class DailySyncTest {
   @AfterEach
   void emptyTables() {
     jdbc.execute(
-        "TRUNCATE player, player_price_snapshot, market_snapshot, league_standing_snapshot");
+        "TRUNCATE player, player_price_snapshot, market_snapshot, league_standing_snapshot, sync_run");
   }
 
   @Test
   void storesTodaysSnapshotAndLogsASummary(CapturedOutput output) {
-    SyncSummary summary = sync.syncToday();
+    SyncSummary summary = sync.syncToday(SyncTrigger.SCHEDULED);
 
     assertThat(summary.day()).isEqualTo(LocalDate.of(2026, 10, 22));
     assertThat(summary.players()).isEqualTo(39);
@@ -118,9 +122,9 @@ class DailySyncTest {
 
   @Test
   void runningTwiceOnTheSameDayDoesNotDuplicate() {
-    sync.syncToday();
+    sync.syncToday(SyncTrigger.SCHEDULED);
     clock.advance(Duration.ofHours(2));
-    sync.syncToday();
+    sync.syncToday(SyncTrigger.SCHEDULED);
 
     assertThat(count("player_price_snapshot")).isEqualTo(39);
     assertThat(count("market_snapshot")).isEqualTo(19);
@@ -136,9 +140,9 @@ class DailySyncTest {
 
   @Test
   void theNextDayAddsANewSnapshot() {
-    sync.syncToday();
+    sync.syncToday(SyncTrigger.SCHEDULED);
     clock.advance(Duration.ofDays(1));
-    sync.syncToday();
+    sync.syncToday(SyncTrigger.SCHEDULED);
 
     assertThat(count("player")).isEqualTo(39);
     assertThat(count("player_price_snapshot")).isEqualTo(78);
@@ -148,20 +152,20 @@ class DailySyncTest {
 
   @Test
   void aPlayerWhoLeftTheMarketSinceTheFirstRunIsNotKept() throws IOException {
-    sync.syncToday();
+    sync.syncToday(SyncTrigger.SCHEDULED);
     stub("/api/v2/market", withSales(sample("market.json"), 5));
 
-    sync.syncToday();
+    sync.syncToday(SyncTrigger.SCHEDULED);
 
     assertThat(count("market_snapshot")).isEqualTo(5);
   }
 
   @Test
   void aManagerWhoLeftTheLeagueSinceTheFirstRunIsNotKept() throws IOException {
-    sync.syncToday();
+    sync.syncToday(SyncTrigger.SCHEDULED);
     stub("/api/v2/rounds/league", withStandings(sample("rounds-league.json"), 5));
 
-    sync.syncToday();
+    sync.syncToday(SyncTrigger.SCHEDULED);
 
     assertThat(count("league_standing_snapshot")).isEqualTo(5);
   }
@@ -171,7 +175,8 @@ class DailySyncTest {
     // The last listing breaks a database check (no negative prices), after the players were saved.
     stub("/api/v2/market", withLastSalePrice(sample("market.json"), -1));
 
-    assertThatThrownBy(() -> sync.syncToday()).isInstanceOf(DataIntegrityViolationException.class);
+    assertThatThrownBy(() -> sync.syncToday(SyncTrigger.SCHEDULED))
+        .isInstanceOf(DataIntegrityViolationException.class);
     assertThat(count("player")).isZero();
     assertThat(count("player_price_snapshot")).isZero();
   }
@@ -180,7 +185,7 @@ class DailySyncTest {
   void aBiwengerFailureStoresNothing() {
     biwenger.stubFor(get("/api/v2/market").willReturn(aResponse().withStatus(503)));
 
-    assertThatThrownBy(() -> sync.syncToday())
+    assertThatThrownBy(() -> sync.syncToday(SyncTrigger.SCHEDULED))
         .isInstanceOf(BiwengerApiException.class)
         .hasMessageContaining("HTTP 503");
     // The catalog had already been read, but nothing is written until every call succeeded.
@@ -189,11 +194,76 @@ class DailySyncTest {
   }
 
   @Test
+  void recordsEveryRunWithItsResult() {
+    sync.syncToday(SyncTrigger.SCHEDULED);
+
+    assertThat(sync.latestRun())
+        .get()
+        .isInstanceOfSatisfying(
+            SyncRun.Succeeded.class,
+            run -> {
+              assertThat(run.trigger()).isEqualTo(SyncTrigger.SCHEDULED);
+              assertThat(run.day()).isEqualTo(LocalDate.of(2026, 10, 22));
+              assertThat(run.players()).isEqualTo(39);
+              assertThat(run.marketListings()).isEqualTo(19);
+              assertThat(run.standings()).isEqualTo(6);
+            });
+
+    biwenger.stubFor(get("/api/v2/market").willReturn(aResponse().withStatus(503)));
+    clock.advance(Duration.ofMinutes(5));
+    assertThatThrownBy(() -> sync.syncToday(SyncTrigger.SCHEDULED));
+
+    assertThat(sync.latestRun())
+        .get()
+        .isInstanceOfSatisfying(
+            SyncRun.Failed.class, run -> assertThat(run.error()).contains("HTTP 503"));
+    assertThat(count("sync_run")).isEqualTo(2);
+  }
+
+  @Test
+  void onlyOneSyncRunsAtATime() throws InterruptedException {
+    // A slow Biwenger keeps the first sync running.
+    biwenger.stubFor(
+        get("/api/v2/market")
+            .willReturn(okJson(sampleUnchecked("market.json")).withFixedDelay(1_500)));
+    sync.startInBackground();
+
+    assertThat(sync.isRunning()).isTrue();
+    // The run is recorded before startInBackground returns, so a status read already shows it.
+    assertThat(sync.latestRun()).get().isInstanceOf(SyncRun.Running.class);
+    assertThatThrownBy(() -> sync.syncToday(SyncTrigger.SCHEDULED))
+        .isInstanceOf(SyncAlreadyRunningException.class);
+    assertThatThrownBy(() -> sync.startInBackground())
+        .isInstanceOf(SyncAlreadyRunningException.class);
+
+    waitUntilIdle();
+    assertThat(sync.latestRun()).get().extracting(SyncRun::result).isEqualTo(SyncResult.SUCCEEDED);
+    assertThat(sync.latestRun()).get().extracting(SyncRun::trigger).isEqualTo(SyncTrigger.MANUAL);
+    // After it finished, a new one can start.
+    assertThat(sync.syncToday(SyncTrigger.SCHEDULED).players()).isEqualTo(39);
+  }
+
+  private void waitUntilIdle() throws InterruptedException {
+    for (int i = 0; i < 100 && sync.isRunning(); i++) {
+      Thread.sleep(100);
+    }
+    assertThat(sync.isRunning()).as("the background sync finished").isFalse();
+  }
+
+  private static String sampleUnchecked(String name) {
+    try {
+      return sample(name);
+    } catch (IOException e) {
+      throw new java.io.UncheckedIOException(e);
+    }
+  }
+
+  @Test
   void theSnapshotDayIsTheMadridDate() {
     // 23:30 UTC on the 22nd is already the 23rd in Madrid.
     clock.set(Instant.parse("2026-10-22T23:30:00Z"));
 
-    assertThat(sync.syncToday().day()).isEqualTo(LocalDate.of(2026, 10, 23));
+    assertThat(sync.syncToday(SyncTrigger.SCHEDULED).day()).isEqualTo(LocalDate.of(2026, 10, 23));
   }
 
   private long count(String table) {

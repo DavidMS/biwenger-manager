@@ -7,7 +7,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.github.davidms.biwenger.app.biwenger.BiwengerProperties;
+import io.github.davidms.biwenger.app.sync.domain.SyncTrigger;
 import io.github.davidms.biwenger.app.sync.service.DailySyncService;
+import io.github.davidms.biwenger.app.sync.service.SyncAlreadyRunningException;
 import io.github.davidms.biwenger.client.BiwengerApiException;
 import java.net.URI;
 import java.time.Duration;
@@ -36,25 +38,34 @@ class DailySyncSchedulerTest {
   void skipsWhenNoLoginIsSet() {
     new DailySyncScheduler(sync, login("", "")).run();
 
-    verify(sync, never()).syncToday();
+    verify(sync, never()).syncToday(SyncTrigger.SCHEDULED);
   }
 
   @Test
   void runsWhenTheLoginIsSet() {
     new DailySyncScheduler(sync, login("manager@example.com", "pw")).run();
 
-    verify(sync).syncToday();
+    verify(sync).syncToday(SyncTrigger.SCHEDULED);
+  }
+
+  @Test
+  void skipsWhenAManualSyncIsRunning() {
+    when(sync.syncToday(SyncTrigger.SCHEDULED)).thenThrow(new SyncAlreadyRunningException());
+    var scheduler = new DailySyncScheduler(sync, login("manager@example.com", "pw"));
+
+    assertThatNoException().isThrownBy(scheduler::run);
   }
 
   @Test
   void aFailedSyncIsLoggedNotThrown() {
-    when(sync.syncToday()).thenThrow(new BiwengerApiException("Biwenger answered HTTP 503"));
+    when(sync.syncToday(SyncTrigger.SCHEDULED))
+        .thenThrow(new BiwengerApiException("Biwenger answered HTTP 503"));
 
     // A scheduled method that throws would only reach Spring's error handler; tomorrow's run must
     // still happen, so the scheduler logs and returns.
     var scheduler = new DailySyncScheduler(sync, login("manager@example.com", "pw"));
 
     assertThatNoException().isThrownBy(scheduler::run);
-    verify(sync).syncToday();
+    verify(sync).syncToday(SyncTrigger.SCHEDULED);
   }
 }
