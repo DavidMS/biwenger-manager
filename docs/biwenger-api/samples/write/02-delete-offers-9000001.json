@@ -1,0 +1,32 @@
+{
+  "method": "DELETE",
+  "path": "/api/v2/offers/9000001",
+  "query": "",
+  "requestHeaders": {
+    "accept": "application/json",
+    "content-type": "application/json; charset=utf-8",
+    "x-lang": "es",
+    "x-league": "1000001",
+    "x-user": "2000001",
+    "x-version": "631"
+  },
+  "otherRequestHeaderNames": [
+    "accept-encoding",
+    "accept-language",
+    "cache-control",
+    "origin",
+    "pragma",
+    "priority",
+    "referer",
+    "sec-ch-ua",
+    "sec-ch-ua-mobile",
+    "sec-ch-ua-platform",
+    "sec-fetch-dest",
+    "sec-fetch-mode",
+    "sec-fetch-site",
+    "user-agent"
+  ],
+  "requestBody": null,
+  "status": 204,
+  "responseBody": null
+}
