@@ -3,6 +3,7 @@
 Run from the repo root: python3 -m unittest discover -s scripts
 """
 
+import base64
 import contextlib
 import io
 import json
@@ -136,6 +137,25 @@ class SeveralFilesTest(unittest.TestCase):
         self.assertEqual(sorted(files), ["01-post-offers.json", "02-put-user.json"])
         self.assertIn('"user": 2000001', files["02-put-user.json"])
         self.assertNotIn("5551234", "".join(files.values()))
+
+
+class EncodingTest(unittest.TestCase):
+
+    def test_reads_answers_stored_as_base64(self):
+        account = entry("GET", "/api/v2/account")
+        account["response"]["content"] = {
+            "encoding": "base64",
+            "text": base64.b64encode(json.dumps(ACCOUNT).encode()).decode()}
+        status, files, _ = run(har(account, entry("POST", "/api/v2/offers", {"to": 5551234})))
+        self.assertEqual(status, 0)
+        self.assertIn('"to": 2000001', files["01-post-offers.json"])
+
+    def test_an_unreadable_account_answer_is_named_as_such(self):
+        account = entry("GET", "/api/v2/account")
+        account["response"]["content"] = {"text": "<html>not json</html>"}
+        with self.assertRaises(SystemExit) as stop:
+            run(har(account))
+        self.assertIn("can't be read as JSON", str(stop.exception.code))
 
 
 class SafetyTest(unittest.TestCase):

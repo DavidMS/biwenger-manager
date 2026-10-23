@@ -21,6 +21,8 @@ Samples go to docs/biwenger-api/samples/write/. Standard library only.
 """
 
 import argparse
+import base64
+import binascii
 import json
 import re
 import sys
@@ -61,7 +63,15 @@ def body_text(request):
 
 
 def response_text(response):
-    return ((response.get("content") or {}).get("text")) or ""
+    """The answer's body. Browsers may store it base64-encoded (content.encoding)."""
+    content = response.get("content") or {}
+    text = content.get("text") or ""
+    if text and content.get("encoding") == "base64":
+        try:
+            return base64.b64decode(text).decode("utf-8")
+        except (binascii.Error, UnicodeDecodeError):
+            return ""
+    return text
 
 
 def secret_values(har):
@@ -83,10 +93,15 @@ def secret_values(har):
 
 
 def build_anonymiser(har):
-    account = None
+    account, seen = None, False
     for method, path, _, _, response in entries(har):
         if method == "GET" and path == ACCOUNT_PATH:
-            account = parse_json(response_text(response))
+            seen = True
+            account = parse_json(response_text(response)) or account
+    if seen and not account:
+        sys.exit(
+            "The HAR has a GET /api/v2/account answer, but it can't be read as JSON. Run --list and\n"
+            "check how its body is stored.")
     if not account:
         sys.exit(
             "The HAR has no GET /api/v2/account answer, so ids and names can't be anonymised.\n"
@@ -154,7 +169,13 @@ def list_entries(har):
         print(f"  {count:>5}  {host}")
     print(f"\nCalls to {API_HOST}/api/ (numeric path parts masked):")
     for method, path, _, _, response in entries(har):
-        saved = "answer saved" if response_text(response) else "NO answer saved"
+        encoding = (response.get("content") or {}).get("encoding")
+        if not response_text(response):
+            saved = "NO answer saved"
+        elif parse_json(response_text(response)) is None:
+            saved = f"answer saved, not JSON ({encoding or 'plain text'})"
+        else:
+            saved = f"answer saved{' (' + encoding + ')' if encoding else ''}"
         print(f"  {method:<6} {re.sub(r'(?<=/)[0-9]+(?=/|$)', 'N', path):<45} HTTP {response.get('status')}  {saved}")
 
 
