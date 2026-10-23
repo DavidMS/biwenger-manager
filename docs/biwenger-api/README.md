@@ -6,6 +6,10 @@ When a fresh capture disagrees with these pages, trust the capture and update th
 
 The Java side is `BiwengerClient` in `backend/biwenger-client`, with one method and one set of records (`client.model`) per endpoint below. Its tests run against these samples.
 
+## Write endpoints
+
+Bid, cancel a bid, list a player for sale, withdraw a listing and save the lineup are in [write-endpoints.md](write-endpoints.md), with samples in `samples/write/`. They were captured from the human's browser (a HAR file, extracted by `scripts/biwenger_har_extract.py`), never sent by code.
+
 ## Endpoints (read-only)
 
 `API` is `https://biwenger.as.com/api/v2`. `CDN` is `https://cf.biwenger.com/api/v2`.
@@ -88,7 +92,7 @@ Trimming: the catalog keeps your squad and market players plus 10 more (at most 
 
 ## Not yet known
 
-- **Write endpoints** (bid, cancel bid, list a player for sale, accept or reject an offer, save a lineup). Spike issue #19 documents them in `write-endpoints.md` from browser captures made by the human. pybiwenger names `POST API/market` (list a player) and `API/market?player=` (remove one), but we have not verified either. Never call them outside the propose and confirm flow.
+- **Accepting or rejecting an offer,** and the captain and coach fields of a lineup. The other writes are in [write-endpoints.md](write-endpoints.md), captured from the browser in #19, which also lists what is still to capture. Never call a write outside the propose and confirm flow.
 - Which headers are strictly required per endpoint.
 - Board pagination: the board returned 10 entries and we don't know the parameters for older ones.
 - The meaning of some fields, marked *unknown* in each page (for example `fantasyPrice`, report event `type` codes, `lineup.count`).

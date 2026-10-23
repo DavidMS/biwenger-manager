@@ -53,7 +53,17 @@ Omitting `season` returns the current one. The catalog calls 2026/2027 season `"
 
 Conventions: money is whole euros (`int`), timestamps are Unix seconds, optional fields are usually **left out** rather than `null`.
 
-**Write endpoints** (bid, cancel bid, list for sale, accept/reject offer, save lineup) are not known yet. Spike #19 documents them in `docs/biwenger-api/write-endpoints.md`. Never call one without explicit user confirmation; in code they only run through the propose → confirm flow (Phase 6).
+**Write endpoints** ([`docs/biwenger-api/write-endpoints.md`](../../../docs/biwenger-api/write-endpoints.md), captured from the browser in #19). Never call one without explicit user confirmation; in code they only run through the propose → confirm flow (Phase 6), and they are never retried.
+
+| Action | Request | Answer |
+|---|---|---|
+| Place a bid | `POST /api/v2/offers` `{to: null, type: "purchase", amount, requestedPlayers: [id]}` | `200`, the offer with its `id` and `until` (market close) |
+| Cancel a bid | `DELETE /api/v2/offers/{offerId}` | `204` |
+| List for sale | `POST /api/v2/market` `{type: "sell", player, price}` | `204` |
+| Withdraw a listing | `DELETE /api/v2/market?player={id}` | `204` |
+| Save the lineup | `PUT /api/v2/user?fields=*,lineup(date)` `{lineup: {type, playersID: [11], reservesID: [4]}}` | `200`, your user |
+
+Accept/reject an offer, captain and coach are not captured yet. To capture a write, the human records a HAR in DevTools and runs `scripts/biwenger_har_extract.py` on it; Claude reads only its output.
 
 ## Game rules that drive features
 
