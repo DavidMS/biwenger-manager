@@ -150,10 +150,10 @@ def list_entries(har):
     print("Requests per host:")
     for host, count in sorted(hosts.items(), key=lambda item: -item[1]):
         print(f"  {count:>5}  {host}")
-    print(f"\nCalls to {API_HOST}/api/ (numbers masked):")
+    print(f"\nCalls to {API_HOST}/api/ (numeric path parts masked):")
     for method, path, _, _, response in entries(har):
         saved = "answer saved" if response_text(response) else "NO answer saved"
-        print(f"  {method:<6} {re.sub(r'[0-9]+', 'N', path):<45} HTTP {response.get('status')}  {saved}")
+        print(f"  {method:<6} {re.sub(r'(?<=/)[0-9]+(?=/|$)', 'N', path):<45} HTTP {response.get('status')}  {saved}")
 
 
 def main(argv=None, out_dir=None):
