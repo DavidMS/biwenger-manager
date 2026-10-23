@@ -10,10 +10,15 @@ import io.github.davidms.biwenger.client.model.PlayerPrices;
 import io.github.davidms.biwenger.client.model.PlayerReports;
 import io.github.davidms.biwenger.client.model.RoundStandings;
 import io.github.davidms.biwenger.client.model.Squad;
+import java.net.SocketTimeoutException;
+import java.net.http.HttpTimeoutException;
 import java.util.List;
+import java.util.function.LongSupplier;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.RestClient;
@@ -57,31 +62,71 @@ public final class BiwengerClient {
   private final RestClient cdn;
   private LeagueContext leagueContext;
 
+  /** With {@link BiwengerClientSettings#DEFAULTS}. */
+  public BiwengerClient(
+      RestClient restClient, RestClient cdnRestClient, BiwengerCredentials credentials) {
+    this(restClient, cdnRestClient, credentials, BiwengerClientSettings.DEFAULTS);
+  }
+
   /**
    * @param restClient configured by the caller with the API's base URL ({@code
    *     https://biwenger.as.com}), timeouts and User-Agent (ADR 0004)
    * @param cdnRestClient the same, for the public CDN ({@code https://cf.biwenger.com})
    * @param credentials the Biwenger login
+   * @param settings rate limit and retries
    */
   public BiwengerClient(
-      RestClient restClient, RestClient cdnRestClient, BiwengerCredentials credentials) {
-    RestClient base = withBiwengerDefaults(restClient);
-    this.cdn = withBiwengerDefaults(cdnRestClient);
-    BiwengerSession session = new BiwengerSession(base, credentials);
-    this.accountApi = base.mutate().requestInterceptor(AuthInterceptor.tokenOnly(session)).build();
-    this.api =
-        base.mutate()
-            .requestInterceptor(AuthInterceptor.withLeague(session, this::leagueContext))
-            .build();
+      RestClient restClient,
+      RestClient cdnRestClient,
+      BiwengerCredentials credentials,
+      BiwengerClientSettings settings) {
+    this(restClient, cdnRestClient, credentials, settings, System::nanoTime, Pause.SLEEP);
   }
 
-  private static RestClient withBiwengerDefaults(RestClient restClient) {
+  /** Tests pass their own clock and pause, to check the waits without waiting. */
+  BiwengerClient(
+      RestClient restClient,
+      RestClient cdnRestClient,
+      BiwengerCredentials credentials,
+      BiwengerClientSettings settings,
+      LongSupplier nanoTime,
+      Pause pause) {
+    var retry = new RetryInterceptor(settings, pause);
+    // One limiter for everything: API, CDN, login, re-logins and retries.
+    var rateLimit =
+        new RateLimitInterceptor(new RateLimiter(settings.minRequestInterval(), nanoTime, pause));
+    BiwengerSession session =
+        new BiwengerSession(configure(restClient, retry, null, rateLimit), credentials);
+    this.accountApi = configure(restClient, retry, AuthInterceptor.tokenOnly(session), rateLimit);
+    this.api =
+        configure(
+            restClient, retry, AuthInterceptor.withLeague(session, this::leagueContext), rateLimit);
+    this.cdn = configure(cdnRestClient, retry, null, rateLimit);
+  }
+
+  /**
+   * Adds the Biwenger headers, the client's JSON mapper and the interceptors in this order: retry
+   * (outermost), auth if any, then the rate limit, so every request that reaches the network waits.
+   */
+  private static RestClient configure(
+      RestClient restClient,
+      ClientHttpRequestInterceptor retry,
+      @Nullable ClientHttpRequestInterceptor auth,
+      ClientHttpRequestInterceptor rateLimit) {
     return restClient
         .mutate()
         .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
         .defaultHeader("X-Lang", "es")
         .configureMessageConverters(
             converters -> converters.withJsonConverter(new JacksonJsonHttpMessageConverter(JSON)))
+        .requestInterceptors(
+            interceptors -> {
+              interceptors.add(retry);
+              if (auth != null) {
+                interceptors.add(auth);
+              }
+              interceptors.add(rateLimit);
+            })
         .build();
   }
 
@@ -196,12 +241,27 @@ public final class BiwengerClient {
         throw new BiwengerApiException(
             "Biwenger's answer to GET " + path + " doesn't match docs/biwenger-api/", e);
       }
-      throw new BiwengerApiException("Calling Biwenger failed for GET " + path, e);
+      throw networkFailure("GET " + path, e);
     }
     if (envelope == null || envelope.data() == null) {
       throw new BiwengerApiException("Biwenger sent no data for GET " + path);
     }
     return envelope.data();
+  }
+
+  /** A failure without an HTTP answer: a timeout, or Biwenger couldn't be reached. */
+  static BiwengerApiException networkFailure(String call, RestClientException e) {
+    for (Throwable cause = e; cause != null; cause = cause.getCause()) {
+      if (cause instanceof HttpTimeoutException || cause instanceof SocketTimeoutException) {
+        return new BiwengerApiException("Biwenger did not answer " + call + " in time", e);
+      }
+    }
+    Throwable root = e;
+    while (root.getCause() != null) {
+      root = root.getCause();
+    }
+    return new BiwengerApiException(
+        "Could not reach Biwenger for " + call + " (" + root.getClass().getSimpleName() + ")", e);
   }
 
   private static LeagueContext findLaLigaLeague(Account account) {

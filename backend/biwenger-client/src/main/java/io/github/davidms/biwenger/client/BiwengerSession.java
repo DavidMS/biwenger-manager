@@ -77,7 +77,7 @@ final class BiwengerSession {
       }
       throw new BiwengerApiException("Biwenger login failed (HTTP " + status + ")");
     } catch (RestClientException e) {
-      throw new BiwengerApiException("Calling Biwenger failed for the login", e);
+      throw BiwengerClient.networkFailure("the login", e);
     }
     if (response == null || response.token() == null || response.token().isBlank()) {
       throw new BiwengerAuthenticationException("Biwenger accepted the login but sent no token");

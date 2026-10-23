@@ -28,6 +28,7 @@ class BiwengerConfiguration {
     return new BiwengerClient(
         common.clone().baseUrl(properties.baseUrl()).build(),
         common.clone().baseUrl(properties.cdnBaseUrl()).build(),
-        new BiwengerCredentials(properties.email(), properties.password()));
+        new BiwengerCredentials(properties.email(), properties.password()),
+        properties.clientSettings());
   }
 }
