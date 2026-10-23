@@ -6,7 +6,7 @@ A personal web app to manage a [Biwenger](https://biwenger.as.com/) fantasy foot
 
 It is also a **tutorial on building software with AI**. Almost all of it is written by [Claude Code](https://claude.com/claude-code), one GitHub issue at a time, and the whole process is documented: the prompts, what the AI did, what had to be corrected and what we learned.
 
-> **Status:** Phase 2 (Biwenger API client) in progress. The API is documented from real captures and the backend can log in to Biwenger; the pages are still empty until Phases 3–4.
+> **Status:** Phase 2 (Biwenger API client) is done. The API is documented from real captures and the backend has a tested client for it; the pages are still empty until Phases 3–4.
 
 ## Start here
 
