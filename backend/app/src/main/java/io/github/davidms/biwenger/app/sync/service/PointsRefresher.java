@@ -5,7 +5,7 @@ import io.github.davidms.biwenger.app.biwenger.BiwengerGateway;
 import io.github.davidms.biwenger.app.biwenger.DailyData;
 import io.github.davidms.biwenger.app.league.domain.Round;
 import io.github.davidms.biwenger.app.league.domain.RoundStatus;
-import io.github.davidms.biwenger.app.player.persistence.MatchReportWriter;
+import io.github.davidms.biwenger.app.player.service.MatchReports;
 import io.github.davidms.biwenger.client.BiwengerApiException;
 import java.lang.System.Logger.Level;
 import java.sql.Timestamp;
@@ -21,8 +21,13 @@ import org.springframework.stereotype.Service;
  * Keeps match points current (#78). Part of the daily sync, so it never overlaps one: when the
  * catalog shows a finished round that hasn't been refreshed, it fetches every player's reports (one
  * CDN call each, which returns the whole season) and records the rounds as refreshed. It waits for
- * a running backfill by skipping that day, and leaves the rounds pending if any player failed, so
- * the next sync tries again. It never throws: the day's snapshot is already stored.
+ * a running backfill by skipping that day (best effort: both write the same reports idempotently,
+ * so an overlap does no harm).
+ *
+ * <p>A transient failure (Biwenger down, a timeout) leaves the rounds pending, so the next sync
+ * tries again. A permanent one (a 4xx, an answer that doesn't match docs/biwenger-api/) is logged
+ * and doesn't block the rounds: retrying it every day would cost ~550 calls and change nothing. It
+ * never throws: the day's snapshot is already stored.
  */
 @Service
 class PointsRefresher {
@@ -31,14 +36,14 @@ class PointsRefresher {
   private static final System.Logger LOG = System.getLogger(PointsRefresher.class.getName());
 
   private final BiwengerGateway biwenger;
-  private final MatchReportWriter reports;
+  private final MatchReports reports;
   private final BackfillService backfill;
   private final JdbcTemplate jdbc;
   private final Clock clock;
 
   PointsRefresher(
       BiwengerGateway biwenger,
-      MatchReportWriter reports,
+      MatchReports reports,
       BackfillService backfill,
       JdbcTemplate jdbc,
       Clock clock) {
@@ -68,7 +73,8 @@ class PointsRefresher {
     }
     Instant started = clock.instant();
     int done = 0;
-    int failed = 0;
+    int unreadable = 0;
+    int toRetry = 0;
     int failuresInARow = 0;
     for (var player : data.players()) {
       if (failuresInARow == MAX_FAILURES_IN_A_ROW) {
@@ -81,27 +87,31 @@ class PointsRefresher {
         done++;
         failuresInARow = 0;
       } catch (RuntimeException e) {
-        failed++;
-        failuresInARow++;
-        if (e instanceof BiwengerApiException) {
+        if (e instanceof BiwengerApiException api && api.isTransient()) {
+          toRetry++;
+          failuresInARow++;
           LOG.log(
               Level.WARNING, "Points refresh skipped player {0}: {1}", player.id(), e.getMessage());
         } else {
-          LOG.log(Level.WARNING, "Points refresh skipped player " + player.id(), e);
+          // Won't change by trying again: log it with the reason, and don't block the rounds.
+          unreadable++;
+          failuresInARow = 0;
+          LOG.log(Level.WARNING, "Points refresh can't read player " + player.id(), e);
         }
       }
     }
-    boolean complete = done == data.players().size();
+    boolean complete = toRetry == 0 && done + unreadable == data.players().size();
     if (complete) {
       markRefreshed(pending, done);
     }
     LOG.log(
         Level.INFO,
-        "Points refresh {0}: rounds {1}, {2} players done, {3} failed, in {4} s",
+        "Points refresh {0}: rounds {1}, {2} players done, {3} unreadable, {4} to retry, in {5} s",
         complete ? "done" : "incomplete (rounds stay pending)",
         pending,
         done,
-        failed,
+        unreadable,
+        toRetry,
         Duration.between(started, clock.instant()).toSeconds());
   }
 

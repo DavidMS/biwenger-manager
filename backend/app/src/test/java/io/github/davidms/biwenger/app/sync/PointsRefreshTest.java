@@ -177,6 +177,37 @@ class PointsRefreshTest {
   }
 
   @Test
+  void aPlayerWhosePageIsBrokenForGoodDoesNotBlockTheRounds() {
+    // A 404 won't change by asking again: retrying every day would cost ~550 calls for nothing.
+    biwenger.stubFor(
+        get(urlPathEqualTo(CDN + firstSlug())).willReturn(aResponse().withStatus(404)));
+
+    sync.syncToday(SyncTrigger.SCHEDULED);
+
+    assertThat(count("points_refresh")).isEqualTo(FINISHED_ROUNDS);
+    assertThat(count("player_points_report")).isEqualTo((PLAYERS - 1) * 9L);
+
+    clock.advance(Duration.ofDays(1));
+    sync.syncToday(SyncTrigger.SCHEDULED);
+
+    assertThat(cdnCalls()).isEqualTo(PLAYERS); // nothing fetched the next day
+  }
+
+  @Test
+  void noFinishedRoundMeansNoCdnCalls() throws IOException {
+    String catalog = sample("catalog.json");
+    for (long round : finishedRoundIds(catalog)) {
+      catalog = withRoundStatus(catalog, round, "pending");
+    }
+    stub("/api/v2/competitions/la-liga/data?lang=es&score=1", catalog);
+
+    sync.syncToday(SyncTrigger.SCHEDULED);
+
+    assertThat(cdnCalls()).isZero();
+    assertThat(count("points_refresh")).isZero();
+  }
+
+  @Test
   void aBiwengerOutageStopsTheRefreshButNotTheSync() {
     biwenger.stubFor(get(urlPathMatching(CDN + ".*")).willReturn(aResponse().withStatus(503)));
 
@@ -200,14 +231,29 @@ class PointsRefreshTest {
   }
 
   private static String withRoundFinished(String catalog, long roundId) {
+    return withRoundStatus(catalog, roundId, "finished");
+  }
+
+  private static String withRoundStatus(String catalog, long roundId, String status) {
     JsonMapper json = JsonMapper.builder().build();
     ObjectNode root = (ObjectNode) json.readTree(catalog);
     for (var round : root.get("data").get("season").get("rounds")) {
       if (round.get("id").asLong() == roundId) {
-        ((ObjectNode) round).put("status", "finished");
+        ((ObjectNode) round).put("status", status);
       }
     }
     return json.writeValueAsString(root);
+  }
+
+  private static java.util.List<Long> finishedRoundIds(String catalog) {
+    JsonMapper json = JsonMapper.builder().build();
+    var ids = new java.util.ArrayList<Long>();
+    for (var round : json.readTree(catalog).get("data").get("season").get("rounds")) {
+      if ("finished".equals(round.get("status").asString())) {
+        ids.add(round.get("id").asLong());
+      }
+    }
+    return ids;
   }
 
   private static void stub(String url, String body) {

@@ -1,7 +1,7 @@
 package io.github.davidms.biwenger.app.backfill.service;
 
 import io.github.davidms.biwenger.app.biwenger.PlayerHistory;
-import io.github.davidms.biwenger.app.player.persistence.MatchReportWriter;
+import io.github.davidms.biwenger.app.player.service.MatchReports;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -37,9 +37,9 @@ class HistoryWriter {
       """;
 
   private final JdbcTemplate jdbc;
-  private final MatchReportWriter reports;
+  private final MatchReports reports;
 
-  HistoryWriter(JdbcTemplate jdbc, MatchReportWriter reports) {
+  HistoryWriter(JdbcTemplate jdbc, MatchReports reports) {
     this.jdbc = jdbc;
     this.reports = reports;
   }

@@ -75,7 +75,10 @@ final class BiwengerSession {
                 + status
                 + "): check BIWENGER_EMAIL and BIWENGER_PASSWORD");
       }
-      throw new BiwengerApiException("Biwenger login failed (HTTP " + status + ")");
+      throw new BiwengerApiException(
+          "Biwenger login failed (HTTP " + status + ")",
+          null,
+          BiwengerApiException.isTransientStatus(status));
     } catch (RestClientException e) {
       throw BiwengerClient.networkFailure("the login", e);
     }

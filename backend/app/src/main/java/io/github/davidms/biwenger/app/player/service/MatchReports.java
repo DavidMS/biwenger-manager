@@ -1,4 +1,4 @@
-package io.github.davidms.biwenger.app.player.persistence;
+package io.github.davidms.biwenger.app.player.service;
 
 import io.github.davidms.biwenger.app.player.domain.MatchResult;
 import java.sql.Timestamp;
@@ -6,15 +6,17 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Writes a player's match reports in one batch: used by the backfill (#24) and by the refresh after
- * each round (#78). A newer answer replaces an older one, so running it twice changes nothing.
+ * Stores a player's match reports in one batch: used by the backfill (#24) and by the refresh after
+ * each round (#78), so other features use this service, not the player tables. A newer answer
+ * replaces an older one, so running it twice changes nothing. Plain SQL, as for every bulk write
+ * (ADR 0005).
  */
-@Repository
-public class MatchReportWriter {
+@Service
+public class MatchReports {
 
   private static final String MATCH =
       """
@@ -30,7 +32,7 @@ public class MatchReportWriter {
 
   private final JdbcTemplate jdbc;
 
-  MatchReportWriter(JdbcTemplate jdbc) {
+  MatchReports(JdbcTemplate jdbc) {
     this.jdbc = jdbc;
   }
 
