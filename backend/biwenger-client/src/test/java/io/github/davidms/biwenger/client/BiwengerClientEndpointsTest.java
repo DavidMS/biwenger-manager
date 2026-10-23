@@ -78,7 +78,8 @@ class BiwengerClientEndpointsTest {
         new BiwengerClient(
             RestClient.create(biwenger.baseUrl()),
             RestClient.create(biwenger.baseUrl()),
-            new BiwengerCredentials("manager@example.com", "s3cret-password"));
+            new BiwengerCredentials("manager@example.com", "s3cret-password"),
+            TestSettings.NO_WAITING);
   }
 
   @Test
@@ -439,7 +440,10 @@ class BiwengerClientEndpointsTest {
 
     Market market =
         new BiwengerClient(
-                strictRestClient, strictRestClient, new BiwengerCredentials("m@example.com", "pw"))
+                strictRestClient,
+                strictRestClient,
+                new BiwengerCredentials("m@example.com", "pw"),
+                TestSettings.NO_WAITING)
             .market();
 
     assertThat(market.sales()).hasSize(19);

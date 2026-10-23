@@ -20,6 +20,8 @@ class BiwengerConfiguration {
 
   @Bean
   BiwengerClient biwengerClient(RestClient.Builder builder, BiwengerProperties properties) {
+    // The JDK client resends an idempotent GET once on a reset connection, on its own. Never set
+    // jdk.httpclient.enableAllMethodRetry: it would resend POSTs too, and a write must not repeat.
     var httpClient = HttpClient.newBuilder().connectTimeout(properties.connectTimeout()).build();
     var requestFactory = new JdkClientHttpRequestFactory(httpClient);
     requestFactory.setReadTimeout(properties.readTimeout());
@@ -28,6 +30,7 @@ class BiwengerConfiguration {
     return new BiwengerClient(
         common.clone().baseUrl(properties.baseUrl()).build(),
         common.clone().baseUrl(properties.cdnBaseUrl()).build(),
-        new BiwengerCredentials(properties.email(), properties.password()));
+        new BiwengerCredentials(properties.email(), properties.password()),
+        properties.clientSettings());
   }
 }

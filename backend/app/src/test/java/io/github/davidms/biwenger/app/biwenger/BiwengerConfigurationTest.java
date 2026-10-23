@@ -39,6 +39,7 @@ class BiwengerConfigurationTest {
     registry.add("biwenger.cdn-base-url", () -> biwenger.baseUrl() + "/cdn");
     registry.add("biwenger.email", () -> "manager@example.com");
     registry.add("biwenger.password", () -> "s3cret-password");
+    registry.add("biwenger.min-request-interval", () -> "0s");
   }
 
   @Autowired BiwengerClient client;

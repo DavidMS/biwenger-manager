@@ -70,8 +70,9 @@ Conventions: money is whole euros (`int`), timestamps are Unix seconds, optional
 ## Be gentle with the API
 
 - Cache the catalog and snapshot it once a day.
-- Rate-limit, set timeouts and retry with backoff. Send a sensible `User-Agent`.
-- Map failures to `BiwengerApiException` with the endpoint and status, never the token.
+- The client already rate-limits (500 ms between requests, API and CDN together), retries `GET`s on 5xx and network errors with backoff, and has connect and read timeouts. Tune them with `biwenger.*` (see `backend/CLAUDE.md`), not with loops of your own.
+- Writes are never retried automatically: a bid sent twice is a real loss.
+- Failures are `BiwengerApiException`s with the call and status, never the token or the response body. A User-Agent names the app.
 
 ## Capture with the script
 
