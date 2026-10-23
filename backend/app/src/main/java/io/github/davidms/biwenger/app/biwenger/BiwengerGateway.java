@@ -1,5 +1,6 @@
 package io.github.davidms.biwenger.app.biwenger;
 
+import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
 import io.github.davidms.biwenger.app.player.domain.MatchResult;
 import io.github.davidms.biwenger.client.BiwengerClient;
 import java.util.List;
@@ -17,6 +18,12 @@ public class BiwengerGateway {
 
   BiwengerGateway(BiwengerClient client) {
     this.client = client;
+  }
+
+  /** The account, your team in the La Liga league, and that league. One call, or none if known. */
+  public ConnectedAccount connectedAccount() {
+    var league = client.leagueContext();
+    return BiwengerMapper.connectedAccount(client.account(), league.leagueId());
   }
 
   /** The season, the league's scoring system and every catalog player: what the backfill does. */

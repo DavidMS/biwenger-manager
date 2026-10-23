@@ -1,16 +1,14 @@
-import { render, screen, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { RouterProvider, createMemoryRouter } from 'react-router'
-import { describe, expect, it } from 'vitest'
+import { screen, within } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
 import { navItems } from '@/app/navigation'
-import { routes } from '@/app/routes'
+import { renderApp as renderAt } from '@/test/render'
 
-function renderAt(path: string) {
-  const user = userEvent.setup()
-  const router = createMemoryRouter(routes, { initialEntries: [path] })
-  render(<RouterProvider router={router} />)
-  return { user }
-}
+// Pages that fetch data (Settings) get answers that never come: this test is about navigation.
+vi.mock('@/features/settings/api', () => ({
+  fetchAccount: () => new Promise(() => {}),
+  fetchSyncStatus: () => new Promise(() => {}),
+  startSync: () => new Promise(() => {}),
+}))
 
 describe('AppLayout', () => {
   it('shows a link to every section in the main navigation', () => {
@@ -26,6 +24,7 @@ describe('AppLayout', () => {
       'Market',
       'Standings',
       'Advisor',
+      'Settings',
     ])
   })
 

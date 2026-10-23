@@ -5,4 +5,5 @@ export const navItems = [
   { to: '/market', label: 'Market' },
   { to: '/standings', label: 'Standings' },
   { to: '/advisor', label: 'Advisor' },
+  { to: '/settings', label: 'Settings' },
 ] as const

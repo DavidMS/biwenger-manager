@@ -247,6 +247,19 @@ class BiwengerMapperTest {
   }
 
   @Test
+  void mapsTheConnectedAccount() {
+    var account = sampleData("account.json", io.github.davidms.biwenger.client.model.Account.class);
+
+    // In the sample the account's name is the same as its team's (both anonymised).
+    assertThat(BiwengerMapper.connectedAccount(account, 1_000_001))
+        .isEqualTo(
+            new io.github.davidms.biwenger.app.account.domain.ConnectedAccount(
+                "Manager 1", "Manager 1", "Example League"));
+    assertThatThrownBy(() -> BiwengerMapper.connectedAccount(account, 42))
+        .hasMessageContaining("doesn't match docs/biwenger-api/");
+  }
+
+  @Test
   void mapsTheLeagueWithManagersInIdOrder() {
     League mapped = BiwengerMapper.league(league);
 
