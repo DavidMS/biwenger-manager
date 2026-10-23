@@ -158,6 +158,29 @@ class EncodingTest(unittest.TestCase):
         self.assertIn("can't be read as JSON", str(stop.exception.code))
 
 
+class AvatarTest(unittest.TestCase):
+
+    def test_replaces_your_icon_in_an_answer_parsed_separately(self):
+        # Regression: the anonymiser once recognised managers by object identity, which fails when
+        # the body is parsed again, so a real Google profile picture got through.
+        me_with_photo = dict(ME, icon="https://lh3.googleusercontent.com/a-/real-photo=s300-c")
+        status, files, _ = run(har(
+            entry("GET", "/api/v2/account", response_body=ACCOUNT),
+            entry("PUT", "/api/v2/user", {"lineup": {}}, {"status": 200, "data": me_with_photo})))
+        self.assertEqual(status, 0)
+        sample = json.loads(files["01-put-user.json"])
+        self.assertEqual(sample["responseBody"]["data"]["icon"], "https://example.invalid/icon.png")
+
+    def test_an_unknown_object_with_a_personal_avatar_is_not_written(self):
+        stranger = {"id": 4242, "nick": "x", "photo": "https://lh3.googleusercontent.com/a-/someone"}
+        status, files, printed = run(har(
+            entry("GET", "/api/v2/account", response_body=ACCOUNT),
+            entry("PUT", "/api/v2/user", {"lineup": {}}, {"status": 200, "data": stranger})))
+        self.assertEqual(status, 1)
+        self.assertEqual(files, {})
+        self.assertIn("a personal avatar URL", printed)
+
+
 class SafetyTest(unittest.TestCase):
 
     def test_refuses_a_har_inside_the_repo(self):
