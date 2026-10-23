@@ -71,7 +71,7 @@ Stop with `docker compose down`. Add `-v` to also delete the database.
 
 | Part | Needs | Run |
 |---|---|---|
-| Backend | JDK 25 (`sdk env` in `backend/`) | `cd backend && ./mvnw -pl app -am spring-boot:run` |
+| Backend | JDK 25 (`sdk env` in `backend/`), and the database: `docker compose up -d db` | `cd backend && SPRING_DATASOURCE_PASSWORD=<your POSTGRES_PASSWORD> ./mvnw -pl app -am spring-boot:run` |
 | Frontend | Node 24 (`nvm use` in `frontend/`) | `cd frontend && npm install && npm run dev`, then open http://localhost:5173 |
 
 The Vite dev server forwards `/api` to the backend on port 8080, just like nginx does in Docker. The commands for tests, lint and formatting are in [CLAUDE.md](CLAUDE.md#commands).

@@ -10,6 +10,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import io.github.davidms.biwenger.app.TestcontainersConfiguration;
 import io.github.davidms.biwenger.client.BiwengerClient;
 import io.github.davidms.biwenger.client.LeagueContext;
 import java.io.IOException;
@@ -19,11 +20,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
 /** The client bean built from {@code biwenger.*} settings, against WireMock instead of Biwenger. */
 @SpringBootTest
+@Import(TestcontainersConfiguration.class)
 class BiwengerConfigurationTest {
 
   // Plain-text HTTP/2 off: see BiwengerClientAuthTest in biwenger-client.

@@ -9,10 +9,12 @@ public sealed interface Seller {
   /** A free player, sold by the game. */
   record Game() implements Seller {}
 
-  record ByManager(Manager manager) implements Seller {
+  /** A manager selling a player he owns. */
+  record ByManager(Manager manager, Ownership ownership) implements Seller {
 
     public ByManager {
       Objects.requireNonNull(manager, "manager");
+      Objects.requireNonNull(ownership, "ownership");
     }
   }
 }
