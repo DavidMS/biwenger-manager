@@ -18,7 +18,7 @@ Prompts are always quoted exactly as they were typed, typos included.
 | 00 | [Planning with AI](00-planning-with-ai.md) | Before Phase 0 | Written |
 | 01 | [Setting up Claude Code](01-setting-up-claude-code.md) | 0 — AI-ready foundation | Written |
 | 02 | [Scaffolding a project with AI](02-scaffolding-with-ai.md) | 1 — Project skeleton | Written |
-| 03 | Reverse-engineering an API with AI | 2 — Biwenger API client | Planned |
+| 03 | [Reverse-engineering an API with AI](03-reverse-engineering-an-api.md) | 2 — Biwenger API client | Written |
 | 04 | Letting AI design a schema | 3 — Domain, persistence and history | Planned |
 | 05 | Building UI with AI | 4 — Read-only UI | Planned |
 | 06 | Designing deterministic algorithms with AI | 5 — Advisor engine | Planned |
@@ -49,3 +49,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #17 | [CDN endpoints: price history and match reports](journal/0017-cdn-endpoints.md) |
 | #18 | [Client resilience: rate limiting, retries, timeouts, errors](journal/0018-client-resilience.md) |
 | #19 | [Spike: discover the Biwenger write endpoints](journal/0019-write-endpoints.md) |
+| #20 | [Tutorial chapter 03](journal/0020-tutorial-chapter-03.md) |

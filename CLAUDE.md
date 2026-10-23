@@ -4,7 +4,7 @@ A personal web app to manage a [Biwenger](https://biwenger.as.com/) fantasy foot
 
 ## Status
 
-Phase 1 (project skeleton) is done: the backend (health endpoint only) and frontend (layout and empty pages) build, run in Docker Compose and are checked by CI. Phase 2 (Biwenger API client) is in progress: the API is documented in `docs/biwenger-api/` and `biwenger-client` logs in and finds the league (#15). Items marked *(planned)* below don't exist yet.
+Phase 1 (project skeleton) is done: the backend (health endpoint only) and frontend (layout and empty pages) build, run in Docker Compose and are checked by CI. Phase 2 (Biwenger API client) is done: the API is documented from real captures in `docs/biwenger-api/`, and `biwenger-client` reads every endpoint, gently and with clear errors. Phase 3 (domain, persistence and history) is next; the app doesn't call Biwenger yet. Items marked *(planned)* below don't exist yet.
 
 ## Repo map
 
