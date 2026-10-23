@@ -5,6 +5,8 @@ import io.github.davidms.biwenger.app.player.domain.MatchResult;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -62,13 +64,24 @@ class HistoryWriter {
             "SELECT player_id FROM backfill_progress WHERE season = ?", Long.class, season));
   }
 
+  /**
+   * Stores the history before {@code today}. Today's price belongs to the daily sync: writing it
+   * here could collide with a sync running at the same moment and roll back its whole day.
+   */
   @Transactional
   public void write(
-      String season, long playerId, int scoreId, PlayerHistory history, Instant syncedAt) {
+      String season,
+      long playerId,
+      int scoreId,
+      PlayerHistory history,
+      LocalDate today,
+      Instant syncedAt) {
     Timestamp synced = Timestamp.from(syncedAt);
+    var pastPrices =
+        history.prices().stream().filter(price -> price.day().isBefore(today)).toList();
     jdbc.batchUpdate(
         PRICE,
-        history.prices().stream()
+        pastPrices.stream()
             .map(
                 price ->
                     new Object[] {
@@ -78,13 +91,13 @@ class HistoryWriter {
     jdbc.batchUpdate(
         MATCH,
         history.matches().stream().map(m -> matchRow(playerId, scoreId, m, synced)).toList());
-    jdbc.update(DONE, season, playerId, history.prices().size(), history.matches().size(), synced);
+    jdbc.update(DONE, season, playerId, pastPrices.size(), history.matches().size(), synced);
   }
 
   private static Object[] matchRow(
       long playerId, int scoreId, MatchResult match, Timestamp synced) {
     List<Object> row =
-        new java.util.ArrayList<>(
+        new ArrayList<>(
             List.of(
                 playerId,
                 match.matchId(),

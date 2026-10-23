@@ -29,7 +29,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -117,7 +116,8 @@ class BackfillTest {
     assertThat(summary.season()).isEqualTo("2027");
     assertThat(summary.completed()).isEqualTo(PLAYERS);
     assertThat(summary.isFinished()).isTrue();
-    assertThat(count("player_price_snapshot")).isEqualTo(PLAYERS * 366L);
+    // 366 days of history, but today's belongs to the daily sync.
+    assertThat(count("player_price_snapshot")).isEqualTo(PLAYERS * 365L);
     assertThat(count("player_points_report")).isEqualTo(PLAYERS * 9L);
     assertThat(count("backfill_progress")).isEqualTo(PLAYERS);
     // Two CDN calls per player: prices and reports.
@@ -161,6 +161,50 @@ class BackfillTest {
     assertThat(second.isFinished()).isTrue();
     assertThat(cdnCalls()).isEqualTo(2);
     biwenger.verify(2, getRequestedFor(urlPathEqualTo(CDN + slug)));
+  }
+
+  @Test
+  void leavesTodayToTheDailySync() {
+    backfill.run();
+
+    assertThat(
+            jdbc.queryForObject(
+                "SELECT count(*) FROM player_price_snapshot WHERE snapshot_date = DATE '2026-10-22'",
+                Long.class))
+        .isZero();
+  }
+
+  @Test
+  void storesMissedMatchesWithTheirReason() throws IOException {
+    String slug = firstPlayerSlug();
+    long playerId = firstPlayerId();
+    biwenger.stubFor(
+        get(urlPathEqualTo(CDN + slug))
+            .withQueryParam("fields", matching("\\*,reports\\(.*"))
+            .willReturn(okJson(sample("player-reports-missed-matches.json"))));
+
+    backfill.run();
+
+    var rows =
+        jdbc.queryForList(
+            "SELECT played, points, minutes_played, absence FROM player_points_report"
+                + " WHERE player_id = ? ORDER BY match_date",
+            playerId);
+    assertThat(rows).hasSize(9);
+    assertThat(rows.getFirst())
+        .containsEntry("played", false)
+        .containsEntry("points", null)
+        .containsEntry("minutes_played", 0)
+        .containsEntry("absence", "INJURED");
+    assertThat(rows.get(6)).containsEntry("absence", "AVAILABLE"); // fit but not picked
+    assertThat(rows.get(7)).containsEntry("played", true).containsEntry("points", -4);
+  }
+
+  @Test
+  void aStopRequestOnlyAppliesToARunInProgress() {
+    backfill.requestStop();
+
+    assertThat(backfill.run().completed()).isEqualTo(PLAYERS);
   }
 
   @Test
@@ -219,11 +263,11 @@ class BackfillTest {
   }
 
   private static String firstPlayerSlug() {
-    List<String> slugs =
-        BiwengerMapper.players(Samples.data("catalog.json", Catalog.class)).stream()
-            .map(p -> p.slug())
-            .toList();
-    return slugs.getFirst();
+    return BiwengerMapper.players(Samples.data("catalog.json", Catalog.class)).getFirst().slug();
+  }
+
+  private static long firstPlayerId() {
+    return BiwengerMapper.players(Samples.data("catalog.json", Catalog.class)).getFirst().id();
   }
 
   private static String sample(String name) throws IOException {

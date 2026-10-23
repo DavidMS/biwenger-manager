@@ -2,10 +2,12 @@ package io.github.davidms.biwenger.app.backfill.service;
 
 import io.github.davidms.biwenger.app.biwenger.BackfillPlan;
 import io.github.davidms.biwenger.app.biwenger.BiwengerGateway;
+import io.github.davidms.biwenger.client.BiwengerApiException;
 import java.lang.System.Logger.Level;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,7 @@ public class BackfillService {
   private final BiwengerGateway biwenger;
   private final HistoryWriter writer;
   private final Clock clock;
+  private volatile boolean stopRequested;
 
   BackfillService(BiwengerGateway biwenger, HistoryWriter writer, Clock clock) {
     this.biwenger = biwenger;
@@ -33,8 +36,15 @@ public class BackfillService {
     this.clock = clock;
   }
 
+  /** Asks a running backfill to stop after the current player, for example when the app stops. */
+  public void requestStop() {
+    stopRequested = true;
+  }
+
   public BackfillSummary run() {
+    stopRequested = false;
     Instant started = clock.instant();
+    LocalDate today = LocalDate.ofInstant(started, clock.getZone());
     BackfillPlan plan = biwenger.backfillPlan();
     Set<Long> done = writer.completedPlayers(plan.season());
     int alreadyDone = 0;
@@ -46,13 +56,17 @@ public class BackfillService {
         alreadyDone++;
         continue;
       }
+      if (stopRequested) {
+        LOG.log(Level.INFO, "Backfill stops: asked to stop (the app is shutting down?)");
+        break;
+      }
       if (failuresInARow == MAX_FAILURES_IN_A_ROW) {
         LOG.log(Level.WARNING, "Backfill stops after {0} failures in a row", failuresInARow);
         break;
       }
       try {
         var history = biwenger.playerHistory(player.slug(), plan.scoreId());
-        writer.write(plan.season(), player.id(), plan.scoreId(), history, clock.instant());
+        writer.write(plan.season(), player.id(), plan.scoreId(), history, today, clock.instant());
         completed++;
         failuresInARow = 0;
       } catch (RuntimeException e) {
@@ -60,7 +74,12 @@ public class BackfillService {
         // a later run tries again.
         failed++;
         failuresInARow++;
-        LOG.log(Level.WARNING, "Backfill skipped player {0}: {1}", player.id(), e.getMessage());
+        if (e instanceof BiwengerApiException) {
+          LOG.log(Level.WARNING, "Backfill skipped player {0}: {1}", player.id(), e.getMessage());
+        } else {
+          // Not Biwenger's fault: maybe our bug. Keep the stack trace.
+          LOG.log(Level.WARNING, "Backfill skipped player " + player.id(), e);
+        }
       }
       if ((completed + failed) % LOG_EVERY == 0) {
         LOG.log(

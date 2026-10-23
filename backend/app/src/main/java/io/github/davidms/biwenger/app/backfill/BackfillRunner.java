@@ -2,6 +2,7 @@ package io.github.davidms.biwenger.app.backfill;
 
 import io.github.davidms.biwenger.app.backfill.service.BackfillService;
 import io.github.davidms.biwenger.app.biwenger.BiwengerProperties;
+import jakarta.annotation.PreDestroy;
 import java.lang.System.Logger.Level;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -34,6 +35,12 @@ class BackfillRunner {
       return;
     }
     Thread.ofVirtual().name("backfill").start(this::run);
+  }
+
+  /** Stops the loop before Spring closes the database, instead of failing the next players. */
+  @PreDestroy
+  void stop() {
+    backfill.requestStop();
   }
 
   void run() {

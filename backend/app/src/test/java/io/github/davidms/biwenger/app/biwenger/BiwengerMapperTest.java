@@ -3,6 +3,7 @@ package io.github.davidms.biwenger.app.biwenger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.github.davidms.biwenger.app.Samples;
 import io.github.davidms.biwenger.app.common.Money;
 import io.github.davidms.biwenger.app.league.domain.League;
 import io.github.davidms.biwenger.app.league.domain.Manager;
@@ -22,13 +23,16 @@ import io.github.davidms.biwenger.app.player.domain.Team;
 import io.github.davidms.biwenger.client.model.Catalog;
 import io.github.davidms.biwenger.client.model.Fitness;
 import io.github.davidms.biwenger.client.model.Market;
+import io.github.davidms.biwenger.client.model.MatchReport;
 import io.github.davidms.biwenger.client.model.PlayerPrices;
 import io.github.davidms.biwenger.client.model.PlayerReports;
 import io.github.davidms.biwenger.client.model.RoundStandings;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.DeserializationFeature;
@@ -201,22 +205,23 @@ class BiwengerMapperTest {
   @Test
   void mapsAPriceHistory() {
     List<DailyPrice> prices =
-        BiwengerMapper.prices(data2("player-prices.json", PlayerPrices.class));
+        BiwengerMapper.prices(sampleData("player-prices.json", PlayerPrices.class));
 
     assertThat(prices).hasSize(366);
     assertThat(prices.getFirst())
-        .isEqualTo(new DailyPrice(java.time.LocalDate.of(2025, 10, 22), Money.euros(6_730_000)));
+        .isEqualTo(new DailyPrice(LocalDate.of(2025, 10, 22), Money.euros(6_730_000)));
   }
 
   @Test
   void mapsMatchesPlayedAndMissed() {
     List<MatchResult> ayoze =
-        BiwengerMapper.matches(data2("player-reports.json", PlayerReports.class), 1);
+        BiwengerMapper.matches(sampleData("player-reports.json", PlayerReports.class), 1);
     assertThat(ayoze).hasSize(9).allMatch(m -> m.outcome() instanceof MatchResult.Played);
     assertThat(ayoze.getFirst().outcome()).isEqualTo(new MatchResult.Played(2, 56));
 
     List<MatchResult> marin =
-        BiwengerMapper.matches(data2("player-reports-missed-matches.json", PlayerReports.class), 1);
+        BiwengerMapper.matches(
+            sampleData("player-reports-missed-matches.json", PlayerReports.class), 1);
     assertThat(marin)
         .extracting(MatchResult::outcome)
         .containsExactly(
@@ -229,6 +234,16 @@ class BiwengerMapperTest {
             new MatchResult.Missed(PlayerStatus.AVAILABLE),
             new MatchResult.Played(-4, 66),
             new MatchResult.Missed(PlayerStatus.SUSPENDED));
+  }
+
+  @Test
+  void aMissedMatchWithoutAStatusIsUnknown() {
+    var first =
+        sampleData("player-reports-missed-matches.json", PlayerReports.class).reports().getFirst();
+    var noStatus = new MatchReport(first.match(), first.home(), Map.of(), null, null);
+
+    assertThat(BiwengerMapper.match(noStatus, 1).outcome())
+        .isEqualTo(new MatchResult.Missed(PlayerStatus.UNKNOWN));
   }
 
   @Test
@@ -275,8 +290,8 @@ class BiwengerMapperTest {
         .orElseThrow();
   }
 
-  private static <T> T data2(String sample, Class<T> type) {
-    return io.github.davidms.biwenger.app.Samples.data(sample, type);
+  private static <T> T sampleData(String sample, Class<T> type) {
+    return Samples.data(sample, type);
   }
 
   private static <T> T data(String sample, Class<T> type) throws IOException {
