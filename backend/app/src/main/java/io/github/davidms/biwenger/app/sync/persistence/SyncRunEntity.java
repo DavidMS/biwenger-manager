@@ -70,14 +70,26 @@ public class SyncRunEntity {
     this.players = players;
     this.marketListings = marketListings;
     this.standings = standings;
+    this.error = null;
   }
 
   public void failed(Instant finishedAt, String error) {
     this.finishedAt = finishedAt;
     this.result = SyncResult.FAILED;
     String reason = error == null || error.isBlank() ? "unknown error" : error;
-    this.error =
-        reason.length() > MAX_ERROR_LENGTH ? reason.substring(0, MAX_ERROR_LENGTH) : reason;
+    this.error = truncate(reason);
+  }
+
+  /** Cut to {@link #MAX_ERROR_LENGTH} characters, never in the middle of one (surrogate pairs). */
+  static String truncate(String text) {
+    if (text.length() <= MAX_ERROR_LENGTH) {
+      return text;
+    }
+    int end = MAX_ERROR_LENGTH;
+    if (Character.isHighSurrogate(text.charAt(end - 1))) {
+      end--;
+    }
+    return text.substring(0, end);
   }
 
   public Long id() {

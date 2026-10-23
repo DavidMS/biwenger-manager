@@ -22,7 +22,8 @@ import org.springframework.stereotype.Service;
  *
  * <p>Only one sync runs at a time, whoever starts it (the schedule or {@code POST /api/sync}): two
  * at once would clash on the same day's rows and double the calls to Biwenger. Every run is
- * recorded in {@code sync_run}.
+ * recorded in {@code sync_run}. The guard is in memory: one app instance, as this single-user app
+ * runs.
  */
 @Service
 public class DailySyncService {
@@ -58,7 +59,7 @@ public class DailySyncService {
     claim();
     try {
       Instant started = clock.instant();
-      return sync(recorder.started(trigger, started), started);
+      return sync(recordStart(trigger, started), started);
     } finally {
       running.set(false);
     }
@@ -74,7 +75,7 @@ public class DailySyncService {
     try {
       // Recorded before the thread starts, so the caller's next status read already shows it.
       Instant started = clock.instant();
-      long runId = recorder.started(SyncTrigger.MANUAL, started);
+      long runId = recordStart(SyncTrigger.MANUAL, started);
       Thread.ofVirtual().name("manual-sync").start(() -> syncAndRelease(runId, started));
     } catch (RuntimeException e) {
       running.set(false);
@@ -94,6 +95,16 @@ public class DailySyncService {
   private void claim() {
     if (!running.compareAndSet(false, true)) {
       throw new SyncAlreadyRunningException();
+    }
+  }
+
+  /** Not even the start could be recorded (the database is down?): say so, then give up. */
+  private long recordStart(SyncTrigger trigger, Instant started) {
+    try {
+      return recorder.started(trigger, started);
+    } catch (RuntimeException e) {
+      LOG.log(Level.ERROR, "Sync not started: its run could not be recorded", e);
+      throw e;
     }
   }
 
@@ -123,8 +134,15 @@ public class DailySyncService {
       LOG.log(Level.INFO, "Daily sync done, {0}", summary);
       return summary;
     } catch (RuntimeException e) {
-      recorder.failed(runId, e.getMessage());
+      // Log first: if recording the failure fails too (the database is down?), this still shows.
       LOG.log(Level.ERROR, "Sync failed: " + e.getMessage(), e);
+      try {
+        recorder.failed(
+            runId, e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName());
+      } catch (RuntimeException recording) {
+        e.addSuppressed(recording);
+        LOG.log(Level.ERROR, "The failed sync could not be recorded either", recording);
+      }
       throw e;
     }
   }

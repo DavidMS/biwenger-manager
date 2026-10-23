@@ -17,10 +17,12 @@ class SyncRunRecorder {
 
   private final SyncRunRepository runs;
   private final Clock clock;
+  private final Instant bootedAt;
 
   SyncRunRecorder(SyncRunRepository runs, Clock clock) {
     this.runs = runs;
     this.clock = clock;
+    this.bootedAt = clock.instant();
   }
 
   @Transactional
@@ -46,13 +48,14 @@ class SyncRunRecorder {
   }
 
   /**
-   * A run still marked running at startup was cut off by a stop or a crash: nothing can finish it
-   * now, so it is marked failed.
+   * A run still marked running from before this start was cut off by a stop or a crash: nothing can
+   * finish it now, so it is marked failed. Runs started since this boot are left alone: the web
+   * server and the scheduler start before the app is "ready", so one may already be running.
    */
   @EventListener(ApplicationReadyEvent.class)
   @Transactional
   public void markInterruptedRuns() {
-    for (var run : runs.findByResult(SyncResult.RUNNING)) {
+    for (var run : runs.findByResultAndStartedAtBefore(SyncResult.RUNNING, bootedAt)) {
       run.failed(clock.instant(), "Interrupted: the app stopped while this sync was running");
     }
   }

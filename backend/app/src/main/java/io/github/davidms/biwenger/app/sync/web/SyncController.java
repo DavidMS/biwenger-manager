@@ -1,6 +1,7 @@
 package io.github.davidms.biwenger.app.sync.web;
 
 import io.github.davidms.biwenger.app.sync.service.DailySyncService;
+import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/sync")
 class SyncController {
+
+  private static final URI STATUS = URI.create("/api/sync/status");
 
   private final DailySyncService sync;
 
@@ -25,7 +28,7 @@ class SyncController {
   @PostMapping
   ResponseEntity<SyncStatusResponse> start() {
     sync.startInBackground();
-    return ResponseEntity.accepted().header("Location", "/api/sync/status").body(status());
+    return ResponseEntity.accepted().location(STATUS).body(status());
   }
 
   @GetMapping("/status")
