@@ -32,7 +32,8 @@ io.github.davidms.biwenger.app
     persistence/       JPA entities, Spring Data repositories
     service/           use cases (@Service)
     web/               @RestController, request and response DTOs
-  biwenger/            the only code that sees biwenger-client's records: maps them to domain types
+  biwenger/            the only code that sees biwenger-client's records: BiwengerMapper turns them into domain types
+  common/              value types shared by several features, such as Money
   config/              @Configuration and @ConfigurationProperties shared by several features
   web/                 cross-feature web code: the @RestControllerAdvice
 ```
@@ -52,7 +53,8 @@ Three kinds of types, never mixed:
 - Services take and return domain types. Entities don't leave `persistence`, and DTOs don't leave `web`.
 - Map by hand: a `toDomain()` method on the entity, a `static from(domainObject)` factory on the response DTO. No MapStruct or reflection mappers.
 - Validate invariants in the record's compact constructor (`if (price < 0) throw new IllegalArgumentException(...)`).
-- Money is a whole number of euros, as Biwenger sends it: `long` for budgets, team values and sums, so they can't overflow. No `double` for money.
+- Money is `common.Money`, a whole number of euros in a `long`, with overflow-checked `plus` and `minus`. It is a type of its own so a price can't be passed where an id is expected. No `double` for money. (Biwenger's records in the client keep plain `long`s; `BiwengerMapper` wraps them.)
+- Closed sets of variants are sealed interfaces, not nullable fields: a round of form is `Played`, `Absent(reason)` or `NotPicked`, and a seller is `Game` or `ByManager`.
 - The domain names its own things. Biwenger's field names and codes (for example position `1`–`4`) are translated in `app.biwenger`, so a change in Biwenger's JSON touches the client records and that package only.
 
 ## Java style
