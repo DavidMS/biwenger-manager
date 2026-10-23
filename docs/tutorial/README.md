@@ -55,3 +55,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #23 | [Daily sync job](journal/0023-daily-sync.md) |
 | #24 | [Backfill the season's price history and match points](journal/0024-history-backfill.md) |
 | #25 | [Manual sync endpoint and sync status](journal/0025-manual-sync.md) |
+| #78 | [Keep match points up to date after each round](journal/0078-points-refresh.md) |
