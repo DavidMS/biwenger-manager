@@ -9,6 +9,8 @@ import io.github.davidms.biwenger.app.league.domain.Standing;
 import io.github.davidms.biwenger.app.market.domain.MarketListing;
 import io.github.davidms.biwenger.app.market.domain.Ownership;
 import io.github.davidms.biwenger.app.market.domain.Seller;
+import io.github.davidms.biwenger.app.player.domain.DailyPrice;
+import io.github.davidms.biwenger.app.player.domain.MatchResult;
 import io.github.davidms.biwenger.app.player.domain.Player;
 import io.github.davidms.biwenger.app.player.domain.PlayerStatus;
 import io.github.davidms.biwenger.app.player.domain.Position;
@@ -18,6 +20,9 @@ import io.github.davidms.biwenger.client.model.Catalog;
 import io.github.davidms.biwenger.client.model.CatalogPlayer;
 import io.github.davidms.biwenger.client.model.Fitness;
 import io.github.davidms.biwenger.client.model.Market;
+import io.github.davidms.biwenger.client.model.MatchReport;
+import io.github.davidms.biwenger.client.model.PlayerPrices;
+import io.github.davidms.biwenger.client.model.PlayerReports;
 import io.github.davidms.biwenger.client.model.RoundStandings;
 import io.github.davidms.biwenger.client.model.Sale;
 import java.time.Instant;
@@ -137,6 +142,48 @@ public final class BiwengerMapper {
         owner.clauseLockedUntil() == null
             ? acquiredAt
             : Instant.ofEpochSecond(owner.clauseLockedUntil()));
+  }
+
+  /** A player's daily values, oldest first. */
+  public static List<DailyPrice> prices(PlayerPrices prices) {
+    return prices.prices().stream()
+        .map(point -> new DailyPrice(point.date(), Money.euros(point.price())))
+        .toList();
+  }
+
+  /**
+   * A player's matches in date order, with points in {@code scoreId} when he played and the reason
+   * when he didn't.
+   */
+  public static List<MatchResult> matches(PlayerReports reports, int scoreId) {
+    return reports.reports().stream().map(report -> match(report, scoreId)).toList();
+  }
+
+  static MatchResult match(MatchReport report, int scoreId) {
+    MatchResult.Outcome outcome;
+    if (report.played()) {
+      int points =
+          report
+              .points(scoreId)
+              .orElseThrow(
+                  () ->
+                      new IllegalArgumentException(
+                          "Biwenger's reports don't match docs/biwenger-api/: match "
+                              + report.match().id()
+                              + " has no points in scoring system "
+                              + scoreId));
+      outcome = new MatchResult.Played(points, report.minutesPlayed());
+    } else {
+      outcome =
+          new MatchResult.Missed(
+              report.status() == null ? PlayerStatus.UNKNOWN : status(report.status().status()));
+    }
+    return new MatchResult(
+        report.match().id(),
+        report.match().round().id(),
+        Instant.ofEpochSecond(report.match().date()),
+        report.home(),
+        outcome);
   }
 
   /** The league table, by position. */

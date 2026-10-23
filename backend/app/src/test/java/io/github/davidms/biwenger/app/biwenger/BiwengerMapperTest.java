@@ -12,6 +12,8 @@ import io.github.davidms.biwenger.app.league.domain.Standing;
 import io.github.davidms.biwenger.app.market.domain.MarketListing;
 import io.github.davidms.biwenger.app.market.domain.Ownership;
 import io.github.davidms.biwenger.app.market.domain.Seller;
+import io.github.davidms.biwenger.app.player.domain.DailyPrice;
+import io.github.davidms.biwenger.app.player.domain.MatchResult;
 import io.github.davidms.biwenger.app.player.domain.Player;
 import io.github.davidms.biwenger.app.player.domain.PlayerStatus;
 import io.github.davidms.biwenger.app.player.domain.Position;
@@ -20,6 +22,8 @@ import io.github.davidms.biwenger.app.player.domain.Team;
 import io.github.davidms.biwenger.client.model.Catalog;
 import io.github.davidms.biwenger.client.model.Fitness;
 import io.github.davidms.biwenger.client.model.Market;
+import io.github.davidms.biwenger.client.model.PlayerPrices;
+import io.github.davidms.biwenger.client.model.PlayerReports;
 import io.github.davidms.biwenger.client.model.RoundStandings;
 import java.io.IOException;
 import java.io.InputStream;
@@ -195,6 +199,39 @@ class BiwengerMapperTest {
   }
 
   @Test
+  void mapsAPriceHistory() {
+    List<DailyPrice> prices =
+        BiwengerMapper.prices(data2("player-prices.json", PlayerPrices.class));
+
+    assertThat(prices).hasSize(366);
+    assertThat(prices.getFirst())
+        .isEqualTo(new DailyPrice(java.time.LocalDate.of(2025, 10, 22), Money.euros(6_730_000)));
+  }
+
+  @Test
+  void mapsMatchesPlayedAndMissed() {
+    List<MatchResult> ayoze =
+        BiwengerMapper.matches(data2("player-reports.json", PlayerReports.class), 1);
+    assertThat(ayoze).hasSize(9).allMatch(m -> m.outcome() instanceof MatchResult.Played);
+    assertThat(ayoze.getFirst().outcome()).isEqualTo(new MatchResult.Played(2, 56));
+
+    List<MatchResult> marin =
+        BiwengerMapper.matches(data2("player-reports-missed-matches.json", PlayerReports.class), 1);
+    assertThat(marin)
+        .extracting(MatchResult::outcome)
+        .containsExactly(
+            new MatchResult.Missed(PlayerStatus.INJURED),
+            new MatchResult.Missed(PlayerStatus.INJURED),
+            new MatchResult.Missed(PlayerStatus.DOUBTFUL),
+            new MatchResult.Missed(PlayerStatus.INJURED),
+            new MatchResult.Missed(PlayerStatus.DOUBTFUL),
+            new MatchResult.Missed(PlayerStatus.DOUBTFUL),
+            new MatchResult.Missed(PlayerStatus.AVAILABLE),
+            new MatchResult.Played(-4, 66),
+            new MatchResult.Missed(PlayerStatus.SUSPENDED));
+  }
+
+  @Test
   void mapsTheLeagueWithManagersInIdOrder() {
     League mapped = BiwengerMapper.league(league);
 
@@ -236,6 +273,10 @@ class BiwengerMapperTest {
         .filter(p -> p.id() == id)
         .findFirst()
         .orElseThrow();
+  }
+
+  private static <T> T data2(String sample, Class<T> type) {
+    return io.github.davidms.biwenger.app.Samples.data(sample, type);
   }
 
   private static <T> T data(String sample, Class<T> type) throws IOException {

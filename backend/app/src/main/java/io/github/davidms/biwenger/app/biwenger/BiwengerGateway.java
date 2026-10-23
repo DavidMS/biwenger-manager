@@ -17,6 +17,25 @@ public class BiwengerGateway {
     this.client = client;
   }
 
+  /** The season, the league's scoring system and every catalog player: what the backfill does. */
+  public BackfillPlan backfillPlan() {
+    int scoreId = client.leagueContext().scoreId();
+    var catalog = client.catalog();
+    return new BackfillPlan(
+        catalog.season().id(),
+        scoreId,
+        BiwengerMapper.players(catalog).stream()
+            .map(player -> new BackfillPlan.PlayerRef(player.id(), player.slug()))
+            .toList());
+  }
+
+  /** One player's price history and match reports: two calls to the public CDN. */
+  public PlayerHistory playerHistory(String slug, int scoreId) {
+    return new PlayerHistory(
+        BiwengerMapper.prices(client.playerPrices(slug)),
+        BiwengerMapper.matches(client.playerReports(slug), scoreId));
+  }
+
   /** Four calls (account, catalog, market, standings), one after another, rate-limited. */
   public DailyData dailyData() {
     long leagueId = client.leagueContext().leagueId();
