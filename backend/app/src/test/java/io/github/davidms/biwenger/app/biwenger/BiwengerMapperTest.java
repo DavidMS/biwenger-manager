@@ -16,6 +16,7 @@ import io.github.davidms.biwenger.app.player.domain.Position;
 import io.github.davidms.biwenger.app.player.domain.RoundForm;
 import io.github.davidms.biwenger.app.player.domain.Team;
 import io.github.davidms.biwenger.client.model.Catalog;
+import io.github.davidms.biwenger.client.model.Fitness;
 import io.github.davidms.biwenger.client.model.Market;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +24,7 @@ import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
@@ -30,7 +32,9 @@ import tools.jackson.databind.json.JsonMapper;
  */
 class BiwengerMapperTest {
 
-  private static final JsonMapper JSON = JsonMapper.builder().build();
+  // The client's own setting (BiwengerClient), stated here too so the two can't drift apart.
+  private static final JsonMapper JSON =
+      JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
 
   private static Catalog catalog;
   private static Market market;
@@ -151,6 +155,25 @@ class BiwengerMapperTest {
         .hasMessageContaining("6");
     // A status Biwenger adds later must not break the catalog.
     assertThat(BiwengerMapper.status("warned")).isEqualTo(PlayerStatus.UNKNOWN);
+    assertThat(BiwengerMapper.roundStatus("cancelled")).isEqualTo(RoundStatus.UNKNOWN);
+  }
+
+  @Test
+  void aMissedRoundWhileFitIsNotPicked() {
+    assertThat(BiwengerMapper.form(new Fitness(null, "ok"))).isEqualTo(new RoundForm.NotPicked());
+    assertThat(BiwengerMapper.form(Fitness.NOT_PLAYED)).isEqualTo(new RoundForm.NotPicked());
+    assertThat(BiwengerMapper.form(new Fitness(null, "injured")))
+        .isEqualTo(new RoundForm.Absent(PlayerStatus.INJURED));
+  }
+
+  @Test
+  void domainInvariantsHold() {
+    assertThatThrownBy(() -> new Round(1, "Jornada 1", "J1", RoundStatus.PENDING, 0))
+        .isInstanceOf(IllegalArgumentException.class);
+    Instant now = Instant.ofEpochSecond(1_792_745_310);
+    assertThatThrownBy(
+            () -> new MarketListing(1, new Seller.Game(), Money.ZERO, now, now.minusSeconds(1)))
+        .isInstanceOf(IllegalArgumentException.class);
   }
 
   private static Player player(long id) {

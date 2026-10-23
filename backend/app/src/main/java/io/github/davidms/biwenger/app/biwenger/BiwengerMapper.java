@@ -26,6 +26,10 @@ import java.util.stream.Collectors;
  * The one place where Biwenger's records become domain types (ADR 0003): codes such as position
  * {@code 4} or status {@code "doubt"} are translated here, Unix seconds become {@link Instant}s and
  * euros become {@link Money}. Pure functions, so the same input always gives the same output.
+ *
+ * <p>Mapping methods are public; the translations of single codes are package-private. Unknown
+ * codes become {@code UNKNOWN}, except a position: a player in the wrong lineup slot is unsafe, so
+ * that fails.
  */
 public final class BiwengerMapper {
 
@@ -99,7 +103,7 @@ public final class BiwengerMapper {
     return market.sales().stream().map(BiwengerMapper::listing).toList();
   }
 
-  static MarketListing listing(Sale sale) {
+  public static MarketListing listing(Sale sale) {
     Seller seller =
         sale.user() == null ? new Seller.Game() : new Seller.ByManager(manager(sale.user()));
     return new MarketListing(
@@ -110,7 +114,7 @@ public final class BiwengerMapper {
         Instant.ofEpochSecond(sale.until()));
   }
 
-  static Manager manager(io.github.davidms.biwenger.client.model.Manager manager) {
+  public static Manager manager(io.github.davidms.biwenger.client.model.Manager manager) {
     return new Manager(manager.id(), manager.name());
   }
 
@@ -153,12 +157,13 @@ public final class BiwengerMapper {
     return reason.isAvailable() ? new RoundForm.NotPicked() : new RoundForm.Absent(reason);
   }
 
+  /** Like player statuses, a round status we don't know yet must not break the whole catalog. */
   static RoundStatus roundStatus(String status) {
     return switch (status) {
       case "finished" -> RoundStatus.FINISHED;
       case "active" -> RoundStatus.ACTIVE;
       case "pending" -> RoundStatus.PENDING;
-      default -> throw new IllegalArgumentException("Unknown Biwenger round status: " + status);
+      default -> RoundStatus.UNKNOWN;
     };
   }
 }
