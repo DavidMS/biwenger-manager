@@ -19,7 +19,7 @@ Prompts are always quoted exactly as they were typed, typos included.
 | 01 | [Setting up Claude Code](01-setting-up-claude-code.md) | 0 — AI-ready foundation | Written |
 | 02 | [Scaffolding a project with AI](02-scaffolding-with-ai.md) | 1 — Project skeleton | Written |
 | 03 | [Reverse-engineering an API with AI](03-reverse-engineering-an-api.md) | 2 — Biwenger API client | Written |
-| 04 | Letting AI design a schema | 3 — Domain, persistence and history | Planned |
+| 04 | [Letting AI design a schema](04-letting-ai-design-a-schema.md) | 3 — Domain, persistence and history | Written |
 | 05 | Building UI with AI | 4 — Read-only UI | Planned |
 | 06 | Designing deterministic algorithms with AI | 5 — Advisor engine | Planned |
 | 07 | Safety when software acts on your behalf | 6 — Actions with confirmation | Planned |
@@ -56,3 +56,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #24 | [Backfill the season's price history and match points](journal/0024-history-backfill.md) |
 | #25 | [Manual sync endpoint and sync status](journal/0025-manual-sync.md) |
 | #78 | [Keep match points up to date after each round](journal/0078-points-refresh.md) |
+| #26 | [Tutorial chapter 04](journal/0026-tutorial-chapter-04.md) |
