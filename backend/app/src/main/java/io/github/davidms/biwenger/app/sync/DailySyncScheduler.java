@@ -1,7 +1,9 @@
 package io.github.davidms.biwenger.app.sync;
 
 import io.github.davidms.biwenger.app.biwenger.BiwengerProperties;
+import io.github.davidms.biwenger.app.sync.domain.SyncTrigger;
 import io.github.davidms.biwenger.app.sync.service.DailySyncService;
+import io.github.davidms.biwenger.app.sync.service.SyncAlreadyRunningException;
 import java.lang.System.Logger.Level;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -35,10 +37,11 @@ class DailySyncScheduler {
       return;
     }
     try {
-      sync.syncToday();
+      sync.syncToday(SyncTrigger.SCHEDULED);
+    } catch (SyncAlreadyRunningException e) {
+      LOG.log(Level.INFO, "Skipping the daily sync: a manual sync is running");
     } catch (RuntimeException e) {
-      // Logged here, once, with the reason; tomorrow's run tries again.
-      LOG.log(Level.ERROR, "Daily sync failed: " + e.getMessage(), e);
+      // The service recorded and logged it; tomorrow's run tries again.
     }
   }
 
