@@ -163,6 +163,22 @@ class BiwengerMapperTest {
   }
 
   @Test
+  void aManagersSaleWithoutOwnershipDataIsAFormatChange() {
+    var sale =
+        new io.github.davidms.biwenger.client.model.Sale(
+            new io.github.davidms.biwenger.client.model.SalePlayer(15430, null),
+            6_930_000,
+            1_792_620_267,
+            1_792_793_067,
+            null,
+            new io.github.davidms.biwenger.client.model.Manager(2_000_003, "Manager 3", null));
+
+    assertThatThrownBy(() -> BiwengerMapper.listing(sale))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageStartingWith("Biwenger's market doesn't match docs/biwenger-api/");
+  }
+
+  @Test
   void mapsTheStandingsByPosition() throws IOException {
     List<Standing> standings =
         BiwengerMapper.standings(data("rounds-league.json", RoundStandings.class));

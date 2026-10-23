@@ -68,9 +68,9 @@ class PlayerHistoryRepositoriesTest {
 
   @Test
   void aSecondDailySnapshotOnTheSameDayReplacesTheFirst() {
-    prices.save(PlayerPriceSnapshotEntity.daily(ayoze(), DAY));
+    prices.save(PlayerPriceSnapshotEntity.daily(ayoze(), DAY, NOW));
     flushAndClear();
-    prices.save(PlayerPriceSnapshotEntity.daily(ayoze(), DAY));
+    prices.save(PlayerPriceSnapshotEntity.daily(ayoze(), DAY, NOW.plusSeconds(600)));
     flushAndClear();
 
     assertThat(prices.count()).isEqualTo(1);
@@ -80,13 +80,16 @@ class PlayerHistoryRepositoriesTest {
     assertThat(saved.status()).contains(PlayerStatus.AVAILABLE);
     assertThat(saved.points()).contains(35);
     assertThat(saved.source()).isEqualTo(PriceSnapshotSource.DAILY_SYNC);
+    assertThat(saved.syncedAt()).isEqualTo(NOW.plusSeconds(600));
   }
 
   @Test
   void priceHistoryComesOldestFirstAndBackfillHasOnlyThePrice() {
-    prices.save(PlayerPriceSnapshotEntity.daily(ayoze(), DAY));
-    prices.save(PlayerPriceSnapshotEntity.backfill(2001, DAY.minusDays(2), Money.euros(4_700_000)));
-    prices.save(PlayerPriceSnapshotEntity.backfill(2001, DAY.minusDays(1), Money.euros(4_750_000)));
+    prices.save(PlayerPriceSnapshotEntity.daily(ayoze(), DAY, NOW));
+    prices.save(
+        PlayerPriceSnapshotEntity.backfill(2001, DAY.minusDays(2), Money.euros(4_700_000), NOW));
+    prices.save(
+        PlayerPriceSnapshotEntity.backfill(2001, DAY.minusDays(1), Money.euros(4_750_000), NOW));
     flushAndClear();
 
     var history = prices.findByIdPlayerIdOrderByIdSnapshotDateAsc(2001);
@@ -105,8 +108,8 @@ class PlayerHistoryRepositoriesTest {
     var missed = new PointsReportId(2001, 50721);
     reports.save(
         PlayerPointsReportEntity.missed(
-            missed, 4900, NOW.plusSeconds(3_600), true, 1, PlayerStatus.INJURED));
-    reports.save(PlayerPointsReportEntity.played(played, 4899, NOW, false, 1, 2, 56));
+            missed, 4900, NOW.plusSeconds(3_600), true, 1, PlayerStatus.INJURED, NOW));
+    reports.save(PlayerPointsReportEntity.played(played, 4899, NOW, false, 1, 2, 56, NOW));
     flushAndClear();
 
     var matches = reports.findByIdPlayerIdOrderByMatchDateAsc(2001);
@@ -127,8 +130,21 @@ class PlayerHistoryRepositoriesTest {
                 jdbc.update(
                     """
                     INSERT INTO player_points_report (player_id, match_id, round_id, match_date,
-                      home, played, score_id, points, minutes_played)
-                    VALUES (1, 1, 1, now(), true, true, 1, NULL, 90)
+                      home, played, score_id, points, minutes_played, synced_at)
+                    VALUES (1, 1, 1, now(), true, true, 1, NULL, 90, now())
+                    """))
+        .isInstanceOf(DataIntegrityViolationException.class);
+  }
+
+  @Test
+  void theDatabaseRejectsAMissedMatchWithoutAReason() {
+    assertThatThrownBy(
+            () ->
+                jdbc.update(
+                    """
+                    INSERT INTO player_points_report (player_id, match_id, round_id, match_date,
+                      home, played, score_id, points, minutes_played, absence, synced_at)
+                    VALUES (1, 2, 1, now(), true, false, 1, NULL, 0, NULL, now())
                     """))
         .isInstanceOf(DataIntegrityViolationException.class);
   }

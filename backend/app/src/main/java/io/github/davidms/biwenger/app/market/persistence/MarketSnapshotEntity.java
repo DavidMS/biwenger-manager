@@ -48,10 +48,14 @@ public class MarketSnapshotEntity {
   @Column(name = "clause_unlocks_at")
   private Instant clauseUnlocksAt;
 
+  @Column(name = "synced_at", nullable = false)
+  private Instant syncedAt;
+
   protected MarketSnapshotEntity() {}
 
-  public static MarketSnapshotEntity from(LocalDate day, MarketListing listing) {
+  public static MarketSnapshotEntity from(LocalDate day, MarketListing listing, Instant syncedAt) {
     var entity = new MarketSnapshotEntity();
+    entity.syncedAt = syncedAt;
     entity.id = new MarketSnapshotId(day, listing.playerId());
     entity.price = listing.price().euros();
     entity.listedAt = listing.listedAt();
@@ -80,5 +84,9 @@ public class MarketSnapshotEntity {
                 new Ownership(
                     Money.euros(clause), Money.euros(purchasePrice), acquiredAt, clauseUnlocksAt));
     return new MarketListing(id.playerId(), seller, Money.euros(price), listedAt, closesAt);
+  }
+
+  public Instant syncedAt() {
+    return syncedAt;
   }
 }

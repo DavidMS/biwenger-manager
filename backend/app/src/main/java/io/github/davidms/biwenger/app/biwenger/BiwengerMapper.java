@@ -123,8 +123,11 @@ public final class BiwengerMapper {
   static Ownership ownership(Sale sale) {
     var owner = sale.player().owner();
     if (owner == null || owner.price() == null) {
+      // Biwenger dropped data we rely on: report it as a format change, like the client does.
       throw new IllegalArgumentException(
-          "Player " + sale.player().id() + " is sold by a manager but has no ownership data");
+          "Biwenger's market doesn't match docs/biwenger-api/: player "
+              + sale.player().id()
+              + " is sold by a manager but has no owner price");
     }
     Instant acquiredAt = Instant.ofEpochSecond(owner.date());
     return new Ownership(

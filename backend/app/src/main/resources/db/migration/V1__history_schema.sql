@@ -1,7 +1,7 @@
 -- History that Biwenger doesn't keep (ADR 0005). Money is whole euros in BIGINT. A snapshot's day
 -- is the calendar day in Europe/Madrid; its natural key makes a second sync on the same day an
--- update, not a duplicate. Snapshots have no foreign key to player: a player who leaves La Liga
--- leaves the catalog, but his history stays.
+-- update, not a duplicate, and synced_at says when the row was last written. Snapshots have no
+-- foreign key to player: a player who leaves La Liga leaves the catalog, but his history stays.
 
 -- Every player we have seen, as the latest catalog had him.
 CREATE TABLE player (
@@ -10,7 +10,7 @@ CREATE TABLE player (
     slug        TEXT        NOT NULL,
     team_id     BIGINT      NOT NULL,
     position    TEXT        NOT NULL CHECK (position IN ('GOALKEEPER', 'DEFENDER', 'MIDFIELDER', 'FORWARD', 'COACH')),
-    status      TEXT        NOT NULL,
+    status      TEXT        NOT NULL CHECK (status IN ('AVAILABLE', 'DOUBTFUL', 'INJURED', 'SUSPENDED', 'UNKNOWN')),
     price       BIGINT      NOT NULL CHECK (price >= 0),
     updated_at  TIMESTAMPTZ NOT NULL
 );
@@ -22,9 +22,10 @@ CREATE TABLE player_price_snapshot (
     snapshot_date DATE   NOT NULL,
     price         BIGINT NOT NULL CHECK (price >= 0),
     price_change  BIGINT,
-    status        TEXT,
+    status        TEXT        CHECK (status IN ('AVAILABLE', 'DOUBTFUL', 'INJURED', 'SUSPENDED', 'UNKNOWN')),
     points        INTEGER,
-    source        TEXT   NOT NULL CHECK (source IN ('DAILY_SYNC', 'BACKFILL')),
+    source        TEXT        NOT NULL CHECK (source IN ('DAILY_SYNC', 'BACKFILL')),
+    synced_at     TIMESTAMPTZ NOT NULL,
     PRIMARY KEY (player_id, snapshot_date)
 );
 
@@ -40,11 +41,14 @@ CREATE TABLE player_points_report (
     score_id       INTEGER     NOT NULL,
     points         INTEGER,
     minutes_played INTEGER     NOT NULL CHECK (minutes_played >= 0),
-    absence        TEXT,
+    -- Why he missed it; AVAILABLE means fit but not picked.
+    absence        TEXT        CHECK (absence IN ('AVAILABLE', 'DOUBTFUL', 'INJURED', 'SUSPENDED', 'UNKNOWN')),
+    synced_at      TIMESTAMPTZ NOT NULL,
     PRIMARY KEY (player_id, match_id),
-    -- Points only when he played; a reason only when he didn't.
+    -- Points and minutes only when he played; a reason only when he didn't.
     CHECK (played = (points IS NOT NULL)),
-    CHECK (NOT played OR absence IS NULL)
+    CHECK (played = (absence IS NULL)),
+    CHECK (played OR minutes_played = 0)
 );
 
 -- Who sold whom in the market on one day. A free player has no seller and no ownership data.
@@ -56,13 +60,16 @@ CREATE TABLE market_snapshot (
     price               BIGINT      NOT NULL CHECK (price >= 0),
     listed_at           TIMESTAMPTZ NOT NULL,
     closes_at           TIMESTAMPTZ NOT NULL,
-    clause              BIGINT,
-    purchase_price      BIGINT,
+    clause              BIGINT      CHECK (clause >= 0),
+    purchase_price      BIGINT      CHECK (purchase_price >= 0),
     acquired_at         TIMESTAMPTZ,
     clause_unlocks_at   TIMESTAMPTZ,
+    synced_at           TIMESTAMPTZ NOT NULL,
     PRIMARY KEY (snapshot_date, player_id),
-    CHECK ((seller_manager_id IS NULL) = (seller_name IS NULL)),
-    CHECK ((seller_manager_id IS NULL) = (clause IS NULL)),
+    -- A manager's sale has all of its seller and ownership data; a free player has none.
+    CHECK (num_nulls(seller_manager_id, seller_name, clause, purchase_price, acquired_at,
+                     clause_unlocks_at) IN (0, 6)),
+    CHECK (clause_unlocks_at >= acquired_at),
     CHECK (closes_at >= listed_at)
 );
 
@@ -76,6 +83,7 @@ CREATE TABLE league_standing_snapshot (
     points             INTEGER NOT NULL,
     team_value         BIGINT  NOT NULL,
     team_value_change  BIGINT  NOT NULL,
+    synced_at          TIMESTAMPTZ NOT NULL,
     PRIMARY KEY (snapshot_date, manager_id)
 );
 

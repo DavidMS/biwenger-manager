@@ -8,6 +8,7 @@ import io.github.davidms.biwenger.app.biwenger.BiwengerMapper;
 import io.github.davidms.biwenger.app.league.domain.Standing;
 import io.github.davidms.biwenger.client.model.RoundStandings;
 import jakarta.persistence.EntityManager;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ class LeagueStandingSnapshotRepositoryTest {
 
   private static final LocalDate DAY = LocalDate.of(2026, 10, 22);
   private static final long LEAGUE_ID = 1_000_001;
+  private static final Instant SYNCED = Instant.parse("2026-10-22T05:10:00Z");
 
   @Autowired LeagueStandingSnapshotRepository standings;
   @Autowired EntityManager entityManager;
@@ -36,7 +38,8 @@ class LeagueStandingSnapshotRepositoryTest {
         .reversed()
         .forEach(
             standing ->
-                standings.save(LeagueStandingSnapshotEntity.from(DAY, LEAGUE_ID, standing)));
+                standings.save(
+                    LeagueStandingSnapshotEntity.from(DAY, LEAGUE_ID, standing, SYNCED)));
     entityManager.flush();
     entityManager.clear();
 
@@ -52,14 +55,28 @@ class LeagueStandingSnapshotRepositoryTest {
   void aSecondSyncOnTheSameDayReplacesTheTable() {
     List<Standing> table =
         BiwengerMapper.standings(Samples.data("rounds-league.json", RoundStandings.class));
-    table.forEach(s -> standings.save(LeagueStandingSnapshotEntity.from(DAY, LEAGUE_ID, s)));
+    table.forEach(
+        s -> standings.save(LeagueStandingSnapshotEntity.from(DAY, LEAGUE_ID, s, SYNCED)));
     entityManager.flush();
-    table.forEach(s -> standings.save(LeagueStandingSnapshotEntity.from(DAY, LEAGUE_ID, s)));
+    // The same day again, the leader with more points: updated in place.
+    table.stream()
+        .map(
+            s ->
+                s.position() == 1
+                    ? new Standing(
+                        s.manager(), 1, s.points() + 7, s.teamValue(), s.teamValueChange())
+                    : s)
+        .forEach(s -> standings.save(LeagueStandingSnapshotEntity.from(DAY, LEAGUE_ID, s, SYNCED)));
     entityManager.flush();
     table.forEach(
-        s -> standings.save(LeagueStandingSnapshotEntity.from(DAY.plusDays(1), LEAGUE_ID, s)));
+        s ->
+            standings.save(
+                LeagueStandingSnapshotEntity.from(DAY.plusDays(1), LEAGUE_ID, s, SYNCED)));
     entityManager.flush();
 
+    entityManager.clear();
     assertThat(standings.count()).isEqualTo(12);
+    assertThat(standings.findByIdSnapshotDateOrderByPositionAsc(DAY).getFirst().toDomain().points())
+        .isEqualTo(table.getFirst().points() + 7);
   }
 }

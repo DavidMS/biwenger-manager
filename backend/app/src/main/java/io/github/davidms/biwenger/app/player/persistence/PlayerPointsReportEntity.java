@@ -44,6 +44,9 @@ public class PlayerPointsReportEntity {
   @Enumerated(EnumType.STRING)
   private PlayerStatus absence;
 
+  @Column(name = "synced_at", nullable = false)
+  private Instant syncedAt;
+
   protected PlayerPointsReportEntity() {}
 
   /** A match he played: points in {@code scoreId} and minutes on the pitch. */
@@ -54,8 +57,9 @@ public class PlayerPointsReportEntity {
       boolean home,
       int scoreId,
       int points,
-      int minutesPlayed) {
-    var entity = match(id, roundId, matchDate, home, scoreId);
+      int minutesPlayed,
+      Instant syncedAt) {
+    var entity = match(id, roundId, matchDate, home, scoreId, syncedAt);
     entity.played = true;
     entity.points = points;
     entity.minutesPlayed = minutesPlayed;
@@ -69,16 +73,23 @@ public class PlayerPointsReportEntity {
       Instant matchDate,
       boolean home,
       int scoreId,
-      PlayerStatus absence) {
-    var entity = match(id, roundId, matchDate, home, scoreId);
+      PlayerStatus absence,
+      Instant syncedAt) {
+    var entity = match(id, roundId, matchDate, home, scoreId, syncedAt);
     entity.played = false;
     entity.absence = Objects.requireNonNull(absence, "absence");
     return entity;
   }
 
   private static PlayerPointsReportEntity match(
-      PointsReportId id, long roundId, Instant matchDate, boolean home, int scoreId) {
+      PointsReportId id,
+      long roundId,
+      Instant matchDate,
+      boolean home,
+      int scoreId,
+      Instant syncedAt) {
     var entity = new PlayerPointsReportEntity();
+    entity.syncedAt = syncedAt;
     entity.id = id;
     entity.roundId = roundId;
     entity.matchDate = matchDate;
@@ -121,5 +132,9 @@ public class PlayerPointsReportEntity {
 
   public Optional<PlayerStatus> absence() {
     return Optional.ofNullable(absence);
+  }
+
+  public Instant syncedAt() {
+    return syncedAt;
   }
 }

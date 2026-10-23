@@ -7,6 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.time.Instant;
 import java.time.LocalDate;
 
 /** A manager's place in the league table on one day (table {@code league_standing_snapshot}). */
@@ -34,10 +35,15 @@ public class LeagueStandingSnapshotEntity {
   @Column(name = "team_value_change", nullable = false)
   private long teamValueChange;
 
+  @Column(name = "synced_at", nullable = false)
+  private Instant syncedAt;
+
   protected LeagueStandingSnapshotEntity() {}
 
-  public static LeagueStandingSnapshotEntity from(LocalDate day, long leagueId, Standing standing) {
+  public static LeagueStandingSnapshotEntity from(
+      LocalDate day, long leagueId, Standing standing, Instant syncedAt) {
     var entity = new LeagueStandingSnapshotEntity();
+    entity.syncedAt = syncedAt;
     entity.id = new StandingSnapshotId(day, standing.manager().id());
     entity.leagueId = leagueId;
     entity.managerName = standing.manager().name();
@@ -63,5 +69,9 @@ public class LeagueStandingSnapshotEntity {
         points,
         Money.euros(teamValue),
         Money.euros(teamValueChange));
+  }
+
+  public Instant syncedAt() {
+    return syncedAt;
   }
 }

@@ -23,7 +23,15 @@ We will use **option 2**, with these rules:
 - **`player_price_snapshot` has nullable `price_change`, `status` and `points`, and a `source` column** (`DAILY_SYNC` or `BACKFILL`). The backfill only knows the price, so its rows leave those columns empty rather than guessing.
 - **`market_snapshot` keeps the seller's ownership data** (clause, price paid, acquired, clause unlocks) for players listed by managers. The human chose this in #22, because it can't be fetched for past days later. It feeds clause watch (F13) and the rival-balance estimate (F4).
 - **`player_points_report` keeps points in one scoring system, the league's, and stores which one** (`score_id`). The human chose this over all seven systems, because nothing planned needs the others.
-- **The database checks consistency itself:** points only for a played match, no seller without ownership data, no negative prices. A bug in the code then fails loudly instead of storing a contradiction.
+- **Every snapshot row has `synced_at`,** the time it was last written, so a re-run on the same day is visible.
+- **The database checks consistency itself:**
+  - points and minutes only for a played match, and a reason only for a missed one
+  - a manager's sale has all six seller and ownership columns, a free player none
+  - statuses and positions from a fixed list
+  - no negative prices
+
+  A bug in the code then fails loudly instead of storing a contradiction.
+- **The backfill (#24) must not overwrite a daily-sync row.** The daily sync knows the status and points, and the backfill would null them. The backfill also writes about 200,000 rows, where Spring Data's `save()` runs a `SELECT` before each `INSERT`. So it writes in batches with `INSERT … ON CONFLICT DO NOTHING`, and the daily sync may keep using `save()` (about 550 players a day).
 - **Money is `BIGINT` euros,** and times are `TIMESTAMPTZ` in UTC (`hibernate.jdbc.time_zone=UTC`).
 
 Flyway owns the schema; Hibernate only validates it (`ddl-auto=validate`).
