@@ -4,7 +4,6 @@ import io.github.davidms.biwenger.app.biwenger.BiwengerProperties;
 import io.github.davidms.biwenger.app.sync.service.DailySyncService;
 import java.lang.System.Logger.Level;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
  * after the market closes. {@code biwenger.sync.enabled=false} turns it off.
  */
 @Component
-@EnableScheduling
 @ConditionalOnProperty(name = "biwenger.sync.enabled", havingValue = "true", matchIfMissing = true)
 class DailySyncScheduler {
 

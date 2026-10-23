@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,7 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -81,14 +83,20 @@ class DailySyncTest {
 
   @BeforeEach
   void freshDatabaseAndBiwenger() throws IOException {
-    jdbc.execute(
-        "TRUNCATE player, player_price_snapshot, market_snapshot, league_standing_snapshot");
+    emptyTables();
     clock.set(MORNING);
     biwenger.stubFor(post("/api/v2/auth/login").willReturn(okJson("{\"token\": \"t\"}")));
     stub("/api/v2/account", sample("account.json"));
     stub("/api/v2/competitions/la-liga/data?lang=es&score=1", sample("catalog.json"));
     stub("/api/v2/market", sample("market.json"));
     stub("/api/v2/rounds/league", sample("rounds-league.json"));
+  }
+
+  /** The container is shared with other test classes, which count rows: leave nothing behind. */
+  @AfterEach
+  void emptyTables() {
+    jdbc.execute(
+        "TRUNCATE player, player_price_snapshot, market_snapshot, league_standing_snapshot");
   }
 
   @Test
@@ -134,6 +142,7 @@ class DailySyncTest {
 
     assertThat(count("player")).isEqualTo(39);
     assertThat(count("player_price_snapshot")).isEqualTo(78);
+    assertThat(count("market_snapshot")).isEqualTo(38);
     assertThat(count("league_standing_snapshot")).isEqualTo(12);
   }
 
@@ -145,6 +154,26 @@ class DailySyncTest {
     sync.syncToday();
 
     assertThat(count("market_snapshot")).isEqualTo(5);
+  }
+
+  @Test
+  void aManagerWhoLeftTheLeagueSinceTheFirstRunIsNotKept() throws IOException {
+    sync.syncToday();
+    stub("/api/v2/rounds/league", withStandings(sample("rounds-league.json"), 5));
+
+    sync.syncToday();
+
+    assertThat(count("league_standing_snapshot")).isEqualTo(5);
+  }
+
+  @Test
+  void aWriteThatFailsHalfwayStoresNothing() throws IOException {
+    // The last listing breaks a database check (no negative prices), after the players were saved.
+    stub("/api/v2/market", withLastSalePrice(sample("market.json"), -1));
+
+    assertThatThrownBy(() -> sync.syncToday()).isInstanceOf(DataIntegrityViolationException.class);
+    assertThat(count("player")).isZero();
+    assertThat(count("player_price_snapshot")).isZero();
   }
 
   @Test
@@ -183,6 +212,24 @@ class DailySyncTest {
     while (sales.size() > keep) {
       sales.remove(sales.size() - 1);
     }
+    return json.writeValueAsString(root);
+  }
+
+  private static String withStandings(String rounds, int keep) {
+    JsonMapper json = JsonMapper.builder().build();
+    ObjectNode root = (ObjectNode) json.readTree(rounds);
+    ArrayNode standings = (ArrayNode) root.get("data").get("league").get("standings");
+    while (standings.size() > keep) {
+      standings.remove(standings.size() - 1);
+    }
+    return json.writeValueAsString(root);
+  }
+
+  private static String withLastSalePrice(String market, long price) {
+    JsonMapper json = JsonMapper.builder().build();
+    ObjectNode root = (ObjectNode) json.readTree(market);
+    ArrayNode sales = (ArrayNode) root.get("data").get("sales");
+    ((ObjectNode) sales.get(sales.size() - 1)).put("price", price);
     return json.writeValueAsString(root);
   }
 

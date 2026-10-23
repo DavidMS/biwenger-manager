@@ -43,13 +43,15 @@ class SnapshotWriter {
       players.save(PlayerEntity.from(player, syncedAt));
       prices.save(PlayerPriceSnapshotEntity.daily(player, day, syncedAt));
     }
-    // The market of a day is what Biwenger shows now: a player who left it since the first run
-    // today is no longer in it.
+    // The market and the table of a day are what Biwenger shows now: a listing or a manager gone
+    // since the first run today is no longer in them. Players stay (their history is kept).
     market.deleteAll(market.findByIdSnapshotDateOrderByIdPlayerIdAsc(day));
     market.flush();
     for (var listing : data.market()) {
       market.save(MarketSnapshotEntity.from(day, listing, syncedAt));
     }
+    standings.deleteAll(standings.findByIdSnapshotDateOrderByPositionAsc(day));
+    standings.flush();
     for (var standing : data.standings()) {
       standings.save(LeagueStandingSnapshotEntity.from(day, data.leagueId(), standing, syncedAt));
     }

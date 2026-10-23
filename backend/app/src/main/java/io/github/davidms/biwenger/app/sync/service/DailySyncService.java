@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
  * Takes today's snapshot: reads the catalog, market and standings from Biwenger, then stores them
  * for today's Madrid date. Every Biwenger call happens before the database transaction starts, so
  * no transaction waits on the network.
+ *
+ * <p>The scheduler runs it on one thread, so it never overlaps with itself. The manual trigger
+ * (#25) must guard against overlap here, in the service, so the scheduled run respects it too.
  */
 @Service
 public class DailySyncService {
