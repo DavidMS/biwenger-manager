@@ -55,13 +55,13 @@ ACCOUNT = {"status": 200, "data": {
                  "user": ME, "settings": {"secret": "invite-abc123"}}]}}
 
 
-def run(har_data):
+def run(har_data, *options):
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "capture.har"
         path.write_text(json.dumps(har_data))
         out = Path(tmp) / "samples"
         with contextlib.redirect_stdout(io.StringIO()) as printed:
-            status = biwenger_har_extract.main([str(path)], out_dir=out)
+            status = biwenger_har_extract.main([str(path), *options], out_dir=out)
         files = {f.name: f.read_text() for f in sorted(out.glob("*.json"))} if out.exists() else {}
     return status, files, printed.getvalue()
 
@@ -115,6 +115,26 @@ class HarExtractTest(unittest.TestCase):
         self.assertEqual(files, {})
         self.assertIn("NOT written", printed)
         self.assertNotIn(TOKEN, printed)
+
+
+class SafetyTest(unittest.TestCase):
+
+    def test_refuses_a_har_inside_the_repo(self):
+        inside = biwenger_har_extract.REPO / "scripts" / "capture.har"
+        with self.assertRaises(SystemExit) as stop, contextlib.redirect_stdout(io.StringIO()):
+            biwenger_har_extract.main([str(inside)])
+        self.assertIn("inside the repo", str(stop.exception.code))
+
+    def test_list_masks_numbers_and_shows_no_bodies(self):
+        status, files, printed = run(har(
+            entry("GET", "/api/v2/league/7770001", response_body={"data": {"name": "Liga de los Amigos"}}),
+            entry("POST", "/api/v2/market/bid", {"amount": 150000})), "--list")
+        self.assertEqual(status, 0)
+        self.assertEqual(files, {})
+        self.assertIn("GET    /api/v2/league/N", printed)
+        self.assertIn("answer saved", printed)
+        for real in ("7770001", "Liga de los Amigos", "150000", TOKEN):
+            self.assertNotIn(real, printed)
 
 
 if __name__ == "__main__":

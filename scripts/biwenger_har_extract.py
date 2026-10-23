@@ -2,6 +2,8 @@
 """Extract anonymised samples of Biwenger *write* requests from a browser HAR file (issue #19).
 
 Run it yourself from the repo root:  python3 scripts/biwenger_har_extract.py ~/Downloads/biwenger.har
+With --list it only prints what the HAR holds (methods, paths with numbers masked, status, whether
+the answer was saved), to find out why an extraction fails.
 
 The HAR holds your session: keep it outside the repo and delete it afterwards. This script:
 - keeps only non-GET requests to biwenger.as.com/api/ (the writes). The login is skipped: its body
@@ -136,13 +138,39 @@ def file_name(index, method, anonymised_path):
     return f"{index:02d}-{method.lower()}-{slug or 'root'}.json"
 
 
+REPO = Path(__file__).resolve().parent.parent
+
+
+def list_entries(har):
+    """What the HAR holds, without anything that identifies you: numbers are masked."""
+    hosts = {}
+    for entry in (har.get("log") or {}).get("entries") or []:
+        host = urlsplit((entry.get("request") or {}).get("url", "")).hostname or "?"
+        hosts[host] = hosts.get(host, 0) + 1
+    print("Requests per host:")
+    for host, count in sorted(hosts.items(), key=lambda item: -item[1]):
+        print(f"  {count:>5}  {host}")
+    print(f"\nCalls to {API_HOST}/api/ (numbers masked):")
+    for method, path, _, _, response in entries(har):
+        saved = "answer saved" if response_text(response) else "NO answer saved"
+        print(f"  {method:<6} {re.sub(r'[0-9]+', 'N', path):<45} HTTP {response.get('status')}  {saved}")
+
+
 def main(argv=None, out_dir=None):
     parser = argparse.ArgumentParser(description="Extract anonymised Biwenger write samples.")
     parser.add_argument("har", type=Path, help="the HAR file exported from DevTools")
+    parser.add_argument("--list", action="store_true", help="only list what the HAR holds")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
-    out_dir = out_dir or Path(__file__).resolve().parent.parent / "docs/biwenger-api/samples/write"
+    out_dir = out_dir or REPO / "docs/biwenger-api/samples/write"
 
+    if args.har.resolve().is_relative_to(REPO):
+        sys.exit(
+            f"{args.har} is inside the repo, where it could be committed by accident, and it holds\n"
+            "your session. Move it out first, for example: mv " + str(args.har) + " ~/Downloads/biwenger.har")
     har = json.loads(args.har.read_text(encoding="utf-8"))
+    if args.list:
+        list_entries(har)
+        return 0
     anonymiser = build_anonymiser(har)
     secrets = secret_values(har)
 
