@@ -30,6 +30,8 @@ services:
       # Used from Phase 2, when the Biwenger client exists.
       BIWENGER_EMAIL: ${BIWENGER_EMAIL:-}
       BIWENGER_PASSWORD: ${BIWENGER_PASSWORD:-}
+      BIWENGER_SYNC_CRON: ${BIWENGER_SYNC_CRON:-0 30 7 * * *}
+      BIWENGER_SYNC_ENABLED: ${BIWENGER_SYNC_ENABLED:-true}
     depends_on:
       db:
         condition: service_healthy
