@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Reads the stored players and their history, so other features use this service, not the player
- * tables. Maps are keyed and ordered by player id; a player with no rows is left out.
+ * tables.
  */
 @Service
 public class PlayerReader {
@@ -40,18 +40,32 @@ public class PlayerReader {
     this.reports = reports;
   }
 
-  /** The players we have stored, by id. */
+  /**
+   * The stored players among {@code ids}, with their values since {@code pricesFrom} (oldest
+   * first), season points as the latest daily sync had them, and last {@code matches} matches
+   * (latest first). One transaction, so a sync committing meanwhile can't mix two days in one
+   * answer.
+   */
   @Transactional(readOnly = true)
-  public List<PlayerProfile> profiles(Collection<Long> ids) {
+  public StoredPlayers read(Collection<Long> ids, LocalDate pricesFrom, int matches) {
+    if (matches < 0) {
+      throw new IllegalArgumentException("Can't read a negative number of matches: " + matches);
+    }
+    if (ids.isEmpty()) {
+      return new StoredPlayers(List.of(), Map.of(), Map.of(), Map.of()); // SQL has no empty IN ()
+    }
+    return new StoredPlayers(
+        profiles(ids), pricesSince(ids, pricesFrom), seasonPoints(ids), lastMatches(ids, matches));
+  }
+
+  private List<PlayerProfile> profiles(Collection<Long> ids) {
     return players.findAllById(ids).stream()
         .map(PlayerEntity::toDomain)
         .sorted(Comparator.comparingLong(PlayerProfile::id))
         .toList();
   }
 
-  /** Each player's daily values since {@code from}, oldest first. */
-  @Transactional(readOnly = true)
-  public Map<Long, List<DailyPrice>> pricesSince(Collection<Long> ids, LocalDate from) {
+  private Map<Long, List<DailyPrice>> pricesSince(Collection<Long> ids, LocalDate from) {
     return prices.findSince(ids, from).stream()
         .collect(
             Collectors.groupingBy(
@@ -60,24 +74,19 @@ public class PlayerReader {
                 Collectors.mapping(PlayerPriceSnapshotEntity::toDomain, Collectors.toList())));
   }
 
-  /** Each player's season points, as the latest daily sync had them. */
-  @Transactional(readOnly = true)
-  public Map<Long, Integer> seasonPoints(Collection<Long> ids) {
-    if (ids.isEmpty()) {
-      return Map.of(); // SQL has no empty IN ()
-    }
+  private Map<Long, Integer> seasonPoints(Collection<Long> ids) {
     return prices.findLatestPoints(ids).stream()
         .collect(
             Collectors.toMap(
                 LatestPoints::getPlayerId,
                 LatestPoints::getPoints,
-                (first, second) -> first,
+                (first, second) -> first, // never runs: DISTINCT ON gives one row per player
                 TreeMap::new));
   }
 
-  /** Each player's last {@code count} matches, latest first. */
-  @Transactional(readOnly = true)
-  public Map<Long, List<MatchResult>> lastMatches(Collection<Long> ids, int count) {
+  // Loads every match of these players to keep the last few: fine for a squad. For the whole
+  // catalog, a row_number() window query would be better.
+  private Map<Long, List<MatchResult>> lastMatches(Collection<Long> ids, int count) {
     return reports.findByIdPlayerIdInOrderByMatchDateDescIdMatchIdDesc(ids).stream()
         .collect(
             Collectors.groupingBy(

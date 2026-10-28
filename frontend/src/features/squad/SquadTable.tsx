@@ -42,6 +42,7 @@ export function SquadTable({ players, sort, onSort }: SquadTableProps) {
           {header('position', 'Position')}
           <TableHead>Status</TableHead>
           {header('value', 'Value')}
+          {/* The backend's window: Squad.TREND_DAYS. */}
           {header('trend', 'Trend (14 days)')}
           {header('points', 'Points')}
           <TableHead>Form</TableHead>
@@ -89,7 +90,7 @@ function SortableHead({ column, label, sort, onSort }: SortableHeadProps) {
   return (
     <TableHead
       aria-sort={
-        active ? (sort.order === 'asc' ? 'ascending' : 'descending') : 'none'
+        active ? (sort.order === 'asc' ? 'ascending' : 'descending') : undefined
       }
     >
       <Button

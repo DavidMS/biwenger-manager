@@ -21,6 +21,7 @@ export function SquadList() {
           ? 'desc'
           : 'asc'
         : firstOrder(key)
+    // Replace, not push: Back leaves the page instead of stepping through every sort.
     setParams({ sort: key, order }, { replace: true })
   }
 

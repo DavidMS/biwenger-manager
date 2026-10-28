@@ -33,7 +33,10 @@ export function RecentForm({ form }: RecentFormProps) {
           )}
         >
           {match.played ? (
-            match.points
+            <>
+              {match.points}
+              <span className="sr-only"> points</span>
+            </>
           ) : (
             <>
               <span aria-hidden="true">{missed[match.reason].short}</span>

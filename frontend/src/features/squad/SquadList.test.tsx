@@ -139,7 +139,7 @@ describe('SquadList', () => {
     expect(cells.getByText('Injured')).toBeInTheDocument()
     expect(cells.getByText('€4,780,000')).toBeInTheDocument()
     expect(
-      cells.getByRole('img', { name: 'Value over 2 days' }),
+      cells.getByRole('img', { name: 'Value from €4,900,000 to €4,780,000' }),
     ).toBeInTheDocument()
     expect(cells.getByText('-€120,000')).toBeInTheDocument()
     expect(cells.getByText('40')).toBeInTheDocument()
@@ -148,12 +148,36 @@ describe('SquadList', () => {
       within(form)
         .getAllByRole('listitem')
         .map((m) => m.textContent),
-    ).toEqual(['Iinjured', '-2'])
+    ).toEqual(['Iinjured', '-2 points'])
 
     const coachRow = screen.getByRole('cell', { name: 'Mister' }).closest('tr')!
     expect(within(coachRow).getByText('Doubtful')).toBeInTheDocument()
     expect(within(coachRow).getByText('No history')).toBeInTheDocument()
     expect(within(coachRow).getByText('No matches')).toBeInTheDocument()
+  })
+
+  it('shows a badge for every status that may keep a player out', async () => {
+    vi.mocked(fetchSquad).mockResolvedValue(
+      squad({
+        players: [
+          forward,
+          { ...coach, id: 1, name: 'Banned', status: 'SUSPENDED' },
+          { ...coach, id: 2, name: 'Mystery', status: 'UNKNOWN' },
+          goalkeeper,
+        ],
+      }),
+    )
+
+    renderApp('/squad')
+
+    const badge = async (name: string) =>
+      within(
+        (await screen.findByRole('cell', { name })).closest('tr')!,
+      ).getAllByRole('cell')[2].textContent
+    expect(await badge('Ayoze')).toBe('Injured')
+    expect(await badge('Banned')).toBe('Suspended')
+    expect(await badge('Mystery')).toBe('Unknown status')
+    expect(await badge('Keeper')).toBe('Available')
   })
 
   it('sorts by position first, and by another column when its header is clicked', async () => {
@@ -166,6 +190,9 @@ describe('SquadList', () => {
 
     await user.click(screen.getByRole('button', { name: 'Points' }))
     expect(playerNames()).toEqual(['Ayoze', 'Mister', 'Keeper'])
+    expect(
+      screen.getByRole('columnheader', { name: 'Value' }),
+    ).not.toHaveAttribute('aria-sort')
     expect(
       screen.getByRole('columnheader', { name: 'Points' }),
     ).toHaveAttribute('aria-sort', 'descending')

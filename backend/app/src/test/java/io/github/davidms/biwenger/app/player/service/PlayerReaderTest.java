@@ -1,6 +1,7 @@
 package io.github.davidms.biwenger.app.player.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.davidms.biwenger.app.Samples;
 import io.github.davidms.biwenger.app.TestcontainersConfiguration;
@@ -65,10 +66,10 @@ class PlayerReaderTest {
     players.save(PlayerEntity.from(catalogPlayer(2001), NOW));
     flushAndClear();
 
-    assertThat(reader.profiles(List.of(2602L, 2001L, 99L)))
+    assertThat(reader.read(List.of(2602L, 2001L, 99L), DAY, 5).profiles())
         .extracting(PlayerProfile::id)
         .containsExactly(2001L, 2602L);
-    assertThat(reader.profiles(List.of(2001L)).getFirst())
+    assertThat(reader.read(List.of(2001L), DAY, 5).profiles().getFirst())
         .isEqualTo(
             new PlayerProfile(
                 2001,
@@ -89,7 +90,7 @@ class PlayerReaderTest {
     prices.save(PlayerPriceSnapshotEntity.daily(catalogPlayer(2602), DAY, NOW));
     flushAndClear();
 
-    Map<Long, List<DailyPrice>> trends = reader.pricesSince(List.of(2001L), DAY.minusDays(13));
+    Map<Long, List<DailyPrice>> trends = reader.read(List.of(2001L), DAY.minusDays(13), 5).prices();
 
     assertThat(trends).containsOnlyKeys(2001L);
     assertThat(trends.get(2001L))
@@ -105,9 +106,8 @@ class PlayerReaderTest {
     prices.save(PlayerPriceSnapshotEntity.backfill(2001, DAY, Money.euros(4_800_000), NOW));
     flushAndClear();
 
-    assertThat(reader.seasonPoints(List.of(2001L, 2602L)))
+    assertThat(reader.read(List.of(2001L, 2602L), DAY, 5).seasonPoints())
         .containsExactly(Map.entry(2001L, catalogPlayer(2001).points()));
-    assertThat(reader.seasonPoints(List.of())).isEmpty();
   }
 
   @Test
@@ -129,7 +129,7 @@ class PlayerReaderTest {
             new PointsReportId(2602, 1), 4901, NOW, false, 1, PlayerStatus.INJURED, NOW));
     flushAndClear();
 
-    Map<Long, List<MatchResult>> form = reader.lastMatches(List.of(2001L, 2602L), 5);
+    Map<Long, List<MatchResult>> form = reader.read(List.of(2001L, 2602L), DAY, 5).lastMatches();
 
     assertThat(form.get(2001L))
         .extracting(MatchResult::matchId)
@@ -138,5 +138,34 @@ class PlayerReaderTest {
     assertThat(form.get(2602L))
         .extracting(MatchResult::outcome)
         .containsExactly(new MatchResult.Missed(PlayerStatus.INJURED));
+  }
+
+  @Test
+  void breaksATieOnMatchDateByMatchIdLatestFirst() {
+    for (long match : List.of(7L, 9L, 8L)) {
+      reports.save(
+          PlayerPointsReportEntity.played(
+              new PointsReportId(2001, match), 4907, NOW, true, 1, (int) match, 90, NOW));
+    }
+    flushAndClear();
+
+    assertThat(reader.read(List.of(2001L), DAY, 2).lastMatches().get(2001L))
+        .extracting(MatchResult::matchId)
+        .containsExactly(9L, 8L);
+  }
+
+  @Test
+  void answersNothingForNoIds() {
+    players.save(PlayerEntity.from(catalogPlayer(2001), NOW));
+    flushAndClear();
+
+    assertThat(reader.read(List.of(), DAY, 5))
+        .isEqualTo(new StoredPlayers(List.of(), Map.of(), Map.of(), Map.of()));
+  }
+
+  @Test
+  void rejectsANegativeNumberOfMatches() {
+    assertThatThrownBy(() -> reader.read(List.of(2001L), DAY, -1))
+        .isInstanceOf(IllegalArgumentException.class);
   }
 }

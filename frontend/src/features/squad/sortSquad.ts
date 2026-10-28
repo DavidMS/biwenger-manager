@@ -36,16 +36,19 @@ export function sortSquad(players: SquadPlayer[], sort: Sort): SquadPlayer[] {
   )
 }
 
+function isSortKey(value: string | null): value is SortKey {
+  return sortKeys.includes(value as SortKey)
+}
+
 /** Reads a sort from URL parameters, falling back to the default for anything unknown. */
 export function parseSort(params: URLSearchParams): Sort {
   const key = params.get('sort')
-  if (!sortKeys.includes(key as SortKey)) {
+  if (!isSortKey(key)) {
     return defaultSort
   }
   const order = params.get('order')
   return {
-    key: key as SortKey,
-    order:
-      order === 'asc' || order === 'desc' ? order : firstOrder(key as SortKey),
+    key,
+    order: order === 'asc' || order === 'desc' ? order : firstOrder(key),
   }
 }

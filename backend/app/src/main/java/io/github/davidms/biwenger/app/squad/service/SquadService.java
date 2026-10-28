@@ -40,23 +40,21 @@ public class SquadService {
   public Squad squad() {
     List<Long> owned = playerIds();
     LocalDate today = LocalDate.now(clock);
-    var profiles = players.profiles(owned);
-    var trends = players.pricesSince(owned, today.minusDays(Squad.TREND_DAYS - 1));
-    var points = players.seasonPoints(owned);
-    var form = players.lastMatches(owned, Squad.FORM_MATCHES);
+    // Biwenger first, outside any transaction: its call can take a while.
+    var stored = players.read(owned, today.minusDays(Squad.TREND_DAYS - 1), Squad.FORM_MATCHES);
 
     List<SquadPlayer> squad =
-        profiles.stream()
+        stored.profiles().stream()
             .map(
                 profile ->
                     new SquadPlayer(
                         profile,
-                        trends.getOrDefault(profile.id(), List.of()),
-                        points.getOrDefault(profile.id(), 0),
-                        form.getOrDefault(profile.id(), List.of())))
+                        stored.prices().getOrDefault(profile.id(), List.of()),
+                        stored.seasonPoints().getOrDefault(profile.id(), 0),
+                        stored.lastMatches().getOrDefault(profile.id(), List.of())))
             .toList();
-    Set<Long> stored = profiles.stream().map(PlayerProfile::id).collect(Collectors.toSet());
-    return new Squad(squad, owned.stream().filter(id -> !stored.contains(id)).toList());
+    Set<Long> found = stored.profiles().stream().map(PlayerProfile::id).collect(Collectors.toSet());
+    return new Squad(squad, owned.stream().filter(id -> !found.contains(id)).toList());
   }
 
   private synchronized List<Long> playerIds() {

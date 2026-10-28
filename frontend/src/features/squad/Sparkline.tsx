@@ -1,4 +1,4 @@
-import { formatMoneyChange } from '@/lib/format'
+import { formatMoney, formatMoneyChange } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { PricePoint } from './types'
 
@@ -20,6 +20,7 @@ export function Sparkline({ trend, change }: SparklineProps) {
   const range = Math.max(...prices) - min
   const points = prices
     .map((price, index) => {
+      // Evenly spaced: the daily sync writes one point per day, so a gap only bends it a little.
       const x = (index / (prices.length - 1)) * WIDTH
       // A flat line sits in the middle; otherwise the highest value touches the top.
       const y =
@@ -31,7 +32,7 @@ export function Sparkline({ trend, change }: SparklineProps) {
     <span className="inline-flex items-center gap-2">
       <svg
         role="img"
-        aria-label={`Value over ${trend.length} days`}
+        aria-label={`Value from ${formatMoney(prices[0])} to ${formatMoney(prices[prices.length - 1])}`}
         width={WIDTH}
         height={HEIGHT}
         viewBox={`-1 -1 ${WIDTH + 2} ${HEIGHT + 2}`}

@@ -2,6 +2,8 @@ package io.github.davidms.biwenger.app.squad.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -17,6 +19,7 @@ import io.github.davidms.biwenger.app.player.domain.PlayerProfile;
 import io.github.davidms.biwenger.app.player.domain.PlayerStatus;
 import io.github.davidms.biwenger.app.player.domain.Position;
 import io.github.davidms.biwenger.app.player.service.PlayerReader;
+import io.github.davidms.biwenger.app.player.service.StoredPlayers;
 import io.github.davidms.biwenger.app.squad.domain.Squad;
 import io.github.davidms.biwenger.app.squad.domain.SquadPlayer;
 import io.github.davidms.biwenger.client.BiwengerApiException;
@@ -56,10 +59,10 @@ class SquadServiceTest {
   private final SquadService squads = new SquadService(biwenger, reader, clock);
 
   private void storedHistory() {
-    when(reader.profiles(OWNED)).thenReturn(List.of(AYOZE));
-    when(reader.pricesSince(OWNED, TODAY.minusDays(13))).thenReturn(Map.of(2001L, TREND));
-    when(reader.seasonPoints(OWNED)).thenReturn(Map.of(2001L, 40));
-    when(reader.lastMatches(OWNED, 5)).thenReturn(Map.of(2001L, FORM));
+    when(reader.read(OWNED, TODAY.minusDays(13), 5))
+        .thenReturn(
+            new StoredPlayers(
+                List.of(AYOZE), Map.of(2001L, TREND), Map.of(2001L, 40), Map.of(2001L, FORM)));
   }
 
   @Test
@@ -74,10 +77,20 @@ class SquadServiceTest {
   @Test
   void aPlayerWithNoHistoryHasAnEmptyTrendNoPointsAndNoForm() {
     when(biwenger.squadPlayerIds()).thenReturn(List.of(2001L));
-    when(reader.profiles(List.of(2001L))).thenReturn(List.of(AYOZE));
+    when(reader.read(List.of(2001L), TODAY.minusDays(13), 5))
+        .thenReturn(new StoredPlayers(List.of(AYOZE), Map.of(), Map.of(), Map.of()));
 
     assertThat(squads.squad().players())
         .containsExactly(new SquadPlayer(AYOZE, List.of(), 0, List.of()));
+  }
+
+  @Test
+  void anEmptySquadIsEmpty() {
+    when(biwenger.squadPlayerIds()).thenReturn(List.of());
+    when(reader.read(List.of(), TODAY.minusDays(13), 5))
+        .thenReturn(new StoredPlayers(List.of(), Map.of(), Map.of(), Map.of()));
+
+    assertThat(squads.squad()).isEqualTo(new Squad(List.of(), List.of()));
   }
 
   @Test
@@ -94,7 +107,7 @@ class SquadServiceTest {
     squads.squad();
     verify(biwenger, times(2)).squadPlayerIds();
     // The stored history is read every time: the database is cheap and the sync may have run.
-    verify(reader, times(3)).profiles(anyList());
+    verify(reader, times(3)).read(anyList(), any(), anyInt());
   }
 
   @Test
