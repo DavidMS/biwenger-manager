@@ -51,7 +51,7 @@ The `fitness` order was checked against player 2001's [reports](player-reports.m
 | `data.teams["{id}"].nextGames[]` | array | Next game(s): `id`, `date` (Unix s), `home.id`, `away.id`, `round.id` | |
 | `data.season.id` | **string** | Season, named by end year | `"2027"` |
 | `data.season.rounds[]` | array | Every round: `id`, `name`, `short`, `status` (`finished`, `active`, `pending`), optional `part` | |
-| `data.activeEvents[]` | array | The active round and the next one, with `start`, `end` (Unix s) and `games[]` | |
+| `data.activeEvents[]` | array | The active round and the next one: `id`, `name`, `short`, `status`, `start`, `end` (Unix s) and `games[]`. `start` is left out for a round already under way. The dashboard's countdown reads the next one's `start` | `{4908, "Jornada 10", "pending", 1792782000}` |
 | `data.activeEvents[].games[]` | array | `id`, `date`, `status` (`finished`, `pending`, `preview`), `home` / `away` with `id`, `name`, `score` (null before the game) and, for upcoming games, `difficulty.rating` (0 to 100) | |
 | `data.scores[]` | array | Available scoring systems: `id`, `name`, `kind` | `{1, "Diario AS", "as"}` |
 | `data.update` | int (Unix s) | Next catalog update, it seems: it was a day after the capture, 10 s after the market close (inferred) | `1792731610` |

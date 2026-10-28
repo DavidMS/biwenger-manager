@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.tuple;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import io.github.davidms.biwenger.client.model.Account;
+import io.github.davidms.biwenger.client.model.ActiveEvent;
 import io.github.davidms.biwenger.client.model.BoardEntry;
 import io.github.davidms.biwenger.client.model.BoardItem;
 import io.github.davidms.biwenger.client.model.Catalog;
@@ -176,6 +177,10 @@ class BiwengerClientEndpointsTest {
         .singleElement()
         .extracting(Round::shortName, Round::part, Round::status)
         .containsExactly("J1", 2, "finished");
+    // The active round is under way, so it has no start; the next one has.
+    assertThat(catalog.activeEvents())
+        .extracting(ActiveEvent::id, ActiveEvent::status, ActiveEvent::start)
+        .containsExactly(tuple(5176L, "active", null), tuple(4908L, "pending", 1_792_782_000L));
   }
 
   @Test

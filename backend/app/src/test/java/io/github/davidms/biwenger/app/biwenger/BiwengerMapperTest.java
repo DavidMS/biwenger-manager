@@ -6,10 +6,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import io.github.davidms.biwenger.app.Samples;
 import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
 import io.github.davidms.biwenger.app.common.Money;
+import io.github.davidms.biwenger.app.dashboard.domain.Dashboard;
 import io.github.davidms.biwenger.app.league.domain.League;
 import io.github.davidms.biwenger.app.league.domain.Manager;
 import io.github.davidms.biwenger.app.league.domain.Round;
 import io.github.davidms.biwenger.app.league.domain.RoundStatus;
+import io.github.davidms.biwenger.app.league.domain.ScheduledRound;
 import io.github.davidms.biwenger.app.league.domain.Standing;
 import io.github.davidms.biwenger.app.market.domain.MarketListing;
 import io.github.davidms.biwenger.app.market.domain.Ownership;
@@ -257,6 +259,28 @@ class BiwengerMapperTest {
         .isEqualTo(new ConnectedAccount("Manager 1", "Manager 1", "Example League"));
     assertThatThrownBy(() -> BiwengerMapper.connectedAccount(account, 42))
         .hasMessageContaining("doesn't match docs/biwenger-api/");
+  }
+
+  @Test
+  void mapsTheDashboard() throws IOException {
+    var account = sampleData("account.json", Account.class);
+    var standings = data("rounds-league.json", RoundStandings.class);
+
+    Dashboard dashboard =
+        BiwengerMapper.dashboard(account, standings, catalog, 1_000_001, 2_000_001);
+
+    assertThat(dashboard.balance()).isEqualTo(Money.euros(51_420_000));
+    assertThat(dashboard.points()).isEqualTo(220);
+    assertThat(dashboard.position()).isEqualTo(6);
+    assertThat(dashboard.managers()).isEqualTo(6);
+    assertThat(dashboard.teamValue()).isEqualTo(Money.euros(22_340_000));
+    assertThat(dashboard.teamValueChange()).isEqualTo(Money.euros(-70_000));
+    // The active round (J6, part 3) is under way and has no start: only J10 is scheduled.
+    assertThat(dashboard.rounds())
+        .containsExactly(
+            new ScheduledRound(4908, "Jornada 10", Instant.ofEpochSecond(1_792_782_000)));
+    assertThatThrownBy(() -> BiwengerMapper.dashboard(account, standings, catalog, 1_000_001, 42))
+        .hasMessageContaining("standings don't match docs/biwenger-api/");
   }
 
   @Test

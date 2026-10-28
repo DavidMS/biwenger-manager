@@ -1,6 +1,7 @@
 package io.github.davidms.biwenger.app.biwenger;
 
 import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
+import io.github.davidms.biwenger.app.dashboard.domain.Dashboard;
 import io.github.davidms.biwenger.app.player.domain.MatchResult;
 import io.github.davidms.biwenger.client.BiwengerClient;
 import java.util.List;
@@ -27,6 +28,20 @@ public class BiwengerGateway {
   public ConnectedAccount connectedAccount() {
     var league = client.leagueContext();
     return BiwengerMapper.connectedAccount(client.account(), league.leagueId());
+  }
+
+  /**
+   * Your team at a glance: three calls (account, standings, catalog), plus one more on a cold start
+   * to find the league. Callers cache it.
+   */
+  public Dashboard dashboard() {
+    var league = client.leagueContext();
+    return BiwengerMapper.dashboard(
+        client.account(),
+        client.roundStandings(),
+        client.catalog(),
+        league.leagueId(),
+        league.userId());
   }
 
   /** The season, the league's scoring system and every catalog player: what the backfill does. */
