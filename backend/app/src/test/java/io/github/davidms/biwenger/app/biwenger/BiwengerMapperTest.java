@@ -43,7 +43,9 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * The mapper against the anonymised samples from docs/biwenger-api/samples/. No Spring, no HTTP.
@@ -97,6 +99,24 @@ class BiwengerMapperTest {
 
     assertThat(players).hasSize(39);
     assertThat(players).extracting(Player::id).isSorted();
+  }
+
+  @Test
+  void leavesOutAPlayerWithNoClub() throws IOException {
+    // Seen in the real catalog on 2026-10-28: a released player has "teamID": null.
+    JsonNode data;
+    try (InputStream in = BiwengerMapperTest.class.getResourceAsStream("/samples/catalog.json")) {
+      data = JSON.readTree(in).get("data");
+    }
+    ((ObjectNode) data.get("players").get("2001")).putNull("teamID");
+    Catalog withNoClub = JSON.treeToValue(data, Catalog.class);
+
+    assertThat(BiwengerMapper.players(withNoClub))
+        .hasSize(38)
+        .extracting(Player::id)
+        .doesNotContain(2001L);
+    assertThat(BiwengerMapper.playersWithNoClub(withNoClub)).containsExactly(2001L);
+    assertThat(BiwengerMapper.playersWithNoClub(catalog)).isEmpty();
   }
 
   @Test

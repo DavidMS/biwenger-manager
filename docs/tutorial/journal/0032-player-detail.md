@@ -57,6 +57,10 @@
 - **Recharts needs `ResizeObserver`, which jsdom doesn't have.** Claude stubbed it in `src/test/setup.ts`. Since jsdom can't lay out a chart either, the tests check the summary and the table view instead of the SVG.
 - **Nobody has looked at the chart in a browser yet.** It needs a synced database, and the sync needs the Biwenger credentials in `.env`, which Claude doesn't read. The human should open a player page before merging.
 
+- **The first real run failed: every sync and the backfill stopped.** When the human started the app, Biwenger's catalog had a player (id 33789) with `"teamID": null`, a player with no club. The client model said the club was a required number. Strict parsing is on purpose (a field Biwenger drops fails loudly instead of becoming a silent 0), but here one player made the whole catalog unreadable. The human pasted only the end of the stack trace, so Claude read the container's logs to find the message and the JSON path.
+
+  Claude offered two fixes: keep such players with an optional club (a migration and changes down to the frontend), or leave them out of the sync. **The human chose to leave them out**, on this branch. `CatalogPlayer.teamId` is now nullable, `BiwengerMapper.players` skips players with no club, the gateway logs their ids on each sync, and the API reference says `teamID` can be `null`.
+
 Human review may add more corrections. Record them here before merging.
 
 ## Decisions made along the way
@@ -64,6 +68,7 @@ Human review may add more corrections. Record them here before merging.
 - **shadcn chart (Recharts) for charts,** loaded only with the pages that draw them.
 - **`--primary` for a single line,** because the theme's chart colours are too light.
 - **Every chart has a text summary and a table view,** so no value is reachable only by hovering.
+- **A player with no club is left out of the sync,** with a log line. Such a player can't play in La Liga.
 
 ## Lesson
 
