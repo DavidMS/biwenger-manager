@@ -4,7 +4,7 @@ A personal web app to manage a [Biwenger](https://biwenger.as.com/) fantasy foot
 
 ## Status
 
-Phase 1 (project skeleton) is done: the backend (health endpoint only) and frontend (layout and empty pages) build, run in Docker Compose and are checked by CI. Phase 2 (Biwenger API client) is done: the API is documented from real captures in `docs/biwenger-api/`, and `biwenger-client` reads every endpoint, gently and with clear errors. Phase 3 (domain, persistence and history) is done: the app syncs from Biwenger every morning (read-only) into PostgreSQL, keeps the history in daily snapshots, can backfill the season and refreshes match points after each round (ADR 0005). Phase 4 (read-only UI) is next. Items marked *(planned)* below don't exist yet.
+Phase 1 (project skeleton) is done: the backend (health endpoint only) and frontend (layout and empty pages) build, run in Docker Compose and are checked by CI. Phase 2 (Biwenger API client) is done: the API is documented from real captures in `docs/biwenger-api/`, and `biwenger-client` reads every endpoint, gently and with clear errors. Phase 3 (domain, persistence and history) is done: the app syncs from Biwenger every morning (read-only) into PostgreSQL, keeps the history in daily snapshots, can backfill the season and refreshes match points after each round (ADR 0005). Phase 4 (read-only UI) is done: settings, dashboard, squad, market, standings and a page per player, read live where data changes during the day and from the database otherwise. Phase 5 (advisor engine) is next. Items marked *(planned)* below don't exist yet.
 
 ## Repo map
 
