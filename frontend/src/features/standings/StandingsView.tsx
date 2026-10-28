@@ -7,7 +7,7 @@ import { useStandings } from './hooks'
 import { RivalSquadCard } from './RivalSquadCard'
 import { StandingsTable } from './StandingsTable'
 
-/** The league table and, for the manager picked in the URL (`?manager=`), his squad. */
+/** The league table and, for the manager picked in the URL (`?manager=`), their squad. */
 export function StandingsView() {
   const standings = useStandings()
   const [params] = useSearchParams()
@@ -42,6 +42,7 @@ export function StandingsView() {
         <RivalSquadCard
           key={selected.managerId}
           managerId={selected.managerId}
+          name={selected.name}
         />
       )}
     </div>

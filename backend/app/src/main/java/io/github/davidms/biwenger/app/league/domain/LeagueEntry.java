@@ -13,6 +13,7 @@ public record LeagueEntry(Standing standing, List<Long> squadPlayerIds, Instant 
 
   public LeagueEntry {
     Objects.requireNonNull(standing, "standing");
+    Objects.requireNonNull(squadPlayerIds, "squadPlayerIds");
     Objects.requireNonNull(lineupSavedAt, "lineupSavedAt");
     squadPlayerIds = squadPlayerIds.stream().distinct().sorted().toList();
   }

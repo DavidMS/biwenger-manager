@@ -131,7 +131,7 @@ describe('StandingsView', () => {
       await screen.findByRole('region', { name: "Manager 4's squad" }),
     )
     expect(fetchRivalSquad).toHaveBeenCalledWith(2000004)
-    expect(squad.getByText(/Team value €64,530,000/)).toBeInTheDocument()
+    expect(await squad.findByText(/Team value €64,530,000/)).toBeInTheDocument()
     // 10:00 UTC is 11:00 in Madrid.
     expect(
       squad.getByText(/lineup saved 26 Oct 2026, 11:00/),
@@ -148,7 +148,9 @@ describe('StandingsView', () => {
         'Suspended',
       ),
     ).toBeInTheDocument()
-    expect(squad.getByText(/player ids 33691/)).toBeInTheDocument()
+    expect(
+      squad.getByText(/1 player in this lineup is not shown/),
+    ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Manager 4' })).toHaveAttribute(
       'aria-current',
       'true',
@@ -175,6 +177,37 @@ describe('StandingsView', () => {
     expect(fetchRivalSquad).not.toHaveBeenCalled()
   })
 
+  it('shows the squad loading inside its titled region', async () => {
+    vi.mocked(fetchStandings).mockResolvedValue(standings)
+    vi.mocked(fetchRivalSquad).mockReturnValue(new Promise(() => {}))
+
+    renderApp('/standings?manager=2000004')
+
+    const squad = within(
+      await screen.findByRole('region', { name: "Manager 4's squad" }),
+    )
+    expect(squad.getByRole('status')).toHaveTextContent('Loading the squad…')
+  })
+
+  it('says when a lineup has no players, and names no missing ones', async () => {
+    vi.mocked(fetchStandings).mockResolvedValue(standings)
+    vi.mocked(fetchRivalSquad).mockResolvedValue({
+      ...leadersSquad,
+      players: [],
+      missingPlayerIds: [],
+    })
+
+    renderApp('/standings?manager=2000004')
+
+    const squad = within(
+      await screen.findByRole('region', { name: "Manager 4's squad" }),
+    )
+    expect(
+      await squad.findByText('No players in this lineup.'),
+    ).toBeInTheDocument()
+    expect(squad.queryByText(/not shown/)).not.toBeInTheDocument()
+  })
+
   it("shows the backend's problem when a squad fails", async () => {
     vi.mocked(fetchStandings).mockResolvedValue(standings)
     vi.mocked(fetchRivalSquad).mockRejectedValue(
@@ -183,7 +216,10 @@ describe('StandingsView', () => {
 
     renderApp('/standings?manager=2000004')
 
-    expect(await screen.findByText('Biwenger unavailable')).toBeInTheDocument()
+    const squad = within(
+      await screen.findByRole('region', { name: "Manager 4's squad" }),
+    )
+    expect(await squad.findByText('Biwenger unavailable')).toBeInTheDocument()
     expect(table().getByRole('row', { name: /Manager 4/ })).toBeInTheDocument()
   })
 })

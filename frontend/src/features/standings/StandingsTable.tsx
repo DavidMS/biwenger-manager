@@ -17,7 +17,7 @@ type StandingsTableProps = {
   selectedManagerId?: number
 }
 
-/** The league table. A manager's name links to his squad. */
+/** The league table. A manager's name links to their squad. */
 export function StandingsTable({
   standings,
   selectedManagerId,

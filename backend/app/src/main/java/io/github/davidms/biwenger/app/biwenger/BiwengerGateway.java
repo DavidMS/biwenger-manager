@@ -55,7 +55,10 @@ public class BiwengerGateway {
         .toList();
   }
 
-  /** The league table with every manager's lineup, and which manager is you: one small call. */
+  /**
+   * The league table with every manager's lineup, and which manager is you: one small call, two on
+   * a cold start.
+   */
   public LeagueTable leagueTable() {
     var league = client.leagueContext();
     return BiwengerMapper.leagueTable(client.roundStandings(), league.userId());

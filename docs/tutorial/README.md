@@ -62,3 +62,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #29 | [My squad page: value trend, status badges and sorting](journal/0029-squad-page.md) |
 | #86 | [Shared "not connected to Biwenger" error state](journal/0086-biwenger-error-state.md) |
 | #30 | [Market page: filters, sorting and the seller](journal/0030-market-page.md) |
+| #31 | [Standings and rival squads](journal/0031-standings.md) |

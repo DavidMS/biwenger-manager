@@ -74,13 +74,8 @@ public final class BiwengerMapper {
   }
 
   /**
-   * Your team in league {@code leagueId}, where you are user {@code userId}: the balance from the
-   * account (only it has it), everything else from one standings response, so position, points and
-   * league size always agree.
-   */
-  /**
-   * The league table by position, each manager with his squad as his lineup shows it: starters and
-   * reserves (empty slots skipped), the players left out and the coach.
+   * The league table by position, each manager with their squad as their lineup shows it: starters
+   * and reserves (empty slots skipped), the players left out and the coach.
    */
   public static LeagueTable leagueTable(RoundStandings rounds, long userId) {
     return new LeagueTable(
@@ -107,11 +102,18 @@ public final class BiwengerMapper {
                       ids,
                       Instant.ofEpochSecond(lineup.date()));
                 })
-            .sorted(Comparator.comparingInt(entry -> entry.standing().position()))
+            .sorted(
+                Comparator.comparingInt((LeagueEntry entry) -> entry.standing().position())
+                    .thenComparingLong(LeagueEntry::managerId))
             .toList(),
         userId);
   }
 
+  /**
+   * Your team in league {@code leagueId}, where you are user {@code userId}: the balance from the
+   * account (only it has it), everything else from one standings response, so position, points and
+   * league size always agree.
+   */
   public static TeamStatus teamStatus(
       Account account, RoundStandings standings, long leagueId, long userId) {
     var balance = accountLeague(account, leagueId).user().balance();
