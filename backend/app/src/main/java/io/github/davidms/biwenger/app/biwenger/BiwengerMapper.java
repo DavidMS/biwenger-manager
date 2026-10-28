@@ -4,6 +4,8 @@ import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
 import io.github.davidms.biwenger.app.common.Money;
 import io.github.davidms.biwenger.app.dashboard.domain.TeamStatus;
 import io.github.davidms.biwenger.app.league.domain.League;
+import io.github.davidms.biwenger.app.league.domain.LeagueEntry;
+import io.github.davidms.biwenger.app.league.domain.LeagueTable;
 import io.github.davidms.biwenger.app.league.domain.Manager;
 import io.github.davidms.biwenger.app.league.domain.Round;
 import io.github.davidms.biwenger.app.league.domain.RoundStatus;
@@ -27,6 +29,7 @@ import io.github.davidms.biwenger.client.model.Fitness;
 import io.github.davidms.biwenger.client.model.Market;
 import io.github.davidms.biwenger.client.model.MatchReport;
 import io.github.davidms.biwenger.client.model.PlayerPrices;
+import io.github.davidms.biwenger.client.model.PlayerRef;
 import io.github.davidms.biwenger.client.model.PlayerReports;
 import io.github.davidms.biwenger.client.model.RoundStandings;
 import io.github.davidms.biwenger.client.model.Sale;
@@ -35,7 +38,9 @@ import io.github.davidms.biwenger.client.model.SquadPlayer;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The one place where Biwenger's records become domain types (ADR 0003): codes such as position
@@ -73,6 +78,40 @@ public final class BiwengerMapper {
    * account (only it has it), everything else from one standings response, so position, points and
    * league size always agree.
    */
+  /**
+   * The league table by position, each manager with his squad as his lineup shows it: starters and
+   * reserves (empty slots skipped), the players left out and the coach.
+   */
+  public static LeagueTable leagueTable(RoundStandings rounds, long userId) {
+    return new LeagueTable(
+        rounds.league().standings().stream()
+            .map(
+                standing -> {
+                  var lineup = standing.lineup();
+                  var ids =
+                      Stream.of(
+                              lineup.players().stream(),
+                              lineup.reserves().stream(),
+                              lineup.discarded().stream(),
+                              Stream.ofNullable(lineup.coach()).map(PlayerRef::id))
+                          .flatMap(s -> s)
+                          .filter(Objects::nonNull)
+                          .toList();
+                  return new LeagueEntry(
+                      new Standing(
+                          new Manager(standing.id(), standing.name()),
+                          standing.position(),
+                          standing.points(),
+                          Money.euros(standing.teamValue()),
+                          Money.euros(standing.teamValueInc())),
+                      ids,
+                      Instant.ofEpochSecond(lineup.date()));
+                })
+            .sorted(Comparator.comparingInt(entry -> entry.standing().position()))
+            .toList(),
+        userId);
+  }
+
   public static TeamStatus teamStatus(
       Account account, RoundStandings standings, long leagueId, long userId) {
     var balance = accountLeague(account, leagueId).user().balance();

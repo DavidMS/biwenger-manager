@@ -106,6 +106,19 @@ class BiwengerGatewayTest {
     assertThat(gateway.marketListings()).hasSize(19).extracting(MarketListing::playerId).isSorted();
   }
 
+  @Test
+  @Order(5)
+  void readsTheLeagueTableAndKnowsWhichManagerIsYou() throws IOException {
+    biwenger.stubFor(post("/api/v2/auth/login").willReturn(okJson("{\"token\": \"t\"}")));
+    biwenger.stubFor(get("/api/v2/account").willReturn(okJson(sample("account.json"))));
+    biwenger.stubFor(get("/api/v2/rounds/league").willReturn(okJson(sample("rounds-league.json"))));
+
+    var table = gateway.leagueTable();
+
+    assertThat(table.entries()).hasSize(6);
+    assertThat(table.yourManagerId()).isEqualTo(2_000_001);
+  }
+
   private static String sample(String name) throws IOException {
     try (InputStream in = BiwengerGatewayTest.class.getResourceAsStream("/samples/" + name)) {
       assertThat(in).as("sample %s on the test classpath", name).isNotNull();

@@ -2,6 +2,7 @@ package io.github.davidms.biwenger.app.biwenger;
 
 import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
 import io.github.davidms.biwenger.app.dashboard.domain.TeamStatus;
+import io.github.davidms.biwenger.app.league.domain.LeagueTable;
 import io.github.davidms.biwenger.app.league.domain.ScheduledRound;
 import io.github.davidms.biwenger.app.market.domain.MarketListing;
 import io.github.davidms.biwenger.app.player.domain.MatchResult;
@@ -52,6 +53,12 @@ public class BiwengerGateway {
     return BiwengerMapper.listings(client.market()).stream()
         .sorted(Comparator.comparingLong(MarketListing::playerId))
         .toList();
+  }
+
+  /** The league table with every manager's lineup, and which manager is you: one small call. */
+  public LeagueTable leagueTable() {
+    var league = client.leagueContext();
+    return BiwengerMapper.leagueTable(client.roundStandings(), league.userId());
   }
 
   /** The active and next rounds' starts: one catalog call, the heaviest there is. */

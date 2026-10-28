@@ -1,5 +1,6 @@
 package io.github.davidms.biwenger.app.web;
 
+import io.github.davidms.biwenger.app.league.service.ManagerNotFoundException;
 import io.github.davidms.biwenger.app.sync.service.SyncAlreadyRunningException;
 import io.github.davidms.biwenger.client.BiwengerApiException;
 import io.github.davidms.biwenger.client.BiwengerAuthenticationException;
@@ -36,6 +37,13 @@ class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     LOG.log(Level.WARNING, "Biwenger unavailable: {0}", e.getMessage());
     var problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, e.getMessage());
     problem.setTitle("Biwenger unavailable");
+    return problem;
+  }
+
+  @ExceptionHandler(ManagerNotFoundException.class)
+  ProblemDetail managerNotFound(ManagerNotFoundException e) {
+    var problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+    problem.setTitle("Manager not found");
     return problem;
   }
 
