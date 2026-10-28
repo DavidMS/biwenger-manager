@@ -120,6 +120,9 @@ describe('MarketList', () => {
     expect(
       await screen.findByText('Nobody is on sale right now.'),
     ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('form', { name: 'Market filters' }),
+    ).not.toBeInTheDocument()
   })
 
   it('shows each player with team, price, trend, points, value for money, seller and closing time', async () => {
@@ -127,9 +130,7 @@ describe('MarketList', () => {
 
     renderApp('/market')
 
-    const row = within(
-      (await screen.findByRole('cell', { name: 'Keeper' })).closest('tr')!,
-    )
+    const row = within(await screen.findByRole('row', { name: /^Keeper/ }))
     expect(row.getByText('Athletic')).toBeInTheDocument()
     expect(row.getByText('Goalkeeper')).toBeInTheDocument()
     expect(row.getByText('Injured')).toBeInTheDocument()
@@ -140,9 +141,7 @@ describe('MarketList', () => {
     // 10:15 UTC is 11:15 in Madrid.
     expect(row.getByText('30 Oct 2026, 11:15')).toBeInTheDocument()
 
-    const freeRow = within(
-      screen.getByRole('cell', { name: 'Striker' }).closest('tr')!,
-    )
+    const freeRow = within(screen.getByRole('row', { name: /^Striker/ }))
     expect(freeRow.getByText('Free agent')).toBeInTheDocument()
     expect(
       freeRow.getByRole('img', { name: 'Value from €5,510,000 to €5,630,000' }),
@@ -157,13 +156,22 @@ describe('MarketList', () => {
     await screen.findByRole('table')
     expect(shownNames()).toEqual(['Keeper', 'Striker', 'Bargain'])
 
-    await user.selectOptions(screen.getByLabelText('Team'), 'Barcelona')
+    await user.selectOptions(
+      screen.getByRole('combobox', { name: 'Team' }),
+      'Barcelona',
+    )
     expect(shownNames()).toEqual(['Striker', 'Bargain'])
 
-    await user.selectOptions(screen.getByLabelText('Position'), 'Midfielder')
+    await user.selectOptions(
+      screen.getByRole('combobox', { name: 'Position' }),
+      'Midfielder',
+    )
     expect(shownNames()).toEqual(['Bargain'])
 
-    await user.selectOptions(screen.getByLabelText('Status'), 'Injured')
+    await user.selectOptions(
+      screen.getByRole('combobox', { name: 'Status' }),
+      'Injured',
+    )
     expect(
       screen.getByText('No player matches these filters.'),
     ).toBeInTheDocument()
@@ -171,8 +179,14 @@ describe('MarketList', () => {
     await user.click(screen.getByRole('button', { name: 'Clear filters' }))
     expect(shownNames()).toEqual(['Keeper', 'Striker', 'Bargain'])
 
-    await user.type(screen.getByLabelText('Min price (M€)'), '1')
-    await user.type(screen.getByLabelText('Max price (M€)'), '6')
+    await user.type(
+      screen.getByRole('spinbutton', { name: 'Min price (M€)' }),
+      '1',
+    )
+    await user.type(
+      screen.getByRole('spinbutton', { name: 'Max price (M€)' }),
+      '6',
+    )
     expect(shownNames()).toEqual(['Striker'])
     expect(screen.getByText(/^1 of 3 players/)).toBeInTheDocument()
   })
@@ -208,7 +222,31 @@ describe('MarketList', () => {
 
     await screen.findByRole('table')
     expect(shownNames()).toEqual(['Bargain', 'Striker'])
-    expect(screen.getByLabelText('Team')).toHaveValue('3')
+    expect(screen.getByRole('combobox', { name: 'Team' })).toHaveValue('3')
+  })
+
+  it('ignores a team in the URL that is not a club', async () => {
+    vi.mocked(fetchMarket).mockResolvedValue(market())
+
+    renderApp('/market?team=999')
+
+    await screen.findByRole('table')
+    expect(shownNames()).toEqual(['Keeper', 'Striker', 'Bargain'])
+    expect(screen.getByRole('combobox', { name: 'Team' })).toHaveValue('')
+  })
+
+  it('says when the max price is below the min price', async () => {
+    vi.mocked(fetchMarket).mockResolvedValue(market())
+
+    renderApp('/market?minPrice=6&maxPrice=2')
+
+    const max = await screen.findByRole('spinbutton', {
+      name: 'Max price (M€)',
+    })
+    expect(max).toHaveAttribute('aria-invalid', 'true')
+    expect(max).toHaveAccessibleDescription(
+      'The max price is below the min price.',
+    )
   })
 
   it('names the players on sale it cannot show', async () => {

@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -21,6 +22,11 @@ export function MarketFilters({
   onChange,
   onClear,
 }: MarketFiltersProps) {
+  const id = useId()
+  const rangeInvalid =
+    values.minPrice !== '' &&
+    values.maxPrice !== '' &&
+    Number(values.maxPrice) < Number(values.minPrice)
   return (
     <form
       aria-label="Market filters"
@@ -28,9 +34,9 @@ export function MarketFilters({
       onSubmit={(event) => event.preventDefault()}
     >
       <div className="grid gap-1.5">
-        <Label htmlFor="market-position">Position</Label>
+        <Label htmlFor={`${id}-position`}>Position</Label>
         <NativeSelect
-          id="market-position"
+          id={`${id}-position`}
           value={values.position}
           onChange={(event) => onChange('position', event.target.value)}
         >
@@ -43,9 +49,9 @@ export function MarketFilters({
         </NativeSelect>
       </div>
       <div className="grid gap-1.5">
-        <Label htmlFor="market-team">Team</Label>
+        <Label htmlFor={`${id}-team`}>Team</Label>
         <NativeSelect
-          id="market-team"
+          id={`${id}-team`}
           value={values.team}
           onChange={(event) => onChange('team', event.target.value)}
         >
@@ -58,9 +64,9 @@ export function MarketFilters({
         </NativeSelect>
       </div>
       <div className="grid gap-1.5">
-        <Label htmlFor="market-status">Status</Label>
+        <Label htmlFor={`${id}-status`}>Status</Label>
         <NativeSelect
-          id="market-status"
+          id={`${id}-status`}
           value={values.status}
           onChange={(event) => onChange('status', event.target.value)}
         >
@@ -73,9 +79,9 @@ export function MarketFilters({
         </NativeSelect>
       </div>
       <div className="grid gap-1.5">
-        <Label htmlFor="market-min-price">Min price (M€)</Label>
+        <Label htmlFor={`${id}-min-price`}>Min price (M€)</Label>
         <Input
-          id="market-min-price"
+          id={`${id}-min-price`}
           type="number"
           inputMode="decimal"
           min={0}
@@ -86,21 +92,28 @@ export function MarketFilters({
         />
       </div>
       <div className="grid gap-1.5">
-        <Label htmlFor="market-max-price">Max price (M€)</Label>
+        <Label htmlFor={`${id}-max-price`}>Max price (M€)</Label>
         <Input
-          id="market-max-price"
+          id={`${id}-max-price`}
           type="number"
           inputMode="decimal"
           min={0}
           step={0.1}
           className="w-28"
           value={values.maxPrice}
+          aria-invalid={rangeInvalid || undefined}
+          aria-describedby={rangeInvalid ? `${id}-range-error` : undefined}
           onChange={(event) => onChange('maxPrice', event.target.value)}
         />
       </div>
       <Button type="button" variant="outline" onClick={onClear}>
         Clear filters
       </Button>
+      {rangeInvalid && (
+        <p id={`${id}-range-error`} className="w-full text-sm text-destructive">
+          The max price is below the min price.
+        </p>
+      )}
     </form>
   )
 }

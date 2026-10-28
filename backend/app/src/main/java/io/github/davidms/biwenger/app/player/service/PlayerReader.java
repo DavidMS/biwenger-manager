@@ -67,10 +67,10 @@ public class PlayerReader {
         matches == 0 ? Map.of() : lastMatches(ids, matches));
   }
 
-  /** Every club we have stored, by name. */
+  /** The clubs the latest sync saw, by name: a club relegated since is left out. */
   @Transactional(readOnly = true)
   public List<Team> teams() {
-    return teams.findAllByOrderByNameAscIdAsc().stream().map(TeamEntity::toDomain).toList();
+    return teams.findCurrent().stream().map(TeamEntity::toDomain).toList();
   }
 
   private List<PlayerProfile> profiles(Collection<Long> ids) {

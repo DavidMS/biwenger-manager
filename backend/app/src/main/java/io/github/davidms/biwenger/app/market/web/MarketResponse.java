@@ -3,6 +3,7 @@ package io.github.davidms.biwenger.app.market.web;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.github.davidms.biwenger.app.market.domain.Market;
 import io.github.davidms.biwenger.app.market.domain.MarketPlayer;
+import io.github.davidms.biwenger.app.market.domain.Seller;
 import io.github.davidms.biwenger.app.player.domain.DailyPrice;
 import io.github.davidms.biwenger.app.player.domain.PlayerStatus;
 import io.github.davidms.biwenger.app.player.domain.Position;
@@ -39,7 +40,7 @@ public record MarketResponse(
       int points,
       BigDecimal pointsPerMillion,
       Instant closesAt,
-      Seller seller) {
+      SellerItem seller) {
 
     static Player from(MarketPlayer marketPlayer) {
       var listing = marketPlayer.listing();
@@ -57,7 +58,7 @@ public record MarketResponse(
           marketPlayer.points(),
           marketPlayer.pointsPerMillion(),
           listing.closesAt(),
-          Seller.from(listing.seller()));
+          SellerItem.from(listing.seller()));
     }
   }
 
@@ -70,14 +71,13 @@ public record MarketResponse(
 
   /** A free player ({@code free}, nothing else) or a manager's sale, with the manager. */
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  public record Seller(boolean free, Long managerId, String managerName) {
+  public record SellerItem(boolean free, Long managerId, String managerName) {
 
-    static Seller from(io.github.davidms.biwenger.app.market.domain.Seller seller) {
+    static SellerItem from(Seller seller) {
       return switch (seller) {
-        case io.github.davidms.biwenger.app.market.domain.Seller.Game _ ->
-            new Seller(true, null, null);
-        case io.github.davidms.biwenger.app.market.domain.Seller.ByManager(var manager, var _) ->
-            new Seller(false, manager.id(), manager.name());
+        case Seller.Game _ -> new SellerItem(true, null, null);
+        case Seller.ByManager(var manager, var _) ->
+            new SellerItem(false, manager.id(), manager.name());
       };
     }
   }

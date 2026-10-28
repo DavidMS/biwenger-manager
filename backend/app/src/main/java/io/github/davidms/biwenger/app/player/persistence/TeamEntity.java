@@ -37,8 +37,4 @@ public class TeamEntity {
   public Team toDomain() {
     return new Team(id, name, slug);
   }
-
-  public Instant updatedAt() {
-    return updatedAt;
-  }
 }

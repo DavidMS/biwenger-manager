@@ -134,6 +134,7 @@ class DailySyncTest {
     clock.advance(Duration.ofHours(2));
     sync.syncToday(SyncTrigger.SCHEDULED);
 
+    assertThat(count("team")).isEqualTo(20);
     assertThat(count("player_price_snapshot")).isEqualTo(39);
     assertThat(count("market_snapshot")).isEqualTo(19);
     assertThat(count("league_standing_snapshot")).isEqualTo(6);
@@ -186,6 +187,7 @@ class DailySyncTest {
 
     assertThatThrownBy(() -> sync.syncToday(SyncTrigger.SCHEDULED))
         .isInstanceOf(DataIntegrityViolationException.class);
+    assertThat(count("team")).isZero();
     assertThat(count("player")).isZero();
     assertThat(count("player_price_snapshot")).isZero();
   }

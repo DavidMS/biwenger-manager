@@ -169,10 +169,12 @@ class PlayerReaderTest {
   }
 
   @Test
-  void readsTheTeamsByNameThenId() {
+  void readsTheCurrentTeamsByNameThenId() {
     teams.save(TeamEntity.from(new Team(3, "Barcelona", "barcelona"), NOW));
     teams.save(TeamEntity.from(new Team(1, "Athletic", "athletic"), NOW));
     teams.save(TeamEntity.from(new Team(40, "Barcelona", "barcelona-b"), NOW));
+    // Relegated: the latest sync didn't see it.
+    teams.save(TeamEntity.from(new Team(9, "Almería", "almeria"), NOW.minusSeconds(86_400)));
     flushAndClear();
 
     assertThat(reader.teams()).extracting(Team::id).containsExactly(1L, 3L, 40L);

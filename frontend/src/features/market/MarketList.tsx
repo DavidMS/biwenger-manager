@@ -18,7 +18,7 @@ import {
 export function MarketList() {
   const market = useMarket()
   const [params, setParams] = useSearchParams()
-  const view = parseView(params)
+  const parsed = parseView(params)
 
   // Replace, not push: Back leaves the page instead of stepping through every filter.
   const update = (changes: Record<string, string>) =>
@@ -40,7 +40,7 @@ export function MarketList() {
     update({
       sort: key,
       // A new column starts with the biggest first; the same column flips.
-      order: key === view.sort && view.order === 'desc' ? 'asc' : 'desc',
+      order: key === parsed.sort && parsed.order === 'desc' ? 'asc' : 'desc',
     })
   const onClear = () =>
     update(Object.fromEntries(filterNames.map((name) => [name, ''])))
@@ -52,21 +52,33 @@ export function MarketList() {
     return <BiwengerErrorState error={market.error} />
   }
   const { players, teams, missingPlayerIds } = market.data
+  // A team that isn't a club (a stale or mistyped link) filters nothing, so the select and the
+  // list agree.
+  const view = teams.some((team) => team.id === parsed.teamId)
+    ? parsed
+    : { ...parsed, teamId: undefined }
   const shown = applyView(players, view)
-  const values = Object.fromEntries(
-    filterNames.map((name) => [name, params.get(name) ?? '']),
-  ) as Record<FilterName, string>
+  // The selects show the view; the price inputs show what was typed, so "1." stays while typing.
+  const values: Record<FilterName, string> = {
+    position: view.position ?? '',
+    team: view.teamId === undefined ? '' : String(view.teamId),
+    status: view.status ?? '',
+    minPrice: params.get('minPrice') ?? '',
+    maxPrice: params.get('maxPrice') ?? '',
+  }
   return (
     <SectionCard
       title="Players on sale"
       description={`${shown.length} of ${players.length} players. The listings are live; status, trend and points are from the last sync.`}
     >
-      <MarketFilters
-        values={values}
-        teams={teams}
-        onChange={(name, value) => update({ [name]: value })}
-        onClear={onClear}
-      />
+      {players.length > 0 && (
+        <MarketFilters
+          values={values}
+          teams={teams}
+          onChange={(name, value) => update({ [name]: value })}
+          onClear={onClear}
+        />
+      )}
       {players.length === 0 ? (
         <EmptyState>Nobody is on sale right now.</EmptyState>
       ) : shown.length === 0 ? (
