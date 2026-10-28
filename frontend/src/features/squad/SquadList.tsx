@@ -1,9 +1,8 @@
 import { useSearchParams } from 'react-router'
 import { SectionCard } from '@/components/layout/SectionCard'
 import { EmptyState } from '@/components/state/EmptyState'
-import { ErrorState } from '@/components/state/ErrorState'
+import { BiwengerErrorState } from '@/components/state/BiwengerErrorState'
 import { LoadingState } from '@/components/state/LoadingState'
-import { ApiError } from '@/lib/api'
 import { useSquad } from './hooks'
 import { firstOrder, parseSort, type SortKey } from './sortSquad'
 import { SquadTable } from './SquadTable'
@@ -29,19 +28,7 @@ export function SquadList() {
     return <LoadingState />
   }
   if (squad.isError) {
-    const notConnected =
-      squad.error instanceof ApiError && squad.error.status === 503
-    return (
-      <ErrorState
-        error={squad.error}
-        title={notConnected ? 'Not connected to Biwenger' : undefined}
-        hint={
-          notConnected
-            ? 'Check the Biwenger account on the Settings page.'
-            : undefined
-        }
-      />
-    )
+    return <BiwengerErrorState error={squad.error} />
   }
   const { players, missingPlayerIds } = squad.data
   return (

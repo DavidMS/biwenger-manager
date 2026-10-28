@@ -1,15 +1,10 @@
 import { SectionCard } from '@/components/layout/SectionCard'
-import { ErrorState } from '@/components/state/ErrorState'
+import { BiwengerErrorState } from '@/components/state/BiwengerErrorState'
 import { LoadingState } from '@/components/state/LoadingState'
-import { ApiError } from '@/lib/api'
 import { useConnectedAccount } from './hooks'
 
 export function AccountCard() {
   const account = useConnectedAccount()
-  // 503: the login is missing or Biwenger rejected it. Either way, the fix is in .env.
-  const notConnected =
-    account.error instanceof ApiError && account.error.status === 503
-
   return (
     <SectionCard
       title="Biwenger account"
@@ -17,14 +12,10 @@ export function AccountCard() {
     >
       {account.isPending && <LoadingState />}
       {account.isError && (
-        <ErrorState
+        // This is the Settings page, so the fix is in .env, not here.
+        <BiwengerErrorState
           error={account.error}
-          title={notConnected ? 'Not connected to Biwenger' : undefined}
-          hint={
-            notConnected
-              ? 'Set or check BIWENGER_EMAIL and BIWENGER_PASSWORD in .env, then restart the backend.'
-              : undefined
-          }
+          notConnectedHint="Set or check BIWENGER_EMAIL and BIWENGER_PASSWORD in .env, then restart the backend."
         />
       )}
       {account.isSuccess && (
