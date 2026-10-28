@@ -8,7 +8,9 @@ input=$(cat)
 file=$(printf '%s' "$input" | python3 -c 'import json,sys; d=json.load(sys.stdin); print((d.get("tool_input") or {}).get("file_path") or (d.get("tool_response") or {}).get("filePath") or "")')
 [ -n "$file" ] && [ -f "$file" ] || exit 0
 
-root="${CLAUDE_PROJECT_DIR:-$(git -C "$(dirname "$file")" rev-parse --show-toplevel 2>/dev/null)}"
+# The repo root, also when Claude Code was started in a subfolder (CLAUDE_PROJECT_DIR is then that
+# subfolder, not the root).
+root="$(git -C "${CLAUDE_PROJECT_DIR:-$(dirname "$file")}" rev-parse --show-toplevel 2>/dev/null)"
 [ -n "$root" ] || exit 0
 
 case "$file" in

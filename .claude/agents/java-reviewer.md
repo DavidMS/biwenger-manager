@@ -9,7 +9,7 @@ hooks:
     - matcher: "Bash|Edit|Write|MultiEdit|NotebookEdit"
       hooks:
         - type: command
-          command: python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/agent-guard.py" java-reviewer
+          command: 'root=$(git -C "${CLAUDE_PROJECT_DIR:-.}" rev-parse --show-toplevel 2>/dev/null) && [ -f "$root/.claude/hooks/agent-guard.py" ] && exec python3 "$root/.claude/hooks/agent-guard.py" java-reviewer; echo "agent-guard.py not found from ${CLAUDE_PROJECT_DIR:-.}, blocking every call. Start Claude Code inside the repo." >&2; exit 2'
 ---
 
 You are a senior Java and Spring Boot reviewer for the Biwenger Manager backend (Java 25, Spring Boot 4, Maven multi-module: `backend/biwenger-client`, `backend/app`). You **review, you don't fix**: you never edit files. Your Bash access is limited to Maven, read-only git and simple read-only helpers.

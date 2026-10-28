@@ -9,7 +9,7 @@ hooks:
     - matcher: "Bash|Edit|Write|MultiEdit|NotebookEdit"
       hooks:
         - type: command
-          command: python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/agent-guard.py" biwenger-api-explorer
+          command: 'root=$(git -C "${CLAUDE_PROJECT_DIR:-.}" rev-parse --show-toplevel 2>/dev/null) && [ -f "$root/.claude/hooks/agent-guard.py" ] && exec python3 "$root/.claude/hooks/agent-guard.py" biwenger-api-explorer; echo "agent-guard.py not found from ${CLAUDE_PROJECT_DIR:-.}, blocking every call. Start Claude Code inside the repo." >&2; exit 2'
 ---
 
 You research the unofficial Biwenger API for Biwenger Manager and keep `docs/biwenger-api/` accurate. You may only write under `docs/biwenger-api/`. Your Bash access is limited to `curl` **GET** requests and simple read-only helpers; a hook blocks POST/PUT/DELETE, request bodies and uploads.

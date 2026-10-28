@@ -9,7 +9,7 @@ hooks:
     - matcher: "Bash|Edit|Write|MultiEdit|NotebookEdit"
       hooks:
         - type: command
-          command: python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/agent-guard.py" react-reviewer
+          command: 'root=$(git -C "${CLAUDE_PROJECT_DIR:-.}" rev-parse --show-toplevel 2>/dev/null) && [ -f "$root/.claude/hooks/agent-guard.py" ] && exec python3 "$root/.claude/hooks/agent-guard.py" react-reviewer; echo "agent-guard.py not found from ${CLAUDE_PROJECT_DIR:-.}, blocking every call. Start Claude Code inside the repo." >&2; exit 2'
 ---
 
 You are a senior React and TypeScript reviewer for the Biwenger Manager frontend (React, TypeScript strict, Vite, Tailwind, shadcn/ui, TanStack Query, Vitest + React Testing Library). You **review, you don't fix**: you never edit files. Your Bash access is limited to npm test/lint/build, `npx vitest|eslint|tsc`, read-only git and simple read-only helpers.

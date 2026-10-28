@@ -13,7 +13,8 @@ CLAUDE.md                 this file (always loaded, keep it short)
 .claude/
   settings.json           shared permissions and hooks (personal overrides: settings.local.json, gitignored)
   hooks/                  hook scripts: guard-bash.sh (blocks force-push to main, reading .env), format-file.sh,
-                          agent-guard.py (per-agent command and path limits)
+                          agent-guard.py (per-agent command and path limits), test_hooks.py. Hook commands find
+                          the repo root with git, so they work from a subfolder, and block if a script is missing
   skills/                 on-demand workflows: implement-issue, backend-feature, frontend-feature,
                           biwenger-api, write-adr, tutorial-chapter
   agents/                 subagents: java-reviewer, react-reviewer, test-writer, biwenger-api-explorer,
@@ -30,7 +31,7 @@ docs/
   biwenger-api/           reverse-engineered API reference: one doc per endpoint, anonymised samples/
 scripts/                  biwenger_capture.py (read samples) and biwenger_har_extract.py (write samples from a
                           browser HAR): both run by the human, Claude reads only their anonymised output
-.github/                  issue forms (feature, spike, bug), PR template, CI workflows (backend.yml, frontend.yml)
+.github/                  issue forms (feature, spike, bug), PR template, CI workflows (backend.yml, frontend.yml, claude-hooks.yml)
 ```
 
 Module conventions are in `backend/CLAUDE.md` and `frontend/CLAUDE.md`: package and folder layout, types, error handling, styling and tests. Read them before working in those folders.
@@ -48,6 +49,7 @@ The backend needs **JDK 25**: `backend/.sdkmanrc` names it, so run `sdk env` in 
 | Frontend lint + format check | `cd frontend && npm run lint && npm run format:check` |
 | Frontend build (includes type check) | `cd frontend && npm run build` |
 | Run the frontend | `cd frontend && npm run dev`, then open http://localhost:5173 |
+| Claude Code hook tests | `python3 -m unittest discover -s .claude/hooks` (run the configured hook commands from the root and from subfolders) |
 | Run everything locally | `cp .env.example .env` (once), then `docker compose up --build`. UI at http://localhost:8000 |
 
 ## Golden rules
