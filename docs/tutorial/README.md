@@ -59,3 +59,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #26 | [Tutorial chapter 04](journal/0026-tutorial-chapter-04.md) |
 | #27 | [Settings page: connected account, league and last sync](journal/0027-settings-page.md) |
 | #28 | [Dashboard: balance, team value, position and next round](journal/0028-dashboard.md) |
+| #29 | [My squad page: value trend, status badges and sorting](journal/0029-squad-page.md) |
