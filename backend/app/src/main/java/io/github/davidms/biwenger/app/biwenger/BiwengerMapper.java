@@ -2,10 +2,12 @@ package io.github.davidms.biwenger.app.biwenger;
 
 import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
 import io.github.davidms.biwenger.app.common.Money;
+import io.github.davidms.biwenger.app.dashboard.domain.TeamStatus;
 import io.github.davidms.biwenger.app.league.domain.League;
 import io.github.davidms.biwenger.app.league.domain.Manager;
 import io.github.davidms.biwenger.app.league.domain.Round;
 import io.github.davidms.biwenger.app.league.domain.RoundStatus;
+import io.github.davidms.biwenger.app.league.domain.ScheduledRound;
 import io.github.davidms.biwenger.app.league.domain.Standing;
 import io.github.davidms.biwenger.app.market.domain.MarketListing;
 import io.github.davidms.biwenger.app.market.domain.Ownership;
@@ -18,6 +20,7 @@ import io.github.davidms.biwenger.app.player.domain.Position;
 import io.github.davidms.biwenger.app.player.domain.RoundForm;
 import io.github.davidms.biwenger.app.player.domain.Team;
 import io.github.davidms.biwenger.client.model.Account;
+import io.github.davidms.biwenger.client.model.AccountLeague;
 import io.github.davidms.biwenger.client.model.Catalog;
 import io.github.davidms.biwenger.client.model.CatalogPlayer;
 import io.github.davidms.biwenger.client.model.Fitness;
@@ -47,17 +50,58 @@ public final class BiwengerMapper {
 
   /** The account's name, its team in league {@code leagueId}, and that league's name. */
   public static ConnectedAccount connectedAccount(Account account, long leagueId) {
-    var league =
-        account.leagues().stream()
-            .filter(candidate -> candidate.id() == leagueId)
+    var league = accountLeague(account, leagueId);
+    return new ConnectedAccount(account.account().name(), league.user().name(), league.name());
+  }
+
+  private static AccountLeague accountLeague(Account account, long leagueId) {
+    return account.leagues().stream()
+        .filter(candidate -> candidate.id() == leagueId)
+        .findFirst()
+        .orElseThrow(
+            () ->
+                new IllegalArgumentException(
+                    "Biwenger's account doesn't match docs/biwenger-api/: league "
+                        + leagueId
+                        + " is missing"));
+  }
+
+  /**
+   * Your team in league {@code leagueId}, where you are user {@code userId}: the balance from the
+   * account (only it has it), everything else from one standings response, so position, points and
+   * league size always agree.
+   */
+  public static TeamStatus teamStatus(
+      Account account, RoundStandings standings, long leagueId, long userId) {
+    var balance = accountLeague(account, leagueId).user().balance();
+    var all = standings.league().standings();
+    var mine =
+        all.stream()
+            .filter(standing -> standing.id() == userId)
             .findFirst()
             .orElseThrow(
                 () ->
                     new IllegalArgumentException(
-                        "Biwenger's account doesn't match docs/biwenger-api/: league "
-                            + leagueId
+                        "Biwenger's standings don't match docs/biwenger-api/: user "
+                            + userId
                             + " is missing"));
-    return new ConnectedAccount(account.account().name(), league.user().name(), league.name());
+    return new TeamStatus(
+        Money.euros(balance),
+        mine.points(),
+        mine.position(),
+        all.size(),
+        Money.euros(mine.teamValue()),
+        Money.euros(mine.teamValueInc()));
+  }
+
+  /** The catalog's active and next rounds that have a start; one under way has none. */
+  public static List<ScheduledRound> scheduledRounds(Catalog catalog) {
+    return catalog.activeEvents().stream()
+        .filter(event -> event.start() != null)
+        .map(
+            event ->
+                new ScheduledRound(event.id(), event.name(), Instant.ofEpochSecond(event.start())))
+        .toList();
   }
 
   /** Every catalog player, ordered by id. */

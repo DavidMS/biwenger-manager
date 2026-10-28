@@ -3,7 +3,11 @@ import { describe, expect, it, vi } from 'vitest'
 import { navItems } from '@/app/navigation'
 import { renderApp as renderAt } from '@/test/render'
 
-// Pages that fetch data (Settings) get answers that never come: this test is about navigation.
+// Pages that fetch data (Dashboard, Settings) get answers that never come: this test is about
+// navigation.
+vi.mock('@/features/dashboard/api', () => ({
+  fetchDashboard: () => new Promise(() => {}),
+}))
 vi.mock('@/features/settings/api', () => ({
   fetchAccount: () => new Promise(() => {}),
   fetchSyncStatus: () => new Promise(() => {}),

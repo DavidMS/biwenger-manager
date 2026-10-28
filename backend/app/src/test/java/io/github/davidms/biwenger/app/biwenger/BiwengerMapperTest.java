@@ -6,10 +6,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import io.github.davidms.biwenger.app.Samples;
 import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
 import io.github.davidms.biwenger.app.common.Money;
+import io.github.davidms.biwenger.app.dashboard.domain.TeamStatus;
 import io.github.davidms.biwenger.app.league.domain.League;
 import io.github.davidms.biwenger.app.league.domain.Manager;
 import io.github.davidms.biwenger.app.league.domain.Round;
 import io.github.davidms.biwenger.app.league.domain.RoundStatus;
+import io.github.davidms.biwenger.app.league.domain.ScheduledRound;
 import io.github.davidms.biwenger.app.league.domain.Standing;
 import io.github.davidms.biwenger.app.market.domain.MarketListing;
 import io.github.davidms.biwenger.app.market.domain.Ownership;
@@ -257,6 +259,27 @@ class BiwengerMapperTest {
         .isEqualTo(new ConnectedAccount("Manager 1", "Manager 1", "Example League"));
     assertThatThrownBy(() -> BiwengerMapper.connectedAccount(account, 42))
         .hasMessageContaining("doesn't match docs/biwenger-api/");
+  }
+
+  @Test
+  void mapsYourTeamStatus() throws IOException {
+    var account = sampleData("account.json", Account.class);
+    var standings = data("rounds-league.json", RoundStandings.class);
+
+    assertThat(BiwengerMapper.teamStatus(account, standings, 1_000_001, 2_000_001))
+        .isEqualTo(
+            new TeamStatus(
+                Money.euros(51_420_000), 220, 6, 6, Money.euros(22_340_000), Money.euros(-70_000)));
+    assertThatThrownBy(() -> BiwengerMapper.teamStatus(account, standings, 1_000_001, 42))
+        .hasMessageContaining("standings don't match docs/biwenger-api/");
+  }
+
+  @Test
+  void mapsTheScheduledRounds() {
+    // The active round (J6, part 3) is under way and has no start: only J10 is scheduled.
+    assertThat(BiwengerMapper.scheduledRounds(catalog))
+        .containsExactly(
+            new ScheduledRound(4908, "Jornada 10", Instant.ofEpochSecond(1_792_782_000)));
   }
 
   @Test
