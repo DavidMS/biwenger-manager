@@ -1,6 +1,8 @@
 package io.github.davidms.biwenger.app.player.persistence;
 
+import io.github.davidms.biwenger.app.common.Money;
 import io.github.davidms.biwenger.app.player.domain.Player;
+import io.github.davidms.biwenger.app.player.domain.PlayerProfile;
 import io.github.davidms.biwenger.app.player.domain.PlayerStatus;
 import io.github.davidms.biwenger.app.player.domain.Position;
 import jakarta.persistence.Column;
@@ -54,6 +56,10 @@ public class PlayerEntity {
     entity.price = player.price().euros();
     entity.updatedAt = updatedAt;
     return entity;
+  }
+
+  public PlayerProfile toDomain() {
+    return new PlayerProfile(id, name, slug, teamId, position, status, Money.euros(price));
   }
 
   public long id() {

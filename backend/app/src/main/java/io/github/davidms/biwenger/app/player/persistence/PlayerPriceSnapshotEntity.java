@@ -1,6 +1,7 @@
 package io.github.davidms.biwenger.app.player.persistence;
 
 import io.github.davidms.biwenger.app.common.Money;
+import io.github.davidms.biwenger.app.player.domain.DailyPrice;
 import io.github.davidms.biwenger.app.player.domain.Player;
 import io.github.davidms.biwenger.app.player.domain.PlayerStatus;
 import jakarta.persistence.Column;
@@ -66,6 +67,10 @@ public class PlayerPriceSnapshotEntity {
     entity.price = price.euros();
     entity.source = PriceSnapshotSource.BACKFILL;
     return entity;
+  }
+
+  public DailyPrice toDomain() {
+    return new DailyPrice(id.snapshotDate(), Money.euros(price));
   }
 
   public PriceSnapshotId id() {

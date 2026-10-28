@@ -1,5 +1,6 @@
 package io.github.davidms.biwenger.app.player.persistence;
 
+import io.github.davidms.biwenger.app.player.domain.MatchResult;
 import io.github.davidms.biwenger.app.player.domain.PlayerStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
@@ -96,6 +97,12 @@ public class PlayerPointsReportEntity {
     entity.home = home;
     entity.scoreId = scoreId;
     return entity;
+  }
+
+  public MatchResult toDomain() {
+    MatchResult.Outcome outcome =
+        played ? new MatchResult.Played(points, minutesPlayed) : new MatchResult.Missed(absence);
+    return new MatchResult(id.matchId(), roundId, matchDate, home, outcome);
   }
 
   public PointsReportId id() {
