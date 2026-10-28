@@ -8,6 +8,8 @@ import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
 import io.github.davidms.biwenger.app.common.Money;
 import io.github.davidms.biwenger.app.dashboard.domain.TeamStatus;
 import io.github.davidms.biwenger.app.league.domain.League;
+import io.github.davidms.biwenger.app.league.domain.LeagueEntry;
+import io.github.davidms.biwenger.app.league.domain.LeagueTable;
 import io.github.davidms.biwenger.app.league.domain.Manager;
 import io.github.davidms.biwenger.app.league.domain.Round;
 import io.github.davidms.biwenger.app.league.domain.RoundStatus;
@@ -61,6 +63,24 @@ class BiwengerMapperTest {
     catalog = data("catalog.json", Catalog.class);
     market = data("market.json", Market.class);
     league = data("league.json", io.github.davidms.biwenger.client.model.League.class);
+  }
+
+  @Test
+  void mapsTheLeagueTableWithEachSquadFromItsLineup() throws IOException {
+    LeagueTable table =
+        BiwengerMapper.leagueTable(data("rounds-league.json", RoundStandings.class), 2_000_001);
+
+    assertThat(table.yourManagerId()).isEqualTo(2_000_001);
+    assertThat(table.entries())
+        .extracting(entry -> entry.standing().position())
+        .containsExactly(1, 2, 3, 4, 5, 6);
+    LeagueEntry leader = table.entries().getFirst();
+    assertThat(leader.managerId()).isEqualTo(2_000_004);
+    assertThat(leader.standing().teamValue()).isEqualTo(Money.euros(64_530_000));
+    assertThat(leader.lineupSavedAt()).isEqualTo(Instant.ofEpochSecond(1_788_461_545));
+    // 23 in the lineup's lists (3 empty slots skipped) plus the coach, who is in none of them.
+    assertThat(leader.squadPlayerIds()).hasSize(24).isSorted().contains(35_316L);
+    assertThat(table.entry(2_000_001).orElseThrow().squadPlayerIds()).hasSize(14);
   }
 
   @Test
