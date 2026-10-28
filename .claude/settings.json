@@ -40,7 +40,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-bash.sh\"",
+            "command": "root=$(git -C \"${CLAUDE_PROJECT_DIR:-.}\" rev-parse --show-toplevel 2>/dev/null) && [ -f \"$root/.claude/hooks/guard-bash.sh\" ] && exec bash \"$root/.claude/hooks/guard-bash.sh\"; echo \"guard-bash.sh not found from ${CLAUDE_PROJECT_DIR:-.}, blocking every call. Start Claude Code inside the repo.\" >&2; exit 2",
             "timeout": 10
           }
         ]
@@ -52,7 +52,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/format-file.sh\"",
+            "command": "root=$(git -C \"${CLAUDE_PROJECT_DIR:-.}\" rev-parse --show-toplevel 2>/dev/null) && [ -f \"$root/.claude/hooks/format-file.sh\" ] && exec bash \"$root/.claude/hooks/format-file.sh\"; echo \"format-file.sh not found from ${CLAUDE_PROJECT_DIR:-.}, so the file was not formatted. Start Claude Code inside the repo.\" >&2; exit 1",
             "timeout": 120,
             "statusMessage": "Formatting file"
           }

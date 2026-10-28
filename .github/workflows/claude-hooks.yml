@@ -1,0 +1,33 @@
+# Run the Claude Code hook commands as configured, from the repo root and from subfolders, on every
+# PR (and on main) that touches them. A hook that can't find its script must block, not pass.
+name: claude-hooks
+
+# Path filters: see backend.yml. Don't make this check "required" as is.
+on:
+  pull_request:
+    paths:
+      - ".claude/**"
+      - ".github/workflows/claude-hooks.yml"
+  push:
+    branches: [main]
+    paths:
+      - ".claude/**"
+      - ".github/workflows/claude-hooks.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: claude-hooks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      # The tests need no dependencies: the hooks use python3, bash and git, which the runner has.
+      - name: Test
+        run: python3 -m unittest discover -s .claude/hooks -v
