@@ -1,5 +1,6 @@
-import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Sparkline } from '@/components/player/Sparkline'
+import { StatusBadge } from '@/components/player/StatusBadge'
+import { SortableHead } from '@/components/table/SortableHead'
 import {
   Table,
   TableBody,
@@ -9,24 +10,15 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { formatMoney } from '@/lib/format'
+import { positionLabels } from '@/lib/player'
 import { RecentForm } from './RecentForm'
 import { sortSquad, type Sort, type SortKey } from './sortSquad'
-import { Sparkline } from './Sparkline'
-import { StatusBadge } from './StatusBadge'
-import type { Position, SquadPlayer } from './types'
+import type { SquadPlayer } from './types'
 
 type SquadTableProps = {
   players: SquadPlayer[]
   sort: Sort
   onSort: (key: SortKey) => void
-}
-
-const positionLabels: Record<Position, string> = {
-  GOALKEEPER: 'Goalkeeper',
-  DEFENDER: 'Defender',
-  MIDFIELDER: 'Midfielder',
-  FORWARD: 'Forward',
-  COACH: 'Coach',
 }
 
 /** Your players, one row each, sorted by the column the user picked. */
@@ -70,38 +62,5 @@ export function SquadTable({ players, sort, onSort }: SquadTableProps) {
         ))}
       </TableBody>
     </Table>
-  )
-}
-
-type SortableHeadProps = {
-  column: SortKey
-  label: string
-  sort: Sort
-  onSort: (key: SortKey) => void
-}
-
-function SortableHead({ column, label, sort, onSort }: SortableHeadProps) {
-  const active = sort.key === column
-  const Icon = !active
-    ? ArrowUpDown
-    : sort.order === 'asc'
-      ? ArrowUp
-      : ArrowDown
-  return (
-    <TableHead
-      aria-sort={
-        active ? (sort.order === 'asc' ? 'ascending' : 'descending') : undefined
-      }
-    >
-      <Button
-        variant="ghost"
-        size="sm"
-        className="-ml-2"
-        onClick={() => onSort(column)}
-      >
-        {label}
-        <Icon aria-hidden="true" />
-      </Button>
-    </TableHead>
   )
 }

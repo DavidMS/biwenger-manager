@@ -106,7 +106,7 @@ class DailySyncTest {
   @AfterEach
   void emptyTables() {
     jdbc.execute(
-        "TRUNCATE player, player_price_snapshot, market_snapshot, league_standing_snapshot, sync_run,"
+        "TRUNCATE team, player, player_price_snapshot, market_snapshot, league_standing_snapshot, sync_run,"
             + " player_points_report, points_refresh");
   }
 
@@ -118,6 +118,7 @@ class DailySyncTest {
     assertThat(summary.players()).isEqualTo(39);
     assertThat(summary.marketListings()).isEqualTo(19);
     assertThat(summary.standings()).isEqualTo(6);
+    assertThat(count("team")).isEqualTo(20);
     assertThat(count("player")).isEqualTo(39);
     assertThat(count("player_price_snapshot")).isEqualTo(39);
     assertThat(count("market_snapshot")).isEqualTo(19);
@@ -133,6 +134,7 @@ class DailySyncTest {
     clock.advance(Duration.ofHours(2));
     sync.syncToday(SyncTrigger.SCHEDULED);
 
+    assertThat(count("team")).isEqualTo(20);
     assertThat(count("player_price_snapshot")).isEqualTo(39);
     assertThat(count("market_snapshot")).isEqualTo(19);
     assertThat(count("league_standing_snapshot")).isEqualTo(6);
@@ -151,6 +153,7 @@ class DailySyncTest {
     clock.advance(Duration.ofDays(1));
     sync.syncToday(SyncTrigger.SCHEDULED);
 
+    assertThat(count("team")).isEqualTo(20);
     assertThat(count("player")).isEqualTo(39);
     assertThat(count("player_price_snapshot")).isEqualTo(78);
     assertThat(count("market_snapshot")).isEqualTo(38);
@@ -184,6 +187,7 @@ class DailySyncTest {
 
     assertThatThrownBy(() -> sync.syncToday(SyncTrigger.SCHEDULED))
         .isInstanceOf(DataIntegrityViolationException.class);
+    assertThat(count("team")).isZero();
     assertThat(count("player")).isZero();
     assertThat(count("player_price_snapshot")).isZero();
   }

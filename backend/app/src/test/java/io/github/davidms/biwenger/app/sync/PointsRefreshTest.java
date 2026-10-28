@@ -102,7 +102,7 @@ class PointsRefreshTest {
   @AfterEach
   void emptyTables() {
     jdbc.execute(
-        "TRUNCATE player, player_price_snapshot, market_snapshot, league_standing_snapshot,"
+        "TRUNCATE team, player, player_price_snapshot, market_snapshot, league_standing_snapshot,"
             + " sync_run, player_points_report, points_refresh");
   }
 

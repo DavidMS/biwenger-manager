@@ -1,6 +1,6 @@
 import { formatMoney, formatMoneyChange } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import type { PricePoint } from './types'
+import type { PricePoint } from '@/lib/player'
 
 type SparklineProps = {
   trend: PricePoint[]

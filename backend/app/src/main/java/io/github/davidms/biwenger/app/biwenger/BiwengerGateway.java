@@ -3,8 +3,10 @@ package io.github.davidms.biwenger.app.biwenger;
 import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
 import io.github.davidms.biwenger.app.dashboard.domain.TeamStatus;
 import io.github.davidms.biwenger.app.league.domain.ScheduledRound;
+import io.github.davidms.biwenger.app.market.domain.MarketListing;
 import io.github.davidms.biwenger.app.player.domain.MatchResult;
 import io.github.davidms.biwenger.client.BiwengerClient;
+import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -45,6 +47,13 @@ public class BiwengerGateway {
     return BiwengerMapper.squadPlayerIds(client.squad());
   }
 
+  /** Today's market, by player id: one small call. */
+  public List<MarketListing> marketListings() {
+    return BiwengerMapper.listings(client.market()).stream()
+        .sorted(Comparator.comparingLong(MarketListing::playerId))
+        .toList();
+  }
+
   /** The active and next rounds' starts: one catalog call, the heaviest there is. */
   public List<ScheduledRound> scheduledRounds() {
     return BiwengerMapper.scheduledRounds(client.catalog());
@@ -82,6 +91,7 @@ public class BiwengerGateway {
         league.leagueId(),
         league.scoreId(),
         BiwengerMapper.players(catalog),
+        BiwengerMapper.teams(catalog),
         BiwengerMapper.rounds(catalog),
         BiwengerMapper.listings(client.market()),
         BiwengerMapper.standings(client.roundStandings()));
