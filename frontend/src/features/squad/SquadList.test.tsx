@@ -207,6 +207,17 @@ describe('SquadList', () => {
     expect(playerNames()).toEqual(['Keeper', 'Ayoze', 'Mister'])
   })
 
+  it("links each player's name to the player page", async () => {
+    vi.mocked(fetchSquad).mockResolvedValue(squad())
+
+    renderApp('/squad')
+
+    expect(await screen.findByRole('link', { name: 'Ayoze' })).toHaveAttribute(
+      'href',
+      '/players/2001',
+    )
+  })
+
   it('reads the sort from the URL', async () => {
     vi.mocked(fetchSquad).mockResolvedValue(squad())
 
