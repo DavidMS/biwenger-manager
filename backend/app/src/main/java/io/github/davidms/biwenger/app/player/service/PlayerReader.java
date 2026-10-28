@@ -2,6 +2,7 @@ package io.github.davidms.biwenger.app.player.service;
 
 import io.github.davidms.biwenger.app.player.domain.DailyPrice;
 import io.github.davidms.biwenger.app.player.domain.MatchResult;
+import io.github.davidms.biwenger.app.player.domain.PlayerDetail;
 import io.github.davidms.biwenger.app.player.domain.PlayerProfile;
 import io.github.davidms.biwenger.app.player.domain.Team;
 import io.github.davidms.biwenger.app.player.persistence.PlayerEntity;
@@ -18,6 +19,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -65,6 +67,30 @@ public class PlayerReader {
         pricesSince(ids, pricesFrom),
         seasonPoints(ids),
         matches == 0 ? Map.of() : lastMatches(ids, matches));
+  }
+
+  /** Everything stored about one player, or empty when the sync has never stored him. */
+  @Transactional(readOnly = true)
+  public Optional<PlayerDetail> detail(long id) {
+    return players
+        .findById(id)
+        .map(
+            player ->
+                new PlayerDetail(
+                    player.toDomain(),
+                    prices.findByIdPlayerIdOrderByIdSnapshotDateAsc(id).stream()
+                        .map(PlayerPriceSnapshotEntity::toDomain)
+                        .toList(),
+                    seasonPoints(List.of(id)).getOrDefault(id, 0),
+                    reports.findByIdPlayerIdOrderByMatchDateAscIdMatchIdAsc(id).stream()
+                        .map(PlayerPointsReportEntity::toDomain)
+                        .toList()));
+  }
+
+  /** One club, whether or not the latest sync saw it. */
+  @Transactional(readOnly = true)
+  public Optional<Team> team(long id) {
+    return teams.findById(id).map(TeamEntity::toDomain);
   }
 
   /** The clubs the latest sync saw, by name: a club relegated since is left out. */

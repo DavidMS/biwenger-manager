@@ -10,6 +10,9 @@ public interface PlayerPointsReportRepository
   /** A player's matches, in the order they were played. */
   List<PlayerPointsReportEntity> findByIdPlayerIdOrderByMatchDateAsc(long playerId);
 
+  /** A player's matches in the order they were played; matches on the same date by match id. */
+  List<PlayerPointsReportEntity> findByIdPlayerIdOrderByMatchDateAscIdMatchIdAsc(long playerId);
+
   /** These players' matches, latest first; matches on the same date by match id, latest first. */
   List<PlayerPointsReportEntity> findByIdPlayerIdInOrderByMatchDateDescIdMatchIdDesc(
       Collection<Long> playerIds);
