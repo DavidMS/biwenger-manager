@@ -1,10 +1,14 @@
 import { PageHeader } from '@/components/layout/PageHeader'
+import { SquadList } from '@/features/squad/SquadList'
 
 export function SquadPage() {
   return (
-    <PageHeader
-      title="Squad"
-      description="Your players with value trend, status and form. Coming in Phase 4."
-    />
+    <div className="space-y-6">
+      <PageHeader
+        title="Squad"
+        description="Your players with value trend, status, points and form."
+      />
+      <SquadList />
+    </div>
   )
 }
