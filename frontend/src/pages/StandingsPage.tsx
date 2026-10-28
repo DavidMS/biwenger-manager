@@ -1,10 +1,14 @@
 import { PageHeader } from '@/components/layout/PageHeader'
+import { StandingsView } from '@/features/standings/StandingsView'
 
 export function StandingsPage() {
   return (
-    <PageHeader
-      title="Standings"
-      description="League table and rival squads. Coming in Phase 4."
-    />
+    <div className="space-y-6">
+      <PageHeader
+        title="Standings"
+        description="The league table, and each manager's squad and team value."
+      />
+      <StandingsView />
+    </div>
   )
 }
