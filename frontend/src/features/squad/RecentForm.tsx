@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils'
-import type { Match, PlayerStatus } from './types'
+import type { PlayerStatus } from '@/lib/player'
+import type { Match } from './types'
 
 type RecentFormProps = {
   form: Match[]

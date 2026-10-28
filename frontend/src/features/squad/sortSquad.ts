@@ -1,9 +1,12 @@
-import type { Position, SquadPlayer } from './types'
+import type { SortOrder } from '@/components/table/SortableHead'
+import { positionRank } from '@/lib/player'
+import type { SquadPlayer } from './types'
 
 export const sortKeys = ['position', 'value', 'points', 'trend'] as const
 export type SortKey = (typeof sortKeys)[number]
-export type SortOrder = 'asc' | 'desc'
 export type Sort = { key: SortKey; order: SortOrder }
+
+export type { SortOrder }
 
 export const defaultSort: Sort = { key: 'position', order: 'asc' }
 
@@ -12,16 +15,8 @@ export function firstOrder(key: SortKey): SortOrder {
   return key === 'position' ? 'asc' : 'desc'
 }
 
-const positionOrder: Record<Position, number> = {
-  GOALKEEPER: 0,
-  DEFENDER: 1,
-  MIDFIELDER: 2,
-  FORWARD: 3,
-  COACH: 4,
-}
-
 const sortValue: Record<SortKey, (player: SquadPlayer) => number> = {
-  position: (player) => positionOrder[player.position],
+  position: (player) => positionRank(player.position),
   value: (player) => player.price,
   points: (player) => player.points,
   trend: (player) => player.trendChange,

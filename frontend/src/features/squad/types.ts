@@ -1,14 +1,4 @@
-export type Position =
-  'GOALKEEPER' | 'DEFENDER' | 'MIDFIELDER' | 'FORWARD' | 'COACH'
-
-export type PlayerStatus =
-  'AVAILABLE' | 'DOUBTFUL' | 'INJURED' | 'SUSPENDED' | 'UNKNOWN'
-
-/** A player's value on one day (backend `SquadResponse.PricePoint`). `day` is `YYYY-MM-DD`. */
-export type PricePoint = {
-  day: string
-  price: number
-}
+import type { PlayerStatus, Position, PricePoint } from '@/lib/player'
 
 /**
  * One recent match (backend `SquadResponse.Match`): played with `points`, or missed with the
