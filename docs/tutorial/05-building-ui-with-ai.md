@@ -32,7 +32,7 @@ Each page went through the same six steps. Every step caught something the earli
 | **Build and test** | Components with Vitest and Testing Library, in jsdom, a browser simulated in Node | States, sorting, filters, links |
 | **Check the build** | `npm run lint`, `format:check`, `build` | A stale type import Vitest didn't see, a bundle that doubled |
 | **Review** | The `react-reviewer` and `java-reviewer` subagents read the diff | Accessibility, races between transactions, a 230 KB download every minute |
-| **Look** | Screenshots of the real pages with headless Chrome | A clipped table, links that don't look like links |
+| **Look** | Screenshots of the real pages with headless Chrome | A table column hidden with no hint, links that don't look like links |
 | **Run** | The human starts the whole app against Biwenger | A player with no club broke every sync |
 
 The first three steps are automatic. Review is a second reader with different priorities, and it runs on every PR (see [chapter 01](01-setting-up-claude-code.md) for the agents). The last two need someone to look at a page and someone to use the app.
@@ -158,12 +158,12 @@ The reviews caught the most, as in Phase 3. Then the real run and the screenshot
 - **A new dependency doubled the first download** ([#32](journal/0032-player-detail.md)). Adding Recharts took the main bundle from 130 to 235 KB gzipped. The build output showed it, and loading the player page on demand brought it back to 134 KB.
 - **The first real run failed** ([#32](journal/0032-player-detail.md)). When the human started the app, Biwenger's catalog had a player with `"teamID": null`, a player with no club. Strict parsing is on purpose, so a field Biwenger drops fails loudly. Here that meant one player stopped every sync and the backfill. The human pasted the end of a stack trace, and Claude read the container's logs to find the cause. The human chose to leave such players out of the sync.
 - **The screenshots for this chapter found two things the tests can't see.**
-  - At 1280px the market table is wider than its card, and the "Closes" column is cut off.
-  - Player names are links, but they look like plain bold text.
+  - At 1280px the market table is wider than its card, and the "Closes" column starts at the card's edge. The table does scroll sideways; the screenshots hide scrollbars. But macOS and phones also hide them until you scroll, so nothing shows the column is there ([#92](https://github.com/DavidMS/biwenger-manager/issues/92)).
+  - Player names are links, but they look like plain bold text until you hover, and a touch screen has no hover ([#93](https://github.com/DavidMS/biwenger-manager/issues/93)).
 
-  Both are suggested as follow-up issues:
+  Both are now follow-up issues:
 
-  ![The market page: the Closes column is cut off at 1280px](images/05/market.png)
+  ![The market page: the Closes column starts at the card's edge at 1280px](images/05/market.png)
 
   The demo server had its own bug. It sent match dates without a time, so every match showed "02:00". Claude checked that the real API sends the kickoff time before blaming the app.
 - **Claude reported stale PR states, twice** ([#28](journal/0028-dashboard.md), [#86](journal/0086-biwenger-error-state.md)). It used the git status from the start of the session, once to ask about a PR and once to report one, and both PRs had already been merged. The fix is a habit: run `gh pr view` before saying anything about a PR.
