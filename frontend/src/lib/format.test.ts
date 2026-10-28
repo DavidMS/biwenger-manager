@@ -34,6 +34,9 @@ describe('format', () => {
   it('shortens money and days for chart axes', () => {
     expect(formatMoneyCompact(4_780_000)).toBe('€4.8m')
     expect(formatMoneyCompact(250_000)).toBe('€250k')
+    expect(formatMoneyCompact(12_000_000)).toBe('€12m')
+    expect(formatMoneyCompact(-70_000)).toBe('-€70k')
+    expect(formatMoneyCompact(900)).toBe('€900')
     expect(formatShortDay('2026-10-22')).toBe('22 Oct')
   })
 

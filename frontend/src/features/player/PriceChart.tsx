@@ -47,7 +47,12 @@ export function PriceChart({ prices }: PriceChartProps) {
         className="aspect-auto h-64 w-full"
         aria-hidden="true"
       >
-        <LineChart data={prices} margin={{ left: 4, right: 12 }}>
+        <LineChart
+          data={prices}
+          margin={{ left: 4, right: 12 }}
+          // The chart is aria-hidden: without this, Recharts makes it a Tab stop.
+          accessibilityLayer={false}
+        >
           <CartesianGrid vertical={false} />
           <XAxis
             dataKey="day"
@@ -66,9 +71,10 @@ export function PriceChart({ prices }: PriceChartProps) {
           <ChartTooltip
             content={
               <ChartTooltipContent
-                labelFormatter={(_, payload) =>
-                  formatDay(String(payload[0]?.payload.day))
-                }
+                labelFormatter={(_, payload) => {
+                  const day: unknown = payload[0]?.payload?.day
+                  return typeof day === 'string' ? formatDay(day) : ''
+                }}
                 formatter={(value) => formatMoney(Number(value))}
               />
             }

@@ -87,7 +87,7 @@ src/
 - Charts use shadcn's `chart` component (Recharts), themed through its `ChartConfig`. A page with a chart is loaded on demand (`React.lazy`, like `pages/LazyPlayerPage.tsx`), so Recharts stays out of the first download.
 - A single series has no legend: the card's title names it. Lines are 2px with no dots, the grid is horizontal hairlines, and hovering shows a crosshair tooltip.
 - Use `--primary` for a single line: the theme's `--chart-*` greys are too light for a 2px line on white.
-- Every chart has a text summary in a `figcaption` and a table view with the same values, so no value is reachable only by hovering.
+- Every chart has a text summary in a `figcaption` and a table view with the same values, so no value is reachable only by hovering. The chart itself is then `aria-hidden` and sets `accessibilityLayer={false}`, or Recharts makes it a Tab stop that screen readers don't announce.
 - jsdom can't lay out a chart, so tests check the summary and the table view, not the SVG. `src/test/setup.ts` stubs `ResizeObserver` for Recharts.
 
 ## Tests

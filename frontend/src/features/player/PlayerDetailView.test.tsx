@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ApiError } from '@/lib/api'
 import { renderApp } from '@/test/render'
@@ -56,11 +56,12 @@ describe('PlayerDetailView', () => {
 
     renderApp('/players/2001')
 
+    // The lazy page's fallback shows the same heading, so wait for the page itself.
+    await waitFor(() => expect(fetchPlayer).toHaveBeenCalledWith(2001))
     expect(
-      await screen.findByRole('heading', { level: 1, name: 'Player' }),
+      screen.getByRole('heading', { level: 1, name: 'Player' }),
     ).toBeInTheDocument()
     expect(screen.getByRole('status')).toHaveTextContent('Loading…')
-    expect(fetchPlayer).toHaveBeenCalledWith(2001)
   })
 
   it('says how to fix a player the sync has never stored', async () => {

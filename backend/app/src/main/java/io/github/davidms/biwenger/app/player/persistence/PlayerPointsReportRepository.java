@@ -7,9 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface PlayerPointsReportRepository
     extends JpaRepository<PlayerPointsReportEntity, PointsReportId> {
 
-  /** A player's matches, in the order they were played. */
-  List<PlayerPointsReportEntity> findByIdPlayerIdOrderByMatchDateAsc(long playerId);
-
   /** A player's matches in the order they were played; matches on the same date by match id. */
   List<PlayerPointsReportEntity> findByIdPlayerIdOrderByMatchDateAscIdMatchIdAsc(long playerId);
 

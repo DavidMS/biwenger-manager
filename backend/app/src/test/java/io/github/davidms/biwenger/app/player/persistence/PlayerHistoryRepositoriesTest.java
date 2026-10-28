@@ -112,7 +112,7 @@ class PlayerHistoryRepositoriesTest {
     reports.save(PlayerPointsReportEntity.played(played, 4899, NOW, false, 1, 2, 56, NOW));
     flushAndClear();
 
-    var matches = reports.findByIdPlayerIdOrderByMatchDateAsc(2001);
+    var matches = reports.findByIdPlayerIdOrderByMatchDateAscIdMatchIdAsc(2001);
 
     assertThat(matches).extracting(r -> r.id().matchId()).containsExactly(50715L, 50721L);
     assertThat(matches.get(0).points()).contains(2);

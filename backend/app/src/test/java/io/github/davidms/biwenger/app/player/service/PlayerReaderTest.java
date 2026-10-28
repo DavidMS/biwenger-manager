@@ -187,7 +187,10 @@ class PlayerReaderTest {
     prices.save(PlayerPriceSnapshotEntity.daily(catalogPlayer(2001), DAY, NOW));
     prices.save(
         PlayerPriceSnapshotEntity.backfill(2001, DAY.minusDays(1), Money.euros(4_700_000), NOW));
-    // Two matches on the same date: by match id.
+    // Two matches on the same date: by match id. An earlier one with a higher id comes first.
+    reports.save(
+        PlayerPointsReportEntity.played(
+            new PointsReportId(2001, 10), 4906, NOW.minusSeconds(86_400), true, 1, 2, 60, NOW));
     reports.save(
         PlayerPointsReportEntity.played(
             new PointsReportId(2001, 9), 4907, NOW, true, 1, 6, 90, NOW));
@@ -204,7 +207,19 @@ class PlayerReaderTest {
             new DailyPrice(DAY.minusDays(1), Money.euros(4_700_000)),
             new DailyPrice(DAY, Money.euros(4_780_000)));
     assertThat(detail.points()).isEqualTo(catalogPlayer(2001).points());
-    assertThat(detail.matches()).extracting(MatchResult::matchId).containsExactly(8L, 9L);
+    assertThat(detail.matches()).extracting(MatchResult::matchId).containsExactly(10L, 8L, 9L);
+  }
+
+  @Test
+  void readsAPlayerWithNoHistory() {
+    players.save(PlayerEntity.from(catalogPlayer(2001), NOW));
+    flushAndClear();
+
+    PlayerDetail detail = reader.detail(2001).orElseThrow();
+
+    assertThat(detail.points()).isZero();
+    assertThat(detail.prices()).isEmpty();
+    assertThat(detail.matches()).isEmpty();
   }
 
   @Test
