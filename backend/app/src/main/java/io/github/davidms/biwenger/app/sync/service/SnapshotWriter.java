@@ -9,6 +9,8 @@ import io.github.davidms.biwenger.app.player.persistence.PlayerEntity;
 import io.github.davidms.biwenger.app.player.persistence.PlayerPriceSnapshotEntity;
 import io.github.davidms.biwenger.app.player.persistence.PlayerPriceSnapshotRepository;
 import io.github.davidms.biwenger.app.player.persistence.PlayerRepository;
+import io.github.davidms.biwenger.app.player.persistence.TeamEntity;
+import io.github.davidms.biwenger.app.player.persistence.TeamRepository;
 import java.time.Instant;
 import java.time.LocalDate;
 import org.springframework.stereotype.Service;
@@ -21,16 +23,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 class SnapshotWriter {
 
+  private final TeamRepository teams;
   private final PlayerRepository players;
   private final PlayerPriceSnapshotRepository prices;
   private final MarketSnapshotRepository market;
   private final LeagueStandingSnapshotRepository standings;
 
   SnapshotWriter(
+      TeamRepository teams,
       PlayerRepository players,
       PlayerPriceSnapshotRepository prices,
       MarketSnapshotRepository market,
       LeagueStandingSnapshotRepository standings) {
+    this.teams = teams;
     this.players = players;
     this.prices = prices;
     this.market = market;
@@ -39,6 +44,9 @@ class SnapshotWriter {
 
   @Transactional
   public void write(LocalDate day, Instant syncedAt, DailyData data) {
+    for (var team : data.teams()) {
+      teams.save(TeamEntity.from(team, syncedAt));
+    }
     for (var player : data.players()) {
       players.save(PlayerEntity.from(player, syncedAt));
       prices.save(PlayerPriceSnapshotEntity.daily(player, day, syncedAt));

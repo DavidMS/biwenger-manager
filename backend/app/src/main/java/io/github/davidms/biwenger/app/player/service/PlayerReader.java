@@ -3,6 +3,7 @@ package io.github.davidms.biwenger.app.player.service;
 import io.github.davidms.biwenger.app.player.domain.DailyPrice;
 import io.github.davidms.biwenger.app.player.domain.MatchResult;
 import io.github.davidms.biwenger.app.player.domain.PlayerProfile;
+import io.github.davidms.biwenger.app.player.domain.Team;
 import io.github.davidms.biwenger.app.player.persistence.PlayerEntity;
 import io.github.davidms.biwenger.app.player.persistence.PlayerPointsReportEntity;
 import io.github.davidms.biwenger.app.player.persistence.PlayerPointsReportRepository;
@@ -10,6 +11,8 @@ import io.github.davidms.biwenger.app.player.persistence.PlayerPriceSnapshotEnti
 import io.github.davidms.biwenger.app.player.persistence.PlayerPriceSnapshotRepository;
 import io.github.davidms.biwenger.app.player.persistence.PlayerPriceSnapshotRepository.LatestPoints;
 import io.github.davidms.biwenger.app.player.persistence.PlayerRepository;
+import io.github.davidms.biwenger.app.player.persistence.TeamEntity;
+import io.github.davidms.biwenger.app.player.persistence.TeamRepository;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Comparator;
@@ -30,14 +33,17 @@ public class PlayerReader {
   private final PlayerRepository players;
   private final PlayerPriceSnapshotRepository prices;
   private final PlayerPointsReportRepository reports;
+  private final TeamRepository teams;
 
   PlayerReader(
       PlayerRepository players,
       PlayerPriceSnapshotRepository prices,
-      PlayerPointsReportRepository reports) {
+      PlayerPointsReportRepository reports,
+      TeamRepository teams) {
     this.players = players;
     this.prices = prices;
     this.reports = reports;
+    this.teams = teams;
   }
 
   /**
@@ -55,7 +61,16 @@ public class PlayerReader {
       return new StoredPlayers(List.of(), Map.of(), Map.of(), Map.of()); // SQL has no empty IN ()
     }
     return new StoredPlayers(
-        profiles(ids), pricesSince(ids, pricesFrom), seasonPoints(ids), lastMatches(ids, matches));
+        profiles(ids),
+        pricesSince(ids, pricesFrom),
+        seasonPoints(ids),
+        matches == 0 ? Map.of() : lastMatches(ids, matches));
+  }
+
+  /** Every club we have stored, by name. */
+  @Transactional(readOnly = true)
+  public List<Team> teams() {
+    return teams.findAllByOrderByNameAscIdAsc().stream().map(TeamEntity::toDomain).toList();
   }
 
   private List<PlayerProfile> profiles(Collection<Long> ids) {

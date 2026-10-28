@@ -13,6 +13,7 @@ import io.github.davidms.biwenger.app.TestcontainersConfiguration;
 import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
 import io.github.davidms.biwenger.app.common.Money;
 import io.github.davidms.biwenger.app.league.domain.ScheduledRound;
+import io.github.davidms.biwenger.app.market.domain.MarketListing;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -93,6 +94,16 @@ class BiwengerGatewayTest {
         get("/api/v2/user?fields=players(id,owner)").willReturn(okJson(sample("user-squad.json"))));
 
     assertThat(gateway.squadPlayerIds()).hasSize(13).startsWith(2001L, 2602L);
+  }
+
+  @Test
+  @Order(4)
+  void readsTodaysMarketByPlayerId() throws IOException {
+    biwenger.stubFor(post("/api/v2/auth/login").willReturn(okJson("{\"token\": \"t\"}")));
+    biwenger.stubFor(get("/api/v2/account").willReturn(okJson(sample("account.json"))));
+    biwenger.stubFor(get("/api/v2/market").willReturn(okJson(sample("market.json"))));
+
+    assertThat(gateway.marketListings()).hasSize(19).extracting(MarketListing::playerId).isSorted();
   }
 
   private static String sample(String name) throws IOException {

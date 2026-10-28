@@ -13,6 +13,7 @@ import io.github.davidms.biwenger.app.player.domain.Player;
 import io.github.davidms.biwenger.app.player.domain.PlayerProfile;
 import io.github.davidms.biwenger.app.player.domain.PlayerStatus;
 import io.github.davidms.biwenger.app.player.domain.Position;
+import io.github.davidms.biwenger.app.player.domain.Team;
 import io.github.davidms.biwenger.app.player.persistence.PlayerEntity;
 import io.github.davidms.biwenger.app.player.persistence.PlayerPointsReportEntity;
 import io.github.davidms.biwenger.app.player.persistence.PlayerPointsReportRepository;
@@ -20,6 +21,8 @@ import io.github.davidms.biwenger.app.player.persistence.PlayerPriceSnapshotEnti
 import io.github.davidms.biwenger.app.player.persistence.PlayerPriceSnapshotRepository;
 import io.github.davidms.biwenger.app.player.persistence.PlayerRepository;
 import io.github.davidms.biwenger.app.player.persistence.PointsReportId;
+import io.github.davidms.biwenger.app.player.persistence.TeamEntity;
+import io.github.davidms.biwenger.app.player.persistence.TeamRepository;
 import io.github.davidms.biwenger.client.model.Catalog;
 import jakarta.persistence.EntityManager;
 import java.time.Duration;
@@ -46,6 +49,7 @@ class PlayerReaderTest {
   @Autowired PlayerRepository players;
   @Autowired PlayerPriceSnapshotRepository prices;
   @Autowired PlayerPointsReportRepository reports;
+  @Autowired TeamRepository teams;
   @Autowired EntityManager entityManager;
 
   private static Player catalogPlayer(long id) {
@@ -152,6 +156,26 @@ class PlayerReaderTest {
     assertThat(reader.read(List.of(2001L), DAY, 2).lastMatches().get(2001L))
         .extracting(MatchResult::matchId)
         .containsExactly(9L, 8L);
+  }
+
+  @Test
+  void readsNoMatchesWhenAskedForNone() {
+    reports.save(
+        PlayerPointsReportEntity.played(
+            new PointsReportId(2001, 1), 4907, NOW, true, 1, 6, 90, NOW));
+    flushAndClear();
+
+    assertThat(reader.read(List.of(2001L), DAY, 0).lastMatches()).isEmpty();
+  }
+
+  @Test
+  void readsTheTeamsByNameThenId() {
+    teams.save(TeamEntity.from(new Team(3, "Barcelona", "barcelona"), NOW));
+    teams.save(TeamEntity.from(new Team(1, "Athletic", "athletic"), NOW));
+    teams.save(TeamEntity.from(new Team(40, "Barcelona", "barcelona-b"), NOW));
+    flushAndClear();
+
+    assertThat(reader.teams()).extracting(Team::id).containsExactly(1L, 3L, 40L);
   }
 
   @Test

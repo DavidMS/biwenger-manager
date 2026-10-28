@@ -22,9 +22,6 @@ public record SquadPlayer(
 
   /** How much his value moved over the trend: last day minus first, zero with fewer than two. */
   public Money trendChange() {
-    if (trend.size() < 2) {
-      return Money.ZERO;
-    }
-    return trend.getLast().price().minus(trend.getFirst().price());
+    return DailyPrice.change(trend);
   }
 }
