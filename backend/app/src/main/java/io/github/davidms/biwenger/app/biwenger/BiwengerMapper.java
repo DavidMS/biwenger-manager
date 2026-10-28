@@ -2,7 +2,7 @@ package io.github.davidms.biwenger.app.biwenger;
 
 import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
 import io.github.davidms.biwenger.app.common.Money;
-import io.github.davidms.biwenger.app.dashboard.domain.Dashboard;
+import io.github.davidms.biwenger.app.dashboard.domain.TeamStatus;
 import io.github.davidms.biwenger.app.league.domain.League;
 import io.github.davidms.biwenger.app.league.domain.Manager;
 import io.github.davidms.biwenger.app.league.domain.Round;
@@ -67,15 +67,16 @@ public final class BiwengerMapper {
   }
 
   /**
-   * Your team in league {@code leagueId}, where you are user {@code userId}: balance and points
-   * from the account, team value from the standings, and the active and next rounds' starts from
-   * the catalog.
+   * Your team in league {@code leagueId}, where you are user {@code userId}: the balance from the
+   * account (only it has it), everything else from one standings response, so position, points and
+   * league size always agree.
    */
-  public static Dashboard dashboard(
-      Account account, RoundStandings standings, Catalog catalog, long leagueId, long userId) {
-    var member = accountLeague(account, leagueId).user();
+  public static TeamStatus teamStatus(
+      Account account, RoundStandings standings, long leagueId, long userId) {
+    var balance = accountLeague(account, leagueId).user().balance();
+    var all = standings.league().standings();
     var mine =
-        standings.league().standings().stream()
+        all.stream()
             .filter(standing -> standing.id() == userId)
             .findFirst()
             .orElseThrow(
@@ -84,14 +85,13 @@ public final class BiwengerMapper {
                         "Biwenger's standings don't match docs/biwenger-api/: user "
                             + userId
                             + " is missing"));
-    return new Dashboard(
-        Money.euros(member.balance()),
-        member.points(),
-        member.position(),
-        standings.league().standings().size(),
+    return new TeamStatus(
+        Money.euros(balance),
+        mine.points(),
+        mine.position(),
+        all.size(),
         Money.euros(mine.teamValue()),
-        Money.euros(mine.teamValueInc()),
-        scheduledRounds(catalog));
+        Money.euros(mine.teamValueInc()));
   }
 
   /** The catalog's active and next rounds that have a start; one under way has none. */

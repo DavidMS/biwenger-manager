@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import { ErrorState } from '@/components/state/ErrorState'
 import { LoadingState } from '@/components/state/LoadingState'
 import { ApiError } from '@/lib/api'
@@ -9,6 +10,10 @@ import { TeamCard } from './TeamCard'
 /** The dashboard's data: a warning when the balance is negative, your team, and the next round. */
 export function DashboardSummary() {
   const dashboard = useDashboard()
+  const { refetch } = dashboard
+  // The backend picks the next round when asked: once this one starts, ask again, so the card and
+  // the warning's deadline move on to the following round.
+  const onRoundStarted = useCallback(() => void refetch(), [refetch])
 
   if (dashboard.isPending) {
     return <LoadingState />
@@ -40,7 +45,7 @@ export function DashboardSummary() {
       )}
       <div className="grid gap-6 md:grid-cols-2">
         <TeamCard dashboard={data} />
-        <NextRoundCard nextRound={data.nextRound} />
+        <NextRoundCard nextRound={data.nextRound} onStarted={onRoundStarted} />
       </div>
     </div>
   )

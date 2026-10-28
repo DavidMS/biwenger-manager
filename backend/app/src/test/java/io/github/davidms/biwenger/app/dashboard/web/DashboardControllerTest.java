@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import io.github.davidms.biwenger.app.common.Money;
 import io.github.davidms.biwenger.app.dashboard.domain.Dashboard;
+import io.github.davidms.biwenger.app.dashboard.domain.TeamStatus;
 import io.github.davidms.biwenger.app.dashboard.service.DashboardService;
 import io.github.davidms.biwenger.app.league.domain.ScheduledRound;
 import io.github.davidms.biwenger.client.BiwengerApiException;
@@ -85,6 +86,7 @@ class DashboardControllerTest {
   }
 
   private static Dashboard dashboard(Money balance, List<ScheduledRound> rounds) {
-    return new Dashboard(balance, 220, 6, 6, Money.euros(22_340_000), Money.euros(-70_000), rounds);
+    return new Dashboard(
+        new TeamStatus(balance, 220, 6, 6, Money.euros(22_340_000), Money.euros(-70_000)), rounds);
   }
 }

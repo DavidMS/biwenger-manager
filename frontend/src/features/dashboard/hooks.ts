@@ -10,5 +10,8 @@ export function useDashboard() {
   return useQuery({
     queryKey: dashboardKeys.summary(),
     queryFn: fetchDashboard,
+    // A 503 (not connected) won't fix itself, and a 502 comes after the backend has already
+    // retried Biwenger for up to ~80 s: show either at once instead of trying again.
+    retry: false,
   })
 }

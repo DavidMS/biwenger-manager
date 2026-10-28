@@ -12,7 +12,6 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import io.github.davidms.biwenger.app.TestcontainersConfiguration;
 import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
 import io.github.davidms.biwenger.app.common.Money;
-import io.github.davidms.biwenger.app.dashboard.domain.Dashboard;
 import io.github.davidms.biwenger.app.league.domain.ScheduledRound;
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,7 +70,7 @@ class BiwengerGatewayTest {
 
   @Test
   @Order(2)
-  void readsTheDashboard() throws IOException {
+  void readsTheTeamStatusAndTheScheduledRounds() throws IOException {
     biwenger.stubFor(post("/api/v2/auth/login").willReturn(okJson("{\"token\": \"t\"}")));
     biwenger.stubFor(get("/api/v2/account").willReturn(okJson(sample("account.json"))));
     biwenger.stubFor(get("/api/v2/rounds/league").willReturn(okJson(sample("rounds-league.json"))));
@@ -79,12 +78,10 @@ class BiwengerGatewayTest {
         get("/api/v2/competitions/la-liga/data?lang=es&score=1")
             .willReturn(okJson(sample("catalog.json"))));
 
-    Dashboard dashboard = gateway.dashboard();
-
-    assertThat(dashboard.balance()).isEqualTo(Money.euros(51_420_000));
-    assertThat(dashboard.teamValue()).isEqualTo(Money.euros(22_340_000));
-    assertThat(dashboard.position()).isEqualTo(6);
-    assertThat(dashboard.rounds()).extracting(ScheduledRound::name).containsExactly("Jornada 10");
+    assertThat(gateway.teamStatus().teamValue()).isEqualTo(Money.euros(22_340_000));
+    assertThat(gateway.scheduledRounds())
+        .extracting(ScheduledRound::name)
+        .containsExactly("Jornada 10");
   }
 
   private static String sample(String name) throws IOException {

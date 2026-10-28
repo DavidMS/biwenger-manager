@@ -1,9 +1,10 @@
-import { screen, within } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { act, screen, within } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ApiError } from '@/lib/api'
 import { renderWithProviders } from '@/test/render'
 import { fetchDashboard } from './api'
 import { DashboardSummary } from './DashboardSummary'
+import { TICK_MS } from './NextRoundCard'
 import type { Dashboard } from './types'
 
 vi.mock('./api')
@@ -24,6 +25,10 @@ function teamCard() {
 }
 
 describe('DashboardSummary', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('shows that it is loading', () => {
     vi.mocked(fetchDashboard).mockReturnValue(new Promise(() => {}))
 
@@ -119,5 +124,25 @@ describe('DashboardSummary', () => {
     expect(
       screen.getByText('Biwenger answered HTTP 503 to GET /api/v2/account'),
     ).toBeInTheDocument()
+  })
+
+  it('asks for the following round once the next one starts', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    vi.setSystemTime(new Date('2026-10-30T18:59:55Z'))
+    vi.mocked(fetchDashboard)
+      .mockResolvedValueOnce(DASHBOARD)
+      .mockResolvedValueOnce({
+        ...DASHBOARD,
+        nextRound: { name: 'Jornada 11', startsAt: '2026-11-06T20:00:00Z' },
+      })
+
+    renderWithProviders(<DashboardSummary />)
+    const card = await screen.findByRole('region', { name: 'Next round' })
+    expect(card).toHaveTextContent('Jornada 10')
+
+    await act(() => vi.advanceTimersByTimeAsync(TICK_MS))
+
+    expect(await within(card).findByText('Jornada 11')).toBeInTheDocument()
+    expect(fetchDashboard).toHaveBeenCalledTimes(2)
   })
 })

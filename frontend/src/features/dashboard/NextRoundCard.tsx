@@ -9,16 +9,18 @@ export const TICK_MS = 10_000
 
 type NextRoundCardProps = {
   nextRound?: NextRound
+  /** Called once when the countdown reaches the start, so the caller can ask for the next round. */
+  onStarted?: () => void
 }
 
 /** The next round and the time left before it starts and lineups lock. */
-export function NextRoundCard({ nextRound }: NextRoundCardProps) {
+export function NextRoundCard({ nextRound, onStarted }: NextRoundCardProps) {
   return (
     <SectionCard title="Next round">
       {nextRound ? (
         <div className="space-y-1">
           <p className="font-medium">{nextRound.name}</p>
-          <TimeLeft startsAt={nextRound.startsAt} />
+          <TimeLeft startsAt={nextRound.startsAt} onStarted={onStarted} />
           <p className="text-muted-foreground">
             {formatDateTime(nextRound.startsAt)}
           </p>
@@ -30,12 +32,23 @@ export function NextRoundCard({ nextRound }: NextRoundCardProps) {
   )
 }
 
-function TimeLeft({ startsAt }: { startsAt: string }) {
+type TimeLeftProps = {
+  startsAt: string
+  onStarted?: () => void
+}
+
+function TimeLeft({ startsAt, onStarted }: TimeLeftProps) {
   const now = useNow(TICK_MS)
   const left = new Date(startsAt).getTime() - now
+  const started = left <= 0
+  useEffect(() => {
+    if (started) {
+      onStarted?.()
+    }
+  }, [started, onStarted])
   return (
     <p className="font-heading text-2xl">
-      {left > 0 ? `Starts in ${formatTimeLeft(left)}` : 'Started'}
+      {started ? 'Started' : `Starts in ${formatTimeLeft(left)}`}
     </p>
   )
 }

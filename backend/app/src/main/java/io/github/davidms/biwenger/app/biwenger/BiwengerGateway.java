@@ -1,7 +1,8 @@
 package io.github.davidms.biwenger.app.biwenger;
 
 import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
-import io.github.davidms.biwenger.app.dashboard.domain.Dashboard;
+import io.github.davidms.biwenger.app.dashboard.domain.TeamStatus;
+import io.github.davidms.biwenger.app.league.domain.ScheduledRound;
 import io.github.davidms.biwenger.app.player.domain.MatchResult;
 import io.github.davidms.biwenger.client.BiwengerClient;
 import java.util.List;
@@ -31,17 +32,17 @@ public class BiwengerGateway {
   }
 
   /**
-   * Your team at a glance: three calls (account, standings, catalog), plus one more on a cold start
-   * to find the league. Callers cache it.
+   * Your balance and place in the league: two calls (account, standings), three on a cold start.
    */
-  public Dashboard dashboard() {
+  public TeamStatus teamStatus() {
     var league = client.leagueContext();
-    return BiwengerMapper.dashboard(
-        client.account(),
-        client.roundStandings(),
-        client.catalog(),
-        league.leagueId(),
-        league.userId());
+    return BiwengerMapper.teamStatus(
+        client.account(), client.roundStandings(), league.leagueId(), league.userId());
+  }
+
+  /** The active and next rounds' starts: one catalog call, the heaviest there is. */
+  public List<ScheduledRound> scheduledRounds() {
+    return BiwengerMapper.scheduledRounds(client.catalog());
   }
 
   /** The season, the league's scoring system and every catalog player: what the backfill does. */

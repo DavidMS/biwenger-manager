@@ -21,14 +21,15 @@ public record DashboardResponse(
     NextRound nextRound) {
 
   static DashboardResponse from(Dashboard dashboard, Instant now) {
+    var team = dashboard.team();
     return new DashboardResponse(
-        dashboard.balance().euros(),
-        dashboard.balanceNegative(),
-        dashboard.points(),
-        dashboard.position(),
-        dashboard.managers(),
-        dashboard.teamValue().euros(),
-        dashboard.teamValueChange().euros(),
+        team.balance().euros(),
+        team.balanceNegative(),
+        team.points(),
+        team.position(),
+        team.managers(),
+        team.teamValue().euros(),
+        team.teamValueChange().euros(),
         dashboard.nextRound(now).map(NextRound::from).orElse(null));
   }
 

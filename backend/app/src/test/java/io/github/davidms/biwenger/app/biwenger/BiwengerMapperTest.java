@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import io.github.davidms.biwenger.app.Samples;
 import io.github.davidms.biwenger.app.account.domain.ConnectedAccount;
 import io.github.davidms.biwenger.app.common.Money;
-import io.github.davidms.biwenger.app.dashboard.domain.Dashboard;
+import io.github.davidms.biwenger.app.dashboard.domain.TeamStatus;
 import io.github.davidms.biwenger.app.league.domain.League;
 import io.github.davidms.biwenger.app.league.domain.Manager;
 import io.github.davidms.biwenger.app.league.domain.Round;
@@ -262,25 +262,24 @@ class BiwengerMapperTest {
   }
 
   @Test
-  void mapsTheDashboard() throws IOException {
+  void mapsYourTeamStatus() throws IOException {
     var account = sampleData("account.json", Account.class);
     var standings = data("rounds-league.json", RoundStandings.class);
 
-    Dashboard dashboard =
-        BiwengerMapper.dashboard(account, standings, catalog, 1_000_001, 2_000_001);
+    assertThat(BiwengerMapper.teamStatus(account, standings, 1_000_001, 2_000_001))
+        .isEqualTo(
+            new TeamStatus(
+                Money.euros(51_420_000), 220, 6, 6, Money.euros(22_340_000), Money.euros(-70_000)));
+    assertThatThrownBy(() -> BiwengerMapper.teamStatus(account, standings, 1_000_001, 42))
+        .hasMessageContaining("standings don't match docs/biwenger-api/");
+  }
 
-    assertThat(dashboard.balance()).isEqualTo(Money.euros(51_420_000));
-    assertThat(dashboard.points()).isEqualTo(220);
-    assertThat(dashboard.position()).isEqualTo(6);
-    assertThat(dashboard.managers()).isEqualTo(6);
-    assertThat(dashboard.teamValue()).isEqualTo(Money.euros(22_340_000));
-    assertThat(dashboard.teamValueChange()).isEqualTo(Money.euros(-70_000));
+  @Test
+  void mapsTheScheduledRounds() {
     // The active round (J6, part 3) is under way and has no start: only J10 is scheduled.
-    assertThat(dashboard.rounds())
+    assertThat(BiwengerMapper.scheduledRounds(catalog))
         .containsExactly(
             new ScheduledRound(4908, "Jornada 10", Instant.ofEpochSecond(1_792_782_000)));
-    assertThatThrownBy(() -> BiwengerMapper.dashboard(account, standings, catalog, 1_000_001, 42))
-        .hasMessageContaining("standings don't match docs/biwenger-api/");
   }
 
   @Test
