@@ -31,6 +31,7 @@ import io.github.davidms.biwenger.client.model.MatchReport;
 import io.github.davidms.biwenger.client.model.PlayerPrices;
 import io.github.davidms.biwenger.client.model.PlayerReports;
 import io.github.davidms.biwenger.client.model.RoundStandings;
+import io.github.davidms.biwenger.client.model.Squad;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
@@ -60,6 +61,14 @@ class BiwengerMapperTest {
     catalog = data("catalog.json", Catalog.class);
     market = data("market.json", Market.class);
     league = data("league.json", io.github.davidms.biwenger.client.model.League.class);
+  }
+
+  @Test
+  void mapsTheSquadToItsPlayerIdsInOrder() throws IOException {
+    assertThat(BiwengerMapper.squadPlayerIds(data("user-squad.json", Squad.class)))
+        .hasSize(13)
+        .isSorted()
+        .contains(2001L, 33691L, 41411L);
   }
 
   @Test

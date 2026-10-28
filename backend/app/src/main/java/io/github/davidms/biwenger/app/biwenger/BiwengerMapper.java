@@ -30,6 +30,8 @@ import io.github.davidms.biwenger.client.model.PlayerPrices;
 import io.github.davidms.biwenger.client.model.PlayerReports;
 import io.github.davidms.biwenger.client.model.RoundStandings;
 import io.github.davidms.biwenger.client.model.Sale;
+import io.github.davidms.biwenger.client.model.Squad;
+import io.github.davidms.biwenger.client.model.SquadPlayer;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
@@ -203,6 +205,11 @@ public final class BiwengerMapper {
         owner.clauseLockedUntil() == null
             ? acquiredAt
             : Instant.ofEpochSecond(owner.clauseLockedUntil()));
+  }
+
+  /** The ids of your players, in order. Some may be missing from the catalog. */
+  public static List<Long> squadPlayerIds(Squad squad) {
+    return squad.players().stream().map(SquadPlayer::id).sorted().toList();
   }
 
   /** A player's daily values, oldest first. */

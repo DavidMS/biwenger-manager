@@ -40,6 +40,11 @@ public class BiwengerGateway {
         client.account(), client.roundStandings(), league.leagueId(), league.userId());
   }
 
+  /** The ids of your players, in order: one small call. */
+  public List<Long> squadPlayerIds() {
+    return BiwengerMapper.squadPlayerIds(client.squad());
+  }
+
   /** The active and next rounds' starts: one catalog call, the heaviest there is. */
   public List<ScheduledRound> scheduledRounds() {
     return BiwengerMapper.scheduledRounds(client.catalog());

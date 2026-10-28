@@ -84,6 +84,17 @@ class BiwengerGatewayTest {
         .containsExactly("Jornada 10");
   }
 
+  @Test
+  @Order(3)
+  void readsTheSquadPlayerIds() throws IOException {
+    biwenger.stubFor(post("/api/v2/auth/login").willReturn(okJson("{\"token\": \"t\"}")));
+    biwenger.stubFor(get("/api/v2/account").willReturn(okJson(sample("account.json"))));
+    biwenger.stubFor(
+        get("/api/v2/user?fields=players(id,owner)").willReturn(okJson(sample("user-squad.json"))));
+
+    assertThat(gateway.squadPlayerIds()).hasSize(13).startsWith(2001L, 2602L);
+  }
+
   private static String sample(String name) throws IOException {
     try (InputStream in = BiwengerGatewayTest.class.getResourceAsStream("/samples/" + name)) {
       assertThat(in).as("sample %s on the test classpath", name).isNotNull();
