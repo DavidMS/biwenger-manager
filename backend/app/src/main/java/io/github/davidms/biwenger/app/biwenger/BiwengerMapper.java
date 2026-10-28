@@ -147,20 +147,34 @@ public final class BiwengerMapper {
         .toList();
   }
 
-  /** Every catalog player, ordered by id. */
+  /**
+   * Every catalog player with a club, ordered by id. A player with no club (released during the
+   * season) can't play in La Liga, so the app leaves them out; {@link #playersWithNoClub} lists
+   * them.
+   */
   public static List<Player> players(Catalog catalog) {
     return catalog.players().values().stream()
-        .map(BiwengerMapper::player)
+        .filter(player -> player.teamId() != null)
+        .map(player -> player(player, player.teamId()))
         .sorted(Comparator.comparingLong(Player::id))
         .toList();
   }
 
-  public static Player player(CatalogPlayer player) {
+  /** The ids of the catalog players with no club, ordered: the ones {@link #players} leaves out. */
+  public static List<Long> playersWithNoClub(Catalog catalog) {
+    return catalog.players().values().stream()
+        .filter(player -> player.teamId() == null)
+        .map(CatalogPlayer::id)
+        .sorted()
+        .toList();
+  }
+
+  private static Player player(CatalogPlayer player, long teamId) {
     return new Player(
         player.id(),
         player.name(),
         player.slug(),
-        player.teamId(),
+        teamId,
         position(player.position()),
         player.altPositions().stream()
             .map(BiwengerMapper::position)

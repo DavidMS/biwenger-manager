@@ -2,6 +2,7 @@ import type { RouteObject } from 'react-router'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { AdvisorPage } from '@/pages/AdvisorPage'
 import { DashboardPage } from '@/pages/DashboardPage'
+import { LazyPlayerPage } from '@/pages/LazyPlayerPage'
 import { MarketPage } from '@/pages/MarketPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { SettingsPage } from '@/pages/SettingsPage'
@@ -16,6 +17,7 @@ export const routes: RouteObject[] = [
       { path: 'squad', element: <SquadPage /> },
       { path: 'market', element: <MarketPage /> },
       { path: 'standings', element: <StandingsPage /> },
+      { path: 'players/:playerId', element: <LazyPlayerPage /> },
       { path: 'advisor', element: <AdvisorPage /> },
       { path: 'settings', element: <SettingsPage /> },
       { path: '*', element: <NotFoundPage /> },

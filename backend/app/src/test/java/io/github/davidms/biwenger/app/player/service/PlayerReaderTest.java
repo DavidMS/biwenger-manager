@@ -10,6 +10,7 @@ import io.github.davidms.biwenger.app.common.Money;
 import io.github.davidms.biwenger.app.player.domain.DailyPrice;
 import io.github.davidms.biwenger.app.player.domain.MatchResult;
 import io.github.davidms.biwenger.app.player.domain.Player;
+import io.github.davidms.biwenger.app.player.domain.PlayerDetail;
 import io.github.davidms.biwenger.app.player.domain.PlayerProfile;
 import io.github.davidms.biwenger.app.player.domain.PlayerStatus;
 import io.github.davidms.biwenger.app.player.domain.Position;
@@ -178,6 +179,62 @@ class PlayerReaderTest {
     flushAndClear();
 
     assertThat(reader.teams()).extracting(Team::id).containsExactly(1L, 3L, 40L);
+  }
+
+  @Test
+  void readsEverythingAboutOnePlayer() {
+    players.save(PlayerEntity.from(catalogPlayer(2001), NOW));
+    prices.save(PlayerPriceSnapshotEntity.daily(catalogPlayer(2001), DAY, NOW));
+    prices.save(
+        PlayerPriceSnapshotEntity.backfill(2001, DAY.minusDays(1), Money.euros(4_700_000), NOW));
+    // Two matches on the same date: by match id. An earlier one with a higher id comes first.
+    reports.save(
+        PlayerPointsReportEntity.played(
+            new PointsReportId(2001, 10), 4906, NOW.minusSeconds(86_400), true, 1, 2, 60, NOW));
+    reports.save(
+        PlayerPointsReportEntity.played(
+            new PointsReportId(2001, 9), 4907, NOW, true, 1, 6, 90, NOW));
+    reports.save(
+        PlayerPointsReportEntity.missed(
+            new PointsReportId(2001, 8), 4907, NOW, false, 1, PlayerStatus.INJURED, NOW));
+    flushAndClear();
+
+    PlayerDetail detail = reader.detail(2001).orElseThrow();
+
+    assertThat(detail.player().name()).isEqualTo("Ayoze");
+    assertThat(detail.prices())
+        .containsExactly(
+            new DailyPrice(DAY.minusDays(1), Money.euros(4_700_000)),
+            new DailyPrice(DAY, Money.euros(4_780_000)));
+    assertThat(detail.points()).isEqualTo(catalogPlayer(2001).points());
+    assertThat(detail.matches()).extracting(MatchResult::matchId).containsExactly(10L, 8L, 9L);
+  }
+
+  @Test
+  void readsAPlayerWithNoHistory() {
+    players.save(PlayerEntity.from(catalogPlayer(2001), NOW));
+    flushAndClear();
+
+    PlayerDetail detail = reader.detail(2001).orElseThrow();
+
+    assertThat(detail.points()).isZero();
+    assertThat(detail.prices()).isEmpty();
+    assertThat(detail.matches()).isEmpty();
+  }
+
+  @Test
+  void readsNothingForAPlayerNeverStored() {
+    assertThat(reader.detail(99)).isEmpty();
+  }
+
+  @Test
+  void readsAnyStoredClubByIdEvenARelegatedOne() {
+    teams.save(TeamEntity.from(new Team(1, "Athletic", "athletic"), NOW));
+    teams.save(TeamEntity.from(new Team(9, "Almería", "almeria"), NOW.minusSeconds(86_400)));
+    flushAndClear();
+
+    assertThat(reader.team(9)).contains(new Team(9, "Almería", "almeria"));
+    assertThat(reader.team(2)).isEmpty();
   }
 
   @Test

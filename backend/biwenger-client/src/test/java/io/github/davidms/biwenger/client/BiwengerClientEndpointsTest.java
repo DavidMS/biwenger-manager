@@ -191,7 +191,7 @@ class BiwengerClientEndpointsTest {
 
     assertThat(ayoze.name()).isEqualTo("Ayoze");
     assertThat(ayoze.slug()).isEqualTo("ayoze-perez");
-    assertThat(ayoze.teamId()).isEqualTo(19);
+    assertThat(ayoze.teamId()).isEqualTo(19L);
     assertThat(ayoze.position()).isEqualTo(4);
     assertThat(ayoze.price()).isEqualTo(4_780_000);
     assertThat(ayoze.priceIncrement()).isEqualTo(30_000);

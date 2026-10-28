@@ -23,7 +23,7 @@ Headers sent: `Authorization: Bearer <token>`, `X-League`, `X-User`, `X-Lang: es
 | `id` | int | Player id | `2001` |
 | `name` | string | Short display name | `"Ayoze"` |
 | `slug` | string | URL slug. Used for the CDN endpoints | `"ayoze-perez"` |
-| `teamID` | int | Club id. Key into `data.teams` | `19` |
+| `teamID` | int or `null` | Club id. Key into `data.teams`. `null` for a player with no club, such as one released during the season (first seen on 2026-10-28); the app leaves those players out | `19` |
 | `position` | int | `1` goalkeeper (PT), `2` defender (DF), `3` midfielder (MC), `4` forward (DL), `5` coach (E) | `4` |
 | `altPositions` | int[], optional | Other positions allowed when the league has `lineupMultiPos` | `[4]` |
 | `price` | int (€) | Current market value | `4780000` |

@@ -1,4 +1,5 @@
 import { SectionCard } from '@/components/layout/SectionCard'
+import { PlayerLink } from '@/components/player/PlayerLink'
 import { StatusBadge } from '@/components/player/StatusBadge'
 import { BiwengerErrorState } from '@/components/state/BiwengerErrorState'
 import { EmptyState } from '@/components/state/EmptyState'
@@ -71,7 +72,9 @@ export function RivalSquadCard({ managerId, name }: RivalSquadCardProps) {
           <TableBody>
             {byPosition(players).map((player) => (
               <TableRow key={player.id}>
-                <TableCell className="font-medium">{player.name}</TableCell>
+                <TableCell className="font-medium">
+                  <PlayerLink id={player.id} name={player.name} />
+                </TableCell>
                 <TableCell>{positionLabels[player.position]}</TableCell>
                 <TableCell>
                   <StatusBadge status={player.status} />

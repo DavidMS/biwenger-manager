@@ -1,4 +1,5 @@
 import { Sparkline } from '@/components/player/Sparkline'
+import { PlayerLink } from '@/components/player/PlayerLink'
 import { StatusBadge } from '@/components/player/StatusBadge'
 import { SortableHead } from '@/components/table/SortableHead'
 import {
@@ -43,7 +44,9 @@ export function SquadTable({ players, sort, onSort }: SquadTableProps) {
       <TableBody>
         {sortSquad(players, sort).map((player) => (
           <TableRow key={player.id}>
-            <TableCell className="font-medium">{player.name}</TableCell>
+            <TableCell className="font-medium">
+              <PlayerLink id={player.id} name={player.name} />
+            </TableCell>
             <TableCell>{positionLabels[player.position]}</TableCell>
             <TableCell>
               <StatusBadge status={player.status} />

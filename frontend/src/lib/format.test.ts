@@ -4,6 +4,8 @@ import {
   formatDay,
   formatMoney,
   formatMoneyChange,
+  formatMoneyCompact,
+  formatShortDay,
   formatTimeLeft,
 } from './format'
 
@@ -27,6 +29,15 @@ describe('format', () => {
     expect(formatMoneyChange(120_000)).toBe('+€120,000')
     expect(formatMoneyChange(-70_000)).toBe('-€70,000')
     expect(formatMoneyChange(0)).toBe('€0')
+  })
+
+  it('shortens money and days for chart axes', () => {
+    expect(formatMoneyCompact(4_780_000)).toBe('€4.8m')
+    expect(formatMoneyCompact(250_000)).toBe('€250k')
+    expect(formatMoneyCompact(12_000_000)).toBe('€12m')
+    expect(formatMoneyCompact(-70_000)).toBe('-€70k')
+    expect(formatMoneyCompact(900)).toBe('€900')
+    expect(formatShortDay('2026-10-22')).toBe('22 Oct')
   })
 
   it('shows the time left to the minute, rounding down', () => {

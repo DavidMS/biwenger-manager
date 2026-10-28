@@ -215,6 +215,17 @@ describe('MarketList', () => {
     expect(shownNames()).toEqual(['Keeper', 'Striker', 'Bargain'])
   })
 
+  it("links each player's name to the player page", async () => {
+    vi.mocked(fetchMarket).mockResolvedValue(market())
+
+    renderApp('/market')
+
+    expect(await screen.findByRole('link', { name: 'Keeper' })).toHaveAttribute(
+      'href',
+      '/players/2602',
+    )
+  })
+
   it('reads the filters and the sort from the URL', async () => {
     vi.mocked(fetchMarket).mockResolvedValue(market())
 

@@ -55,6 +55,35 @@ export function formatMoneyChange(euroAmount: number): string {
   return euroChange.format(euroAmount)
 }
 
+const oneDecimal = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 1 })
+
+/**
+ * Money in few characters, for chart axes: `4780000` → `€4.8m`, `250000` → `€250k`. Built by hand:
+ * `Intl`'s compact notation gives `m` or `M` depending on the ICU data in the browser or Node build.
+ */
+export function formatMoneyCompact(euroAmount: number): string {
+  const sign = euroAmount < 0 ? '-' : ''
+  const amount = Math.abs(euroAmount)
+  if (amount >= 1_000_000) {
+    return `${sign}€${oneDecimal.format(amount / 1_000_000)}m`
+  }
+  if (amount >= 1_000) {
+    return `${sign}€${oneDecimal.format(amount / 1_000)}k`
+  }
+  return `${sign}€${oneDecimal.format(amount)}`
+}
+
+const shortDay = new Intl.DateTimeFormat('en-GB', {
+  timeZone: MADRID,
+  day: 'numeric',
+  month: 'short',
+})
+
+/** `2026-10-22` → `22 Oct`, for chart axes. */
+export function formatShortDay(isoDate: string): string {
+  return shortDay.format(new Date(`${isoDate}T12:00:00Z`))
+}
+
 const MINUTE_MS = 60_000
 
 /**

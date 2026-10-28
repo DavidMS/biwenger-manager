@@ -157,6 +157,17 @@ describe('StandingsView', () => {
     )
   })
 
+  it("links each squad player's name to the player page", async () => {
+    vi.mocked(fetchStandings).mockResolvedValue(standings)
+    vi.mocked(fetchRivalSquad).mockResolvedValue(leadersSquad)
+
+    renderApp('/standings?manager=2000004')
+
+    expect(
+      await screen.findByRole('link', { name: 'Striker' }),
+    ).toHaveAttribute('href', '/players/30487')
+  })
+
   it('opens the squad named in the URL', async () => {
     vi.mocked(fetchStandings).mockResolvedValue(standings)
     vi.mocked(fetchRivalSquad).mockResolvedValue(leadersSquad)

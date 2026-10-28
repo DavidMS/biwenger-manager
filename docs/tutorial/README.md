@@ -63,3 +63,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #86 | [Shared "not connected to Biwenger" error state](journal/0086-biwenger-error-state.md) |
 | #30 | [Market page: filters, sorting and the seller](journal/0030-market-page.md) |
 | #31 | [Standings and rival squads](journal/0031-standings.md) |
+| #32 | [Player detail page](journal/0032-player-detail.md) |

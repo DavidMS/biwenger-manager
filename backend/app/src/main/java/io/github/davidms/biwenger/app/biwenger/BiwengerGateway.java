@@ -6,7 +6,10 @@ import io.github.davidms.biwenger.app.league.domain.LeagueTable;
 import io.github.davidms.biwenger.app.league.domain.ScheduledRound;
 import io.github.davidms.biwenger.app.market.domain.MarketListing;
 import io.github.davidms.biwenger.app.player.domain.MatchResult;
+import io.github.davidms.biwenger.app.player.domain.Player;
 import io.github.davidms.biwenger.client.BiwengerClient;
+import io.github.davidms.biwenger.client.model.Catalog;
+import java.lang.System.Logger.Level;
 import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -18,6 +21,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class BiwengerGateway {
+
+  private static final System.Logger LOG = System.getLogger(BiwengerGateway.class.getName());
 
   private final BiwengerClient client;
 
@@ -76,7 +81,7 @@ public class BiwengerGateway {
     return new BackfillPlan(
         catalog.season().id(),
         scoreId,
-        BiwengerMapper.players(catalog).stream()
+        players(catalog).stream()
             .map(player -> new BackfillPlan.PlayerRef(player.id(), player.slug()))
             .toList());
   }
@@ -100,10 +105,19 @@ public class BiwengerGateway {
     return new DailyData(
         league.leagueId(),
         league.scoreId(),
-        BiwengerMapper.players(catalog),
+        players(catalog),
         BiwengerMapper.teams(catalog),
         BiwengerMapper.rounds(catalog),
         BiwengerMapper.listings(client.market()),
         BiwengerMapper.standings(client.roundStandings()));
+  }
+
+  private static List<Player> players(Catalog catalog) {
+    List<Long> noClub = BiwengerMapper.playersWithNoClub(catalog);
+    if (!noClub.isEmpty()) {
+      LOG.log(
+          Level.INFO, "Leaving out {0} catalog players with no club: {1}", noClub.size(), noClub);
+    }
+    return BiwengerMapper.players(catalog);
   }
 }
