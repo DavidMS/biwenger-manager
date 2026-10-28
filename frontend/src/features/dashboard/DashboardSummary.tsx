@@ -1,7 +1,6 @@
 import { useCallback } from 'react'
-import { ErrorState } from '@/components/state/ErrorState'
+import { BiwengerErrorState } from '@/components/state/BiwengerErrorState'
 import { LoadingState } from '@/components/state/LoadingState'
-import { ApiError } from '@/lib/api'
 import { useDashboard } from './hooks'
 import { NegativeBalanceAlert } from './NegativeBalanceAlert'
 import { NextRoundCard } from './NextRoundCard'
@@ -19,20 +18,7 @@ export function DashboardSummary() {
     return <LoadingState />
   }
   if (dashboard.isError) {
-    // 503: the login is missing or Biwenger rejected it.
-    const notConnected =
-      dashboard.error instanceof ApiError && dashboard.error.status === 503
-    return (
-      <ErrorState
-        error={dashboard.error}
-        title={notConnected ? 'Not connected to Biwenger' : undefined}
-        hint={
-          notConnected
-            ? 'Check the Biwenger account on the Settings page.'
-            : undefined
-        }
-      />
-    )
+    return <BiwengerErrorState error={dashboard.error} />
   }
   const data = dashboard.data
   return (
