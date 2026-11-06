@@ -20,7 +20,7 @@ Prompts are always quoted exactly as they were typed, typos included.
 | 02 | [Scaffolding a project with AI](02-scaffolding-with-ai.md) | 1 — Project skeleton | Written |
 | 03 | [Reverse-engineering an API with AI](03-reverse-engineering-an-api.md) | 2 — Biwenger API client | Written |
 | 04 | [Letting AI design a schema](04-letting-ai-design-a-schema.md) | 3 — Domain, persistence and history | Written |
-| 05 | Building UI with AI | 4 — Read-only UI | Planned |
+| 05 | [Building UI with AI](05-building-ui-with-ai.md) | 4 — Read-only UI | Written |
 | 06 | Designing deterministic algorithms with AI | 5 — Advisor engine | Planned |
 | 07 | Safety when software acts on your behalf | 6 — Actions with confirmation | Planned |
 | 08 | Retrospective | 7 — Advanced and polish | Planned |
@@ -64,3 +64,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #30 | [Market page: filters, sorting and the seller](journal/0030-market-page.md) |
 | #31 | [Standings and rival squads](journal/0031-standings.md) |
 | #32 | [Player detail page](journal/0032-player-detail.md) |
+| #33 | [Tutorial chapter 05](journal/0033-tutorial-chapter-05.md) |
