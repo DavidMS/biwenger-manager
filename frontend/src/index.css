@@ -128,3 +128,23 @@
     @apply font-sans;
   }
 }
+
+/*
+ * A shadow at each edge a table can still scroll to: macOS and phones hide scrollbars until you
+ * scroll. The card-coloured covers scroll with the content and hide a shadow at the end it has
+ * reached. Tables sit on cards, so this is the card's colour.
+ */
+@layer components {
+  [data-slot='table-container'] {
+    --scroll-shadow: color-mix(in oklab, var(--foreground) 18%, transparent);
+    background:
+      linear-gradient(to right, var(--card) 40%, transparent) left / 2.5rem 100%
+        no-repeat local,
+      linear-gradient(to left, var(--card) 40%, transparent) right / 2.5rem 100%
+        no-repeat local,
+      linear-gradient(to right, var(--scroll-shadow), transparent) left / 1rem
+        100% no-repeat scroll,
+      linear-gradient(to left, var(--scroll-shadow), transparent) right / 1rem
+        100% no-repeat scroll;
+  }
+}

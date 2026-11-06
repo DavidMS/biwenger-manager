@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { formatDateTime, formatMoney } from '@/lib/format'
+import { formatDateTime, formatMoney, formatShortDateTime } from '@/lib/format'
 import { positionLabels } from '@/lib/player'
 import type { SortOrder } from '@/components/table/SortableHead'
 import type { SortKey } from './marketView'
@@ -43,8 +43,6 @@ export function MarketTable({
       <TableHeader>
         <TableRow>
           <TableHead>Player</TableHead>
-          <TableHead>Team</TableHead>
-          <TableHead>Position</TableHead>
           <TableHead>Status</TableHead>
           {header('price', 'Price')}
           {/* The backend's window: Market.TREND_DAYS. */}
@@ -58,11 +56,16 @@ export function MarketTable({
       <TableBody>
         {players.map((player) => (
           <TableRow key={player.id}>
-            <TableCell className="font-medium">
-              <PlayerLink id={player.id} name={player.name} />
+            <TableCell>
+              <div className="font-medium">
+                <PlayerLink id={player.id} name={player.name} />
+              </div>
+              <div className="flex gap-1 text-xs text-muted-foreground">
+                <span>{teamNames.get(player.teamId) ?? '–'}</span>
+                <span aria-hidden="true">·</span>
+                <span>{positionLabels[player.position]}</span>
+              </div>
             </TableCell>
-            <TableCell>{teamNames.get(player.teamId) ?? '–'}</TableCell>
-            <TableCell>{positionLabels[player.position]}</TableCell>
             <TableCell>
               <StatusBadge status={player.status} />
             </TableCell>
@@ -76,11 +79,16 @@ export function MarketTable({
             <TableCell className="tabular-nums">
               {pointsPerMillion.format(player.pointsPerMillion)}
             </TableCell>
-            <TableCell>
+            <TableCell className="whitespace-normal">
               <SellerName seller={player.seller} />
             </TableCell>
-            <TableCell className="whitespace-nowrap">
-              {formatDateTime(player.closesAt)}
+            <TableCell>
+              <time
+                dateTime={player.closesAt}
+                title={formatDateTime(player.closesAt)}
+              >
+                {formatShortDateTime(player.closesAt)}
+              </time>
             </TableCell>
           </TableRow>
         ))}

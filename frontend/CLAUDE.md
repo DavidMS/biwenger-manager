@@ -80,6 +80,7 @@ src/
 - Build with shadcn/ui first. Add a component with `npx shadcn add <name>`, which uses the CLI version in `package.json`, which writes it to `components/ui/`. Those files are generated: change them only when needed, and say so in the PR.
 - Conditional classes go through `cn()` from `@/lib/utils` (generated `ui/` files import the `cn` package directly, which is the same function). Variants of shadcn components go through their `variant` and `size` props, or `buttonVariants()` for elements like `NavLink`.
 - Prettier sorts the Tailwind classes. Don't sort them by hand.
+- Tables must fit their card at 1280px. When one doesn't, merge columns nothing sorts by (the market puts team and position under the name) before hiding any: below that width a table scrolls, and `index.css` shadows the edges of every `Table` so you can see it does. jsdom does no layout, so check widths in a browser.
 - Layouts work from phone width up: use `flex-wrap` and the responsive prefixes (`md:`), and avoid fixed widths.
 
 ## Charts
