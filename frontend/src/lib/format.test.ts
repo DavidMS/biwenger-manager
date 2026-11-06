@@ -5,11 +5,16 @@ import {
   formatMoney,
   formatMoneyChange,
   formatMoneyCompact,
+  formatShortDateTime,
   formatShortDay,
   formatTimeLeft,
 } from './format'
 
 describe('format', () => {
+  it('shortens a date and time to Madrid time with no year', () => {
+    expect(formatShortDateTime('2026-10-22T05:30:00Z')).toBe('22 Oct, 07:30')
+  })
+
   it('shows times in Madrid time, summer and winter', () => {
     expect(formatDateTime('2026-10-22T05:30:00Z')).toBe('22 Oct 2026, 07:30')
     expect(formatDateTime('2026-11-02T06:30:00Z')).toBe('2 Nov 2026, 07:30')
