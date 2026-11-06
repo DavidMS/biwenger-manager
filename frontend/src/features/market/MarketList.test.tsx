@@ -139,10 +139,9 @@ describe('MarketList', () => {
     expect(row.getByText('1.73')).toBeInTheDocument()
     expect(row.getByText('Manager 3')).toBeInTheDocument()
     // 10:15 UTC is 11:15 in Madrid.
-    expect(row.getByText('30 Oct, 11:15')).toHaveAttribute(
-      'title',
-      '30 Oct 2026, 11:15',
-    )
+    const closes = row.getByText('30 Oct, 11:15')
+    expect(closes).toHaveAttribute('title', '30 Oct 2026, 11:15')
+    expect(closes).toHaveAttribute('datetime', '2026-10-30T10:15:00Z')
 
     const freeRow = within(screen.getByRole('row', { name: /^Striker/ }))
     expect(freeRow.getByText('Free agent')).toBeInTheDocument()
