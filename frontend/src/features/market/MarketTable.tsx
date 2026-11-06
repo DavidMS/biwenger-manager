@@ -79,7 +79,7 @@ export function MarketTable({
             <TableCell className="tabular-nums">
               {pointsPerMillion.format(player.pointsPerMillion)}
             </TableCell>
-            <TableCell className="whitespace-normal">
+            <TableCell className="min-w-28 whitespace-normal">
               <SellerName seller={player.seller} />
             </TableCell>
             <TableCell>
