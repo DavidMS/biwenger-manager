@@ -81,7 +81,7 @@ src/
 - Conditional classes go through `cn()` from `@/lib/utils` (generated `ui/` files import the `cn` package directly, which is the same function). Variants of shadcn components go through their `variant` and `size` props, or `buttonVariants()` for elements like `NavLink`.
 - Prettier sorts the Tailwind classes. Don't sort them by hand.
 - Layouts work from phone width up: use `flex-wrap` and the responsive prefixes (`md:`), and avoid fixed widths.
-- A player's name in a table is a `PlayerLink`. Other links inside a table look the same: a subtle underline that is always visible and gets stronger on hover (a touch screen has no hover), and a `focus-visible:` ring.
+- A player's name in a table is a `PlayerLink`. Other links inside a table look the same: a subtle underline that is always visible and gets stronger on hover (a touch screen has no hover), and a `focus-visible:` ring. The underline is the only cue, so it needs 3:1 contrast. Use `focus-visible:outline-hidden`, not `outline-none`: a ring is a shadow, and forced-colors mode removes shadows. The manager link in `StandingsTable` doesn't follow this yet.
 
 ## Charts
 
