@@ -66,3 +66,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #32 | [Player detail page](journal/0032-player-detail.md) |
 | #33 | [Tutorial chapter 05](journal/0033-tutorial-chapter-05.md) |
 | #92 | [The market table fits at laptop width](journal/0092-market-table-width.md) |
+| #93 | [Player names look like links](journal/0093-player-link-affordance.md) |

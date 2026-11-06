@@ -82,6 +82,7 @@ src/
 - Prettier sorts the Tailwind classes. Don't sort them by hand.
 - Tables must fit their card at 1280px. When one doesn't, merge columns nothing sorts by (the market puts team and position under the name) before hiding any: below that width a table scrolls, and `index.css` shadows the edges of every `Table` so you can see it does. The shadow assumes the table sits on `--card`, so a `Table` on another surface must override it. jsdom does no layout, so check widths in a browser.
 - Layouts work from phone width up: use `flex-wrap` and the responsive prefixes (`md:`), and avoid fixed widths.
+- A player's name in a table is a `PlayerLink`. Other links inside a table look the same: a subtle underline that is always visible and gets stronger on hover (a touch screen has no hover), and a `focus-visible:` ring. The underline is the only cue, so it needs 3:1 contrast. Use `focus-visible:outline-hidden`, not `outline-none`: a ring is a shadow, and forced-colors mode removes shadows. The manager link in `StandingsTable` doesn't follow this yet.
 
 ## Charts
 
