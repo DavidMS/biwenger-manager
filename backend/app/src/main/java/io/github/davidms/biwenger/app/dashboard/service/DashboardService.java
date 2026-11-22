@@ -36,9 +36,7 @@ public class DashboardService {
 
   public synchronized Dashboard dashboard() {
     Instant now = clock.instant();
-    if (team == null || !now.isBefore(team.freshUntil())) {
-      team = new Cached<>(biwenger.teamStatus(), now.plus(TEAM_FRESH_FOR));
-    }
+    TeamStatus status = team();
     if (rounds == null || !now.isBefore(rounds.freshUntil())) {
       var read = biwenger.scheduledRounds();
       Instant until = now.plus(ROUNDS_FRESH_FOR);
@@ -46,7 +44,19 @@ public class DashboardService {
           Dashboard.nextRound(read, now).map(ScheduledRound::startsAt).orElse(until);
       rounds = new Cached<>(read, nextStart.isBefore(until) ? nextStart : until);
     }
-    return new Dashboard(team.value(), rounds.value());
+    return new Dashboard(status, rounds.value());
+  }
+
+  /**
+   * Only the team (balance, points, position), for callers that don't need the round schedule: it
+   * never reads the catalog. Kept as in {@link #dashboard()}.
+   */
+  public synchronized TeamStatus team() {
+    Instant now = clock.instant();
+    if (team == null || !now.isBefore(team.freshUntil())) {
+      team = new Cached<>(biwenger.teamStatus(), now.plus(TEAM_FRESH_FOR));
+    }
+    return team.value();
   }
 
   private record Cached<T>(T value, Instant freshUntil) {}
