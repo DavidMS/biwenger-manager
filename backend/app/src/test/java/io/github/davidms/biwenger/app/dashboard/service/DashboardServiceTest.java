@@ -3,6 +3,7 @@ package io.github.davidms.biwenger.app.dashboard.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,6 +50,18 @@ class DashboardServiceTest {
     assertThat(dashboards.dashboard()).isEqualTo(new Dashboard(TEAM, List.of(NEXT_WEEK)));
     verify(biwenger, times(2)).teamStatus();
     verify(biwenger, times(1)).scheduledRounds();
+  }
+
+  @Test
+  void readsOnlyTheTeamWhenAskedForTheTeamAndSharesItsMinute() {
+    when(biwenger.teamStatus()).thenReturn(TEAM);
+    when(biwenger.scheduledRounds()).thenReturn(List.of(NEXT_WEEK));
+
+    assertThat(dashboards.team()).isEqualTo(TEAM);
+    verify(biwenger, never()).scheduledRounds();
+    dashboards.dashboard();
+
+    verify(biwenger, times(1)).teamStatus();
   }
 
   @Test
