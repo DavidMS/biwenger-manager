@@ -5,6 +5,7 @@ import io.github.davidms.biwenger.app.advisor.domain.BuyCandidate;
 import io.github.davidms.biwenger.app.advisor.domain.BuyRecommendations;
 import io.github.davidms.biwenger.app.advisor.domain.BuyWeights;
 import io.github.davidms.biwenger.app.advisor.domain.PlayerScorer;
+import io.github.davidms.biwenger.app.advisor.domain.ReferenceFormation;
 import io.github.davidms.biwenger.app.advisor.domain.ScoredPlayer;
 import io.github.davidms.biwenger.app.advisor.domain.ScoringInput;
 import io.github.davidms.biwenger.app.advisor.domain.ScoringWeights;
@@ -39,6 +40,7 @@ public class BuyAdvisorService {
   private final DashboardService dashboard;
   private final PlayerReader players;
   private final ScoringWeights scoring;
+  private final ReferenceFormation formation;
   private final BuyWeights buying;
   private final Clock clock;
 
@@ -48,6 +50,7 @@ public class BuyAdvisorService {
       DashboardService dashboard,
       PlayerReader players,
       ScoringWeights scoring,
+      ReferenceFormation formation,
       BuyWeights buying,
       Clock clock) {
     this.market = market;
@@ -55,6 +58,7 @@ public class BuyAdvisorService {
     this.dashboard = dashboard;
     this.players = players;
     this.scoring = scoring;
+    this.formation = formation;
     this.buying = buying;
     this.clock = clock;
   }
@@ -81,7 +85,7 @@ public class BuyAdvisorService {
         mine.players().stream().map(p -> scored(p.player(), stored)).toList();
     return new BuyRecommendations(
         balance,
-        BuyAdvisor.recommend(candidates, squadScores, balance, buying),
+        BuyAdvisor.recommend(candidates, squadScores, balance, formation, buying),
         mine.missingPlayerIds(),
         onSale.missingPlayerIds());
   }

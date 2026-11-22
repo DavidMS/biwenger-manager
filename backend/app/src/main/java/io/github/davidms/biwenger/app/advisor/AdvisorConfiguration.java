@@ -1,6 +1,7 @@
 package io.github.davidms.biwenger.app.advisor;
 
 import io.github.davidms.biwenger.app.advisor.domain.BuyWeights;
+import io.github.davidms.biwenger.app.advisor.domain.ReferenceFormation;
 import io.github.davidms.biwenger.app.advisor.domain.ScoringWeights;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -11,12 +12,21 @@ import org.springframework.context.annotation.Configuration;
  * range stops the app with a clear message.
  */
 @Configuration
-@EnableConfigurationProperties({ScoringProperties.class, BuyProperties.class})
+@EnableConfigurationProperties({
+  ScoringProperties.class,
+  FormationProperties.class,
+  BuyProperties.class
+})
 public class AdvisorConfiguration {
 
   @Bean
   ScoringWeights scoringWeights(ScoringProperties properties) {
     return properties.toWeights();
+  }
+
+  @Bean
+  ReferenceFormation referenceFormation(FormationProperties properties) {
+    return properties.toFormation();
   }
 
   @Bean
