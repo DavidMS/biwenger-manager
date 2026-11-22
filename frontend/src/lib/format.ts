@@ -26,6 +26,19 @@ export function formatDateTime(isoInstant: string): string {
   return dateTime.format(new Date(isoInstant))
 }
 
+const shortDateTime = new Intl.DateTimeFormat('en-GB', {
+  timeZone: MADRID,
+  day: 'numeric',
+  month: 'short',
+  hour: '2-digit',
+  minute: '2-digit',
+})
+
+/** `2026-10-22T05:30:00Z` → `22 Oct, 07:30`, for tables where every column has to fit. */
+export function formatShortDateTime(isoInstant: string): string {
+  return shortDateTime.format(new Date(isoInstant))
+}
+
 /** `2026-10-22` (a calendar day, no time) → `22 Oct 2026`. */
 export function formatDay(isoDate: string): string {
   // Noon UTC is the same calendar day in Madrid all year round.
