@@ -315,7 +315,7 @@ Recommendations are **deterministic algorithms**: the same data and the same con
 
 | Issue | Description |
 |---|---|
-| 5.1 | Player scoring model: expected points (weighted recent form, season average, home/away, status penalty), value trend (n-day delta) and points-per-million. Configurable weights |
+| 5.1 | Player scoring model: expected points (weighted recent form, season average, home/away, status penalty), value trend (n-day delta) and points-per-million. Configurable weights. Formula and defaults: [ADR 0006](adr/0006-player-scoring-model.md) |
 | 5.2 | Buy recommendations (F7): rank market players by score, filtered by budget and position needs. Return explanations ("rising +8% in 3 days, avg 7.2 pts, your DEF line is weak") |
 | 5.3 | Sell recommendations (F9): falling value, injured long-term, low points-per-million, position surplus. Respect a minimum squad size |
 | 5.4 | Bid advisor (F8): suggested bid range |

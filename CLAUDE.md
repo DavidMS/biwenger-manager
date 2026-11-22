@@ -4,7 +4,7 @@ A personal web app to manage a [Biwenger](https://biwenger.as.com/) fantasy foot
 
 ## Status
 
-Phase 1 (project skeleton) is done: the backend (health endpoint only) and frontend (layout and empty pages) build, run in Docker Compose and are checked by CI. Phase 2 (Biwenger API client) is done: the API is documented from real captures in `docs/biwenger-api/`, and `biwenger-client` reads every endpoint, gently and with clear errors. Phase 3 (domain, persistence and history) is done: the app syncs from Biwenger every morning (read-only) into PostgreSQL, keeps the history in daily snapshots, can backfill the season and refreshes match points after each round (ADR 0005). Phase 4 (read-only UI) is done: settings, dashboard, squad, market, standings and a page per player, read live where data changes during the day and from the database otherwise. Phase 5 (advisor engine) is next. Items marked *(planned)* below don't exist yet.
+Phase 1 (project skeleton) is done: the backend (health endpoint only) and frontend (layout and empty pages) build, run in Docker Compose and are checked by CI. Phase 2 (Biwenger API client) is done: the API is documented from real captures in `docs/biwenger-api/`, and `biwenger-client` reads every endpoint, gently and with clear errors. Phase 3 (domain, persistence and history) is done: the app syncs from Biwenger every morning (read-only) into PostgreSQL, keeps the history in daily snapshots, can backfill the season and refreshes match points after each round (ADR 0005). Phase 4 (read-only UI) is done: settings, dashboard, squad, market, standings and a page per player, read live where data changes during the day and from the database otherwise. Phase 5 (advisor engine) is in progress: the player scoring model is done (ADR 0006). Items marked *(planned)* below don't exist yet.
 
 ## Repo map
 
@@ -27,7 +27,8 @@ docs/
   IMPLEMENTATION_PLAN.md  phases, tasks and decisions
   tutorial/               "how we built this with AI": README.md index, one chapter per phase
   tutorial/journal/       one entry per issue, start from TEMPLATE.md
-  adr/                    architecture decision records (0001-0005: ADRs, tech stack, layout, client HTTP, history schema)
+  adr/                    architecture decision records (0001-0006: ADRs, tech stack, layout, client HTTP, history schema,
+                          player scoring model)
   biwenger-api/           reverse-engineered API reference: one doc per endpoint, anonymised samples/
 scripts/                  biwenger_capture.py (read samples) and biwenger_har_extract.py (write samples from a
                           browser HAR): both run by the human, Claude reads only their anonymised output
