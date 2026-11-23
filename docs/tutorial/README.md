@@ -69,3 +69,4 @@ New entries start from [`journal/TEMPLATE.md`](journal/TEMPLATE.md).
 | #93 | [Player names look like links](journal/0093-player-link-affordance.md) |
 | #34 | [Player scoring model](journal/0034-player-scoring-model.md) |
 | #35 | [Buy recommendations](journal/0035-buy-recommendations.md) |
+| #36 | [Sell recommendations](journal/0036-sell-recommendations.md) |
