@@ -11,8 +11,17 @@ import io.github.davidms.biwenger.app.advisor.domain.BuyRecommendation.Replaces;
 import io.github.davidms.biwenger.app.advisor.domain.BuyRecommendations;
 import io.github.davidms.biwenger.app.advisor.domain.PlayerScore;
 import io.github.davidms.biwenger.app.advisor.domain.ScoredPlayer;
+import io.github.davidms.biwenger.app.advisor.domain.SellRecommendation;
+import io.github.davidms.biwenger.app.advisor.domain.SellRecommendation.CoveredBy;
+import io.github.davidms.biwenger.app.advisor.domain.SellRecommendation.NotAStarter;
+import io.github.davidms.biwenger.app.advisor.domain.SellRecommendations;
+import io.github.davidms.biwenger.app.advisor.domain.SellSignal.FallingValue;
+import io.github.davidms.biwenger.app.advisor.domain.SellSignal.LongInjury;
+import io.github.davidms.biwenger.app.advisor.domain.SellSignal.LowValueForMoney;
+import io.github.davidms.biwenger.app.advisor.domain.SellSignal.Surplus;
 import io.github.davidms.biwenger.app.advisor.domain.Venue;
 import io.github.davidms.biwenger.app.advisor.service.BuyAdvisorService;
+import io.github.davidms.biwenger.app.advisor.service.SellAdvisorService;
 import io.github.davidms.biwenger.app.common.Money;
 import io.github.davidms.biwenger.app.player.domain.PlayerProfile;
 import io.github.davidms.biwenger.app.player.domain.PlayerStatus;
@@ -32,6 +41,7 @@ class AdvisorControllerTest {
 
   @Autowired MockMvc mvc;
   @MockitoBean BuyAdvisorService buys;
+  @MockitoBean SellAdvisorService sells;
 
   private static ScoredPlayer player(long id, String expected) {
     PlayerProfile profile =
@@ -139,6 +149,73 @@ class AdvisorControllerTest {
         .thenThrow(new BiwengerApiException("Biwenger answered HTTP 503 to GET /api/v2/market"));
 
     mvc.perform(get("/api/advisor/buys"))
+        .andExpect(status().isBadGateway())
+        .andExpect(jsonPath("$.title").value("Biwenger unavailable"));
+  }
+
+  @Test
+  void showsEachSaleWithItsSignalsAndWhoWouldStartInstead() throws Exception {
+    var bench =
+        new SellRecommendation(
+            player(16, "1.00"),
+            List.of(
+                new FallingValue(new BigDecimal("3.00"), 7),
+                new LongInjury(2),
+                new LowValueForMoney(
+                    new BigDecimal("2.00"), new BigDecimal("6.00"), new BigDecimal("3.00")),
+                new Surplus(6, 5)),
+            new NotAStarter(),
+            new BigDecimal("0.00"),
+            "Your XI loses 0.00: he doesn't start.");
+    var starter =
+        new SellRecommendation(
+            player(14, "4.00"),
+            List.of(new FallingValue(new BigDecimal("5.00"), 7)),
+            new CoveredBy(player(15, "2.00")),
+            new BigDecimal("2.00"),
+            "Player 15 (2.00) would start instead.");
+    when(sells.recommendations())
+        .thenReturn(new SellRecommendations(List.of(bench, starter), List.of(99_999L)));
+
+    mvc.perform(get("/api/advisor/sells"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.recommendations[0].id").value(16))
+        .andExpect(jsonPath("$.recommendations[0].position").value("DEFENDER"))
+        .andExpect(jsonPath("$.recommendations[0].value").value(5_000_000))
+        .andExpect(jsonPath("$.recommendations[0].signals[0].type").value("FALLING_VALUE"))
+        .andExpect(jsonPath("$.recommendations[0].signals[0].percent").value(3.00))
+        .andExpect(jsonPath("$.recommendations[0].signals[0].days").value(7))
+        .andExpect(jsonPath("$.recommendations[0].signals[0].depth").doesNotExist())
+        .andExpect(jsonPath("$.recommendations[0].signals[1].type").value("LONG_INJURY"))
+        .andExpect(jsonPath("$.recommendations[0].signals[1].matchesMissed").value(2))
+        .andExpect(jsonPath("$.recommendations[0].signals[2].type").value("LOW_VALUE_FOR_MONEY"))
+        .andExpect(jsonPath("$.recommendations[0].signals[2].pointsPerMillion").value(2.00))
+        .andExpect(jsonPath("$.recommendations[0].signals[2].squadMedian").value(6.00))
+        .andExpect(jsonPath("$.recommendations[0].signals[2].threshold").value(3.00))
+        .andExpect(jsonPath("$.recommendations[0].signals[3].type").value("SURPLUS"))
+        .andExpect(jsonPath("$.recommendations[0].signals[3].depth").value(6))
+        .andExpect(jsonPath("$.recommendations[0].signals[3].kept").value(5))
+        .andExpect(jsonPath("$.recommendations[0].cover.type").value("NOT_A_STARTER"))
+        .andExpect(jsonPath("$.recommendations[0].cover.id").doesNotExist())
+        .andExpect(jsonPath("$.recommendations[0].xiLoss").value(0.00))
+        .andExpect(jsonPath("$.recommendations[0].score.expectedPoints").value(1.00))
+        .andExpect(
+            jsonPath("$.recommendations[0].explanation")
+                .value("Your XI loses 0.00: he doesn't start."))
+        .andExpect(jsonPath("$.recommendations[1].cover.type").value("COVERED_BY"))
+        .andExpect(jsonPath("$.recommendations[1].cover.id").value(15))
+        .andExpect(jsonPath("$.recommendations[1].cover.name").value("Player 15"))
+        .andExpect(jsonPath("$.recommendations[1].cover.expectedPoints").value(2.00))
+        .andExpect(jsonPath("$.recommendations[1].xiLoss").value(2.00))
+        .andExpect(jsonPath("$.missingPlayerIds[0]").value(99_999));
+  }
+
+  @Test
+  void aBiwengerFailureOnSellsIsBadGateway() throws Exception {
+    when(sells.recommendations())
+        .thenThrow(new BiwengerApiException("Biwenger answered HTTP 503 to GET /api/v2/user"));
+
+    mvc.perform(get("/api/advisor/sells"))
         .andExpect(status().isBadGateway())
         .andExpect(jsonPath("$.title").value("Biwenger unavailable"));
   }

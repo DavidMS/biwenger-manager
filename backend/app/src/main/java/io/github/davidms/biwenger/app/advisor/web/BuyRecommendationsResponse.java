@@ -5,8 +5,6 @@ import io.github.davidms.biwenger.app.advisor.domain.BuyRecommendation;
 import io.github.davidms.biwenger.app.advisor.domain.BuyRecommendation.EmptySlot;
 import io.github.davidms.biwenger.app.advisor.domain.BuyRecommendation.Replaces;
 import io.github.davidms.biwenger.app.advisor.domain.BuyRecommendations;
-import io.github.davidms.biwenger.app.advisor.domain.PlayerScore;
-import io.github.davidms.biwenger.app.advisor.domain.Venue;
 import io.github.davidms.biwenger.app.player.domain.PlayerStatus;
 import io.github.davidms.biwenger.app.player.domain.Position;
 import java.math.BigDecimal;
@@ -14,8 +12,8 @@ import java.util.List;
 
 /**
  * {@code GET /api/advisor/buys}. Money is whole euros. Each recommendation carries the player's
- * full {@link ScoreItem score}, so the explanation can be checked against the numbers. The missing
- * ids are players the advisor couldn't score because the daily sync never stored them.
+ * full {@link ScoreResponse score}, so the explanation can be checked against the numbers. The
+ * missing ids are players the advisor couldn't score because the daily sync never stored them.
  */
 public record BuyRecommendationsResponse(
     long balance,
@@ -45,7 +43,7 @@ public record BuyRecommendationsResponse(
       BigDecimal gainPerMillion,
       long budgetLeft,
       Starter replaces,
-      ScoreItem score,
+      ScoreResponse score,
       String explanation) {
 
     static Recommendation from(BuyRecommendation buy) {
@@ -71,51 +69,11 @@ public record BuyRecommendationsResponse(
           buy.gainPerMillion(),
           buy.budgetLeft().euros(),
           replaces,
-          ScoreItem.from(buy.candidate().score()),
+          ScoreResponse.from(buy.candidate().score()),
           buy.explanation());
     }
   }
 
   /** The starter of yours he would replace. */
   public record Starter(long id, String name, BigDecimal expectedPoints) {}
-
-  /** Every number of the player's score (ADR 0006). */
-  public record ScoreItem(
-      BigDecimal expectedPoints,
-      BigDecimal recentForm,
-      int formMatchesUsed,
-      BigDecimal seasonAverage,
-      int gamesPlayed,
-      BigDecimal base,
-      Venue venue,
-      int homeGames,
-      int awayGames,
-      BigDecimal venueAverage,
-      BigDecimal venueFactor,
-      BigDecimal statusMultiplier,
-      long valueTrend,
-      BigDecimal valueTrendPercent,
-      int trendDays,
-      BigDecimal pointsPerMillion) {
-
-    static ScoreItem from(PlayerScore score) {
-      return new ScoreItem(
-          score.expectedPoints(),
-          score.recentForm(),
-          score.formMatchesUsed(),
-          score.seasonAverage(),
-          score.gamesPlayed(),
-          score.base(),
-          score.venue(),
-          score.homeGames(),
-          score.awayGames(),
-          score.venueAverage(),
-          score.venueFactor(),
-          score.statusMultiplier(),
-          score.valueTrend().euros(),
-          score.valueTrendPercent(),
-          score.trendDays(),
-          score.pointsPerMillion());
-    }
-  }
 }

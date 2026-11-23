@@ -4,16 +4,13 @@ import io.github.davidms.biwenger.app.advisor.domain.BuyAdvisor;
 import io.github.davidms.biwenger.app.advisor.domain.BuyCandidate;
 import io.github.davidms.biwenger.app.advisor.domain.BuyRecommendations;
 import io.github.davidms.biwenger.app.advisor.domain.BuyWeights;
-import io.github.davidms.biwenger.app.advisor.domain.PlayerScorer;
+import io.github.davidms.biwenger.app.advisor.domain.ReferenceFormation;
 import io.github.davidms.biwenger.app.advisor.domain.ScoredPlayer;
-import io.github.davidms.biwenger.app.advisor.domain.ScoringInput;
 import io.github.davidms.biwenger.app.advisor.domain.ScoringWeights;
-import io.github.davidms.biwenger.app.advisor.domain.Venue;
 import io.github.davidms.biwenger.app.common.Money;
 import io.github.davidms.biwenger.app.dashboard.service.DashboardService;
 import io.github.davidms.biwenger.app.market.domain.Market;
 import io.github.davidms.biwenger.app.market.service.MarketService;
-import io.github.davidms.biwenger.app.player.domain.PlayerProfile;
 import io.github.davidms.biwenger.app.player.service.PlayerReader;
 import io.github.davidms.biwenger.app.player.service.StoredPlayers;
 import io.github.davidms.biwenger.app.squad.domain.Squad;
@@ -39,6 +36,7 @@ public class BuyAdvisorService {
   private final DashboardService dashboard;
   private final PlayerReader players;
   private final ScoringWeights scoring;
+  private final ReferenceFormation formation;
   private final BuyWeights buying;
   private final Clock clock;
 
@@ -48,6 +46,7 @@ public class BuyAdvisorService {
       DashboardService dashboard,
       PlayerReader players,
       ScoringWeights scoring,
+      ReferenceFormation formation,
       BuyWeights buying,
       Clock clock) {
     this.market = market;
@@ -55,6 +54,7 @@ public class BuyAdvisorService {
     this.dashboard = dashboard;
     this.players = players;
     this.scoring = scoring;
+    this.formation = formation;
     this.buying = buying;
     this.clock = clock;
   }
@@ -75,25 +75,17 @@ public class BuyAdvisorService {
 
     List<BuyCandidate> candidates =
         onSale.players().stream()
-            .map(p -> new BuyCandidate(scored(p.player(), stored), p.listing().price()))
+            .map(
+                p ->
+                    new BuyCandidate(
+                        StoredScores.score(p.player(), stored, scoring), p.listing().price()))
             .toList();
     List<ScoredPlayer> squadScores =
-        mine.players().stream().map(p -> scored(p.player(), stored)).toList();
+        mine.players().stream().map(p -> StoredScores.score(p.player(), stored, scoring)).toList();
     return new BuyRecommendations(
         balance,
-        BuyAdvisor.recommend(candidates, squadScores, balance, buying),
+        BuyAdvisor.recommend(candidates, squadScores, balance, formation, buying),
         mine.missingPlayerIds(),
         onSale.missingPlayerIds());
-  }
-
-  private ScoredPlayer scored(PlayerProfile player, StoredPlayers stored) {
-    ScoringInput input =
-        new ScoringInput(
-            player,
-            stored.prices().getOrDefault(player.id(), List.of()),
-            stored.seasonPoints().getOrDefault(player.id(), 0),
-            stored.lastMatches().getOrDefault(player.id(), List.of()),
-            Venue.UNKNOWN);
-    return new ScoredPlayer(player, PlayerScorer.score(input, scoring));
   }
 }

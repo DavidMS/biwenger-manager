@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 class BuyAdvisorTest {
 
   private static final Money BALANCE = Money.euros(10_000_000);
+  private static final ReferenceFormation FORMATION = ReferenceFormation.DEFAULT;
   private static final BuyWeights WEIGHTS = BuyWeights.DEFAULTS;
 
   private static ScoredPlayer player(long id, Position position, String expected) {
@@ -78,6 +79,7 @@ class BuyAdvisorTest {
             List.of(onSale(player(100, Position.DEFENDER, "5.00"), 2_000_000)),
             squad(),
             BALANCE,
+            FORMATION,
             WEIGHTS);
 
     assertThat(buys).hasSize(1);
@@ -99,6 +101,7 @@ class BuyAdvisorTest {
                 onSale(player(101, Position.DEFENDER, "5.00"), 2_000_000)),
             squad(),
             BALANCE,
+            FORMATION,
             WEIGHTS);
 
     // Defender: 5 − 2 = 3. Midfielder: 8 − 7 = 1.
@@ -116,6 +119,7 @@ class BuyAdvisorTest {
             List.of(onSale(player(100, Position.FORWARD, "3.00"), 1_000_000)),
             squad(),
             BALANCE,
+            FORMATION,
             WEIGHTS);
 
     assertThat(buys.getFirst().slot()).isEqualTo(new EmptySlot());
@@ -131,6 +135,7 @@ class BuyAdvisorTest {
                 onSale(player(101, Position.MIDFIELDER, "6.00"), 1_000_000)),
             squad(),
             BALANCE,
+            FORMATION,
             WEIGHTS);
 
     assertThat(buys).isEmpty();
@@ -145,6 +150,7 @@ class BuyAdvisorTest {
                 onSale(player(101, Position.DEFENDER, "9.00"), 10_000_001)),
             squad(),
             BALANCE,
+            FORMATION,
             WEIGHTS);
 
     assertThat(buys).extracting(b -> b.candidate().player().id()).containsExactly(100L);
@@ -158,6 +164,7 @@ class BuyAdvisorTest {
                 List.of(onSale(player(100, Position.DEFENDER, "5.00"), 0)),
                 squad(),
                 Money.euros(-1),
+                FORMATION,
                 WEIGHTS))
         .isEmpty();
   }
@@ -170,6 +177,7 @@ class BuyAdvisorTest {
             List.of(onSale(player(1, Position.DEFENDER, "6.00"), 1_000_000)),
             squad(),
             BALANCE,
+            FORMATION,
             WEIGHTS);
 
     assertThat(buys).isEmpty();
@@ -182,6 +190,7 @@ class BuyAdvisorTest {
             List.of(onSale(player(100, Position.COACH, "9.00"), 1_000_000)),
             squad(),
             BALANCE,
+            FORMATION,
             WEIGHTS);
 
     assertThat(buys).isEmpty();
@@ -197,6 +206,7 @@ class BuyAdvisorTest {
                 onSale(player(100, Position.DEFENDER, "5.00"), 3_000_000)),
             squad(),
             BALANCE,
+            FORMATION,
             WEIGHTS);
 
     // Same gain 3.00: the cheaper one first (1.50 per million), then 1.00 per million by id.
@@ -210,9 +220,8 @@ class BuyAdvisorTest {
       market.add(onSale(player(100 + i, Position.DEFENDER, "5.00"), 1_000_000));
     }
 
-    assertThat(BuyAdvisor.recommend(market, squad(), BALANCE, WEIGHTS)).hasSize(10);
-    assertThat(
-            BuyAdvisor.recommend(market, squad(), BALANCE, new BuyWeights(WEIGHTS.starters(), 3)))
+    assertThat(BuyAdvisor.recommend(market, squad(), BALANCE, FORMATION, WEIGHTS)).hasSize(10);
+    assertThat(BuyAdvisor.recommend(market, squad(), BALANCE, FORMATION, new BuyWeights(3)))
         .extracting(b -> b.candidate().player().id())
         .containsExactly(100L, 101L, 102L);
   }
@@ -225,13 +234,15 @@ class BuyAdvisorTest {
             onSale(player(101, Position.FORWARD, "4.00"), 1_000_000),
             onSale(player(102, Position.MIDFIELDER, "8.00"), 3_000_000));
 
-    assertThat(BuyAdvisor.recommend(market.reversed(), squad().reversed(), BALANCE, WEIGHTS))
-        .isEqualTo(BuyAdvisor.recommend(market, squad(), BALANCE, WEIGHTS));
+    assertThat(
+            BuyAdvisor.recommend(
+                market.reversed(), squad().reversed(), BALANCE, FORMATION, WEIGHTS))
+        .isEqualTo(BuyAdvisor.recommend(market, squad(), BALANCE, FORMATION, WEIGHTS));
   }
 
   @Test
   void suggestsNothingFromAnEmptyMarket() {
-    assertThat(BuyAdvisor.recommend(List.of(), squad(), BALANCE, WEIGHTS)).isEmpty();
+    assertThat(BuyAdvisor.recommend(List.of(), squad(), BALANCE, FORMATION, WEIGHTS)).isEmpty();
   }
 
   @Test
@@ -241,14 +252,14 @@ class BuyAdvisorTest {
             List.of(onSale(player(100, Position.GOALKEEPER, "4.00"), 1_000_000)),
             List.of(),
             BALANCE,
-            new BuyWeights(
+            new ReferenceFormation(
                 Map.of(
                     Position.GOALKEEPER, 1,
                     Position.DEFENDER, 4,
                     Position.MIDFIELDER, 4,
                     Position.FORWARD, 2,
-                    Position.COACH, 1),
-                10));
+                    Position.COACH, 1)),
+            WEIGHTS);
 
     assertThat(buys.getFirst().slot()).isEqualTo(new EmptySlot());
   }

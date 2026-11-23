@@ -16,6 +16,7 @@ import io.github.davidms.biwenger.app.advisor.domain.BuyRecommendation.EmptySlot
 import io.github.davidms.biwenger.app.advisor.domain.BuyRecommendation.Replaces;
 import io.github.davidms.biwenger.app.advisor.domain.BuyRecommendations;
 import io.github.davidms.biwenger.app.advisor.domain.BuyWeights;
+import io.github.davidms.biwenger.app.advisor.domain.ReferenceFormation;
 import io.github.davidms.biwenger.app.advisor.domain.ScoringWeights;
 import io.github.davidms.biwenger.app.common.Money;
 import io.github.davidms.biwenger.app.dashboard.domain.TeamStatus;
@@ -65,14 +66,14 @@ class BuyAdvisorServiceTest {
           dashboard,
           reader,
           ScoringWeights.DEFAULTS,
-          new BuyWeights(
+          new ReferenceFormation(
               Map.of(
                   Position.GOALKEEPER, 0,
                   Position.DEFENDER, 1,
                   Position.MIDFIELDER, 0,
                   Position.FORWARD, 0,
-                  Position.COACH, 0),
-              10),
+                  Position.COACH, 0)),
+          BuyWeights.DEFAULTS,
           new MutableClock(NOW, ZoneId.of("Europe/Madrid")));
 
   private static PlayerProfile defender(long id) {

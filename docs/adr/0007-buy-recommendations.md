@@ -3,6 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-11-22
 - **Issue:** #35
+- **Amended by:** [0008](0008-sell-recommendations.md): the formation settings moved to `biwenger.advisor.formation.*`
 
 ## Context
 

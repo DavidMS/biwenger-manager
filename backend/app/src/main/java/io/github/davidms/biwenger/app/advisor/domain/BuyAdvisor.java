@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  *
  * <ol>
  *   <li>Your starters in a position are your best {@code starters} players there by expected points
- *       (ties by player id), as the reference formation in {@link BuyWeights} says.
+ *       (ties by player id), as the {@link ReferenceFormation} says.
  *   <li>A candidate's gain is his expected points minus your weakest starter's in his position, or
  *       minus 0 when you have fewer starters than the formation needs. So a weak line gives big
  *       gains and rises on its own.
@@ -45,13 +45,17 @@ public final class BuyAdvisor {
   private BuyAdvisor() {}
 
   public static List<BuyRecommendation> recommend(
-      List<BuyCandidate> market, List<ScoredPlayer> squad, Money balance, BuyWeights weights) {
+      List<BuyCandidate> market,
+      List<ScoredPlayer> squad,
+      Money balance,
+      ReferenceFormation formation,
+      BuyWeights weights) {
     Set<Long> owned = squad.stream().map(s -> s.player().id()).collect(Collectors.toSet());
     return market.stream()
         .filter(candidate -> !owned.contains(candidate.player().player().id()))
         .filter(candidate -> candidate.askingPrice().compareTo(balance) <= 0)
-        .filter(candidate -> weights.startersAt(position(candidate)) > 0)
-        .map(candidate -> recommendation(candidate, squad, balance, weights))
+        .filter(candidate -> formation.startersAt(position(candidate)) > 0)
+        .map(candidate -> recommendation(candidate, squad, balance, formation))
         .filter(recommendation -> recommendation.gain().signum() > 0)
         .sorted(RANKING)
         .limit(weights.limit())
@@ -59,18 +63,15 @@ public final class BuyAdvisor {
   }
 
   private static BuyRecommendation recommendation(
-      BuyCandidate candidate, List<ScoredPlayer> squad, Money balance, BuyWeights weights) {
+      BuyCandidate candidate,
+      List<ScoredPlayer> squad,
+      Money balance,
+      ReferenceFormation formation) {
     Position position = position(candidate);
+    int needed = formation.startersAt(position);
     List<ScoredPlayer> starters =
-        squad.stream()
-            .filter(s -> s.player().position() == position)
-            .sorted(Comparator.comparing(ScoredPlayer::score, PlayerScore.BY_EXPECTED_POINTS))
-            .limit(weights.startersAt(position))
-            .toList();
-    Slot slot =
-        starters.size() < weights.startersAt(position)
-            ? new EmptySlot()
-            : new Replaces(starters.getLast());
+        ReferenceFormation.depthChart(squad, position).stream().limit(needed).toList();
+    Slot slot = starters.size() < needed ? new EmptySlot() : new Replaces(starters.getLast());
     BigDecimal expected = candidate.player().score().expectedPoints();
     BigDecimal gain =
         switch (slot) {
